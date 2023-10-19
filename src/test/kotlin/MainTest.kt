@@ -12,7 +12,7 @@ class ExampleTest {
     @Test
     fun textChangesWhenButtonIsClicked(){
         rule.setContent {
-            App()
+            LoginView()
         }
 
         rule.onNodeWithTag("button").assertTextEquals("Hello, World!")
