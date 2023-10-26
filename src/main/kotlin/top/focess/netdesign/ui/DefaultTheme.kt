@@ -9,44 +9,48 @@ import androidx.compose.ui.graphics.Color
 
 object DefaultTheme {
 
+    val FORCE_LIGHT = true
+
     val darkColors = darkColors(
-        primary = Color(0xFF1F1F1F),         // Dark Charcoal Gray
-        primaryVariant = Color(0xFF191919),  // Slightly Darker Charcoal Gray
-        secondary = Color(0xFFD32F2F),      // Dark Red
-        secondaryVariant = Color(0xFFB71C1C), // Darker Red
-        background = Color(0xFF121212),     // Dark Gray
-        surface = Color(0xFF333333),        // Slightly lighter Gray
-        error = Color(0xFFFF5722),          // Red
-        onPrimary = Color(0xFFFFFFFF),     // White
-        onSecondary = Color(0xFFFFFFFF),   // White
-        onBackground = Color(0xFFFFFFFF),  // White
-        onSurface = Color(0xFFFFFFFF),      // White
-        onError = Color(0xFFFFFFFF),        // White
+        primary = Color(0xFF2196F3), // Blue
+        primaryVariant = Color(0xFF1976D2),
+        secondary = Color(0xFF03DAC6),
+        secondaryVariant = Color(0xFF018786),
+        background = Color(0xFF1C1C1C),
+        surface = Color(0xFFE0E0E0),
+        error = Color(0xFFCF6679),
+        onPrimary = Color(0xFFFFFFFF),
+        onSecondary = Color(0xFF000000),
+        onBackground = Color(0xFFFFFFFF),
+        onSurface = Color(0xFFFFFFFF),
+        onError = Color(0xFF000000),
     )
+
 
     val lightColors = lightColors(
-        primary = Color(0xFFA5A5A5),         // Light Gray
-        primaryVariant = Color(0xFF7E7E7E),  // Slightly Darker Gray
-        secondary = Color(0xFFD32F2F),      // Dark Red
-        secondaryVariant = Color(0xFFB71C1C), // Darker Red
-        background = Color(0xFFFFFFFF),     // White
-        surface = Color(0xFFE0E0E0),        // Light Gray
-        error = Color(0xFFFF5722),          // Red
-        onPrimary = Color(0xFF000000),     // Black
-        onSecondary = Color(0xFF000000),   // Black
-        onBackground = Color(0xFF000000),  // Black
-        onSurface = Color(0xFF000000),      // Black
-        onError = Color(0xFFFFFFFF),        // White
+        primary = Color(0xFF4CAF50),
+        primaryVariant = Color(0xFF388E3C),
+        secondary = Color(0xFF2196F3),
+        secondaryVariant = Color(0xFF1976D2),
+        background = Color(0xFFFFEB3B),
+        surface = Color(0xFFEEEEEE),
+        error = Color(0xFFF44336),
+        onPrimary = Color(0xFFFFFFFF),
+        onSecondary = Color(0xFFFFFFFF),
+        onBackground = Color(0xFF333333),
+        onSurface = Color(0xFF666666),
+        onError = Color(0xFFFFFFFF),
     )
 
-//    @Composable
-//    fun colors() =
-//        if (isSystemInDarkTheme())
-//            darkColors
-//        else
-//            lightColors
+    @Composable
+    fun colors() =
+        if (isSystemInDarkTheme() && !FORCE_LIGHT)
+            darkColors
+        else
+            lightColors
 
     @Composable
-    fun colors() = lightColors
+    fun slightlyColors() = if (isSystemInDarkTheme()) darkColors else lightColors
+
 
 }

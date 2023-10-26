@@ -1,31 +1,21 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.window.WindowDraggableArea
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.unit.*
-import androidx.compose.ui.window.*
-import top.focess.netdesign.Socket
-import top.focess.netdesign.ui.DefaultTheme
-
-
-@Composable
-fun CustomLayout(
-    modifier: Modifier,
-    how: Placeable.PlacementScope.(measurables: List<Measurable>, constraints: Constraints) -> Unit,
-    children: @Composable () -> Unit
-) = Layout({ children() }, modifier) { measurables, constraints ->
-    layout(constraints.maxWidth, constraints.maxHeight) {
-        how(measurables, constraints)
-    }
-}
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
+import top.focess.netdesign.ServerConnection
+import top.focess.netdesign.ui.DefaultView
+import top.focess.netdesign.ui.SurfaceView
 
 @Composable
 @Preview
@@ -34,6 +24,8 @@ fun LoginView(logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegis
     var username by remember { mutableStateOf("") }
 
     var password by remember { mutableStateOf("") }
+
+    Spacer(Modifier.fillMaxWidth().padding(10.dp))
 
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
         TextField(
@@ -70,80 +62,6 @@ fun LoginView(logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegis
     }
 }
 
-@Composable
-fun MainView() {
-    var text by remember { mutableStateOf("") }
-    TextField(
-        text,
-        onValueChange = { text = it },
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-        label = { Text("Text") },
-        singleLine = true
-    )
-}
-
-
-@Composable
-fun DefaultView(
-    state: WindowState = rememberWindowState(),
-    title: String,
-    onCloseRequest: () -> Unit = {},
-    children: @Composable () -> Unit
-) {
-
-    Window(
-        onCloseRequest = {}, state = state, title = title, transparent = true,
-        undecorated = true
-    ) {
-
-        MaterialTheme(colors = DefaultTheme.colors()) {
-
-            Surface(Modifier.clip(RoundedCornerShape(5.dp))) {
-
-                Column {
-
-                    WindowDraggableArea {
-
-                        CustomLayout(
-                            modifier = Modifier.fillMaxWidth().height(48.dp)
-                                .background(MaterialTheme.colors.primary),
-                            how = { measurables, constraints ->
-                                val titleBar = measurables[0]
-                                    .measure(
-                                        Constraints(
-                                            0,
-                                            constraints.maxWidth / 3,
-                                            constraints.minHeight,
-                                            constraints.maxHeight
-                                        )
-                                    )
-
-                                titleBar.place(constraints.maxWidth / 2 - titleBar.width / 2, 25)
-
-                                val exit = measurables[1]
-                                    .measure(
-                                        Constraints(
-                                            0,
-                                            constraints.maxWidth / 3,
-                                            constraints.minHeight,
-                                            constraints.maxHeight
-                                        )
-                                    )
-                                exit.place(constraints.maxWidth - exit.width, 0)
-                            }
-                        ) {
-                            Text(text = title, fontSize = 16.sp)
-                            Button(modifier = Modifier.fillMaxHeight(), onClick = onCloseRequest) {
-                                Text("X")
-                            }
-                        }
-                    }
-                    children()
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun SettingsView() {
@@ -175,28 +93,40 @@ fun RegisterView() {
 
 }
 
+
 @Composable
-fun centerWindowState(width: Dp, _height: Dp): WindowState {
-    var height = _height;
-    val unspecified = _height == Dp.Unspecified;
-    if (unspecified)
-        height = 0.dp
+fun MainView() {
+    var text by remember { mutableStateOf("") }
+    TextField(
+        text,
+        onValueChange = { text = it },
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        label = { Text("Text") },
+        singleLine = true
+    )
+}
+
+
+@Composable
+fun centerWindowState(width: Dp, height: Dp): WindowState {
     val screenSize = java.awt.Dimension(java.awt.Toolkit.getDefaultToolkit().screenSize)
     val windowPosition = WindowPosition(((screenSize.width.dp - width) / 2), ((screenSize.height.dp - height) / 2))
-    return rememberWindowState(position = windowPosition, size = DpSize(width, if (unspecified) Dp.Unspecified else height))
+    return rememberWindowState(position = windowPosition, size = DpSize(width, height))
 }
 
 fun main() {
 
-    val socket = Socket.getSocket()
+    val serverConnection = ServerConnection.getServerConnection()
 
-    application(exitProcessOnExit = false) {
+
+
+    application(exitProcessOnExit = true) {
         var login by remember { mutableStateOf(false) }
         var showSettings by remember { mutableStateOf(false) }
         var showRegister by remember { mutableStateOf(false) }
 
         if (!login)
-            DefaultView(onCloseRequest = ::exitApplication, state = centerWindowState(500.dp, Dp.Unspecified), title = "NetDesign2 - Login") {
+            DefaultView(onCloseRequest = ::exitApplication, state = centerWindowState(500.dp, 500.dp), title = "NetDesign2 - Login") {
                 LoginView({
                     login = true
                 }, {
@@ -206,20 +136,23 @@ fun main() {
                 })
             }
         else
-            DefaultView(title = "NetDesign2") {
+            DefaultView(onCloseRequest = ::exitApplication, title = "NetDesign2") {
                 MainView()
             }
 
         if (showSettings) {
-            DefaultView(onCloseRequest = { showSettings = false }, title = "NetDesign2 - Settings") {
-                SettingsView();
+            SurfaceView(onCloseRequest = { showSettings = false }, state = centerWindowState(500.dp, 400.dp), title = "NetDesign2 - Settings") {
+                SettingsView()
             }
         }
 
         if (showRegister) {
-            DefaultView(onCloseRequest = { showRegister = false }, title = "NetDesign2 - Register") {
-                RegisterView();
-            }
+            if (serverConnection.getServer() == null)
+
+            else
+                DefaultView(onCloseRequest = { showRegister = false }, title = "NetDesign2 - Register") {
+                    RegisterView()
+                }
         }
     }
 
