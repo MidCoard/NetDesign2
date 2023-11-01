@@ -11,24 +11,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
 
-val Int.tdp: TextUnit
-    @Composable
-    get() = with(LocalDensity.current) {
-        this@tdp.dp.toSp()
-    }
-
 @Composable
 fun CustomLayout(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     how: Placeable.PlacementScope.(measurables: List<Measurable>, constraints: Constraints) -> Unit,
     children: @Composable () -> Unit
 ) = Layout({ children() }, modifier) { measurables, constraints ->
@@ -38,7 +31,7 @@ fun CustomLayout(
 }
 
 @Composable
-fun DefaultView(
+fun  DefaultView(
     state: WindowState = rememberWindowState(),
     title: String,
     onCloseRequest: () -> Unit = {},
@@ -48,53 +41,45 @@ fun DefaultView(
 
     Window(
         onCloseRequest = onCloseRequest, state = state, title = title,
-//        transparent = true,
+        transparent = true,
         resizable = false,
         undecorated = true
     ) {
+
         Box(Modifier.clip(RoundedCornerShape(5.dp))) {
 
             MaterialTheme(colors = colors) {
 
                 Column(
-//                    Modifier.background(colors.background)
+                    Modifier.background(colors.background)
                 ) {
 
                     WindowDraggableArea {
 
-                        CustomLayout(
-                            modifier = Modifier.fillMaxWidth().height(48.dp)
-                                .background(MaterialTheme.colors.primary),
-                            how = { measurables, constraints ->
-                                val titleBar = measurables[0]
-                                    .measure(
-                                        Constraints(
-                                            0,
-                                            constraints.maxWidth * 2 / 3,
-                                            constraints.minHeight,
-                                            constraints.maxHeight
-                                        )
-                                    )
+                        Row(Modifier.fillMaxWidth().height(48.dp).background(colors.primary)) {
 
-                                titleBar.place(
-                                    constraints.maxWidth / 2 - titleBar.width / 2,
-                                    constraints.maxHeight / 2 - 18
+                            Spacer(modifier = Modifier.weight(3f))
+
+
+                            CustomLayout(modifier = Modifier.weight(6f), how = {
+                                    measurables, constraints ->
+                                val placeable =
+                                    measurables[0].measure(
+                                        constraints.copy(minWidth = 0, minHeight = 0)
+                                    )
+                                val x = (constraints.maxWidth - placeable.width) / 2
+                                val y = (constraints.maxHeight - placeable.height) / 2
+                                placeable.placeRelative(x, y)
+                            }) {
+                                Text(
+                                    text = title,
+                                    fontSize = 18.sp, textAlign = TextAlign.Center,
                                 )
-
-                                val exit = measurables[1]
-                                    .measure(
-                                        Constraints(
-                                            0,
-                                            constraints.maxWidth / 3,
-                                            constraints.minHeight,
-                                            constraints.maxHeight
-                                        )
-                                    )
-                                exit.place(constraints.maxWidth - exit.width, 0)
                             }
-                        ) {
-                            Text(text = title, fontSize = 18.tdp, textAlign = TextAlign.Center)
-                            Button(modifier = Modifier.fillMaxHeight(), onClick = onCloseRequest) {
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            Button(modifier = Modifier.fillMaxHeight().weight(2f), onClick = onCloseRequest) {
                                 Text("X")
                             }
                         }
@@ -122,3 +107,4 @@ fun SurfaceView(
         }
     }
 }
+

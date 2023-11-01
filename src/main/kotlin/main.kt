@@ -5,7 +5,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -13,7 +15,11 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.onCompletion
 import top.focess.netdesign.ServerConnection
+import top.focess.netdesign.ui.CustomLayout
 import top.focess.netdesign.ui.DefaultView
 import top.focess.netdesign.ui.SurfaceView
 
@@ -67,25 +73,27 @@ fun LoginView(logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegis
 fun SettingsView() {
     var host by remember { mutableStateOf("") }
     var port by remember { mutableStateOf("") }
+
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
         TextField(
             host,
             onValueChange = { host = it },
-            modifier = Modifier.fillMaxWidth(0.8f),
+            modifier = Modifier.fillMaxWidth(0.8f).weight(2f),
             label = { Text("Host") },
             singleLine = true
         )
-    }
 
-    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
+        Spacer(Modifier.width(8.dp))
+
         TextField(
             port,
             onValueChange = { port = it },
-            modifier = Modifier.fillMaxWidth(0.8f),
+            modifier = Modifier.fillMaxWidth(0.8f).weight(1f),
             label = { Text("Port") },
             singleLine = true
         )
     }
+
 }
 
 @Composable
@@ -106,27 +114,21 @@ fun MainView() {
     )
 }
 
-
 @Composable
-fun centerWindowState(width: Dp, height: Dp): WindowState {
-    val screenSize = java.awt.Dimension(java.awt.Toolkit.getDefaultToolkit().screenSize)
-    val windowPosition = WindowPosition(((screenSize.width.dp - width) / 2), ((screenSize.height.dp - height) / 2))
-    return rememberWindowState(position = windowPosition, size = DpSize(width, height))
-}
+fun rememberCenterWindowState(size: DpSize): WindowState = rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
 
 fun main() {
 
     val serverConnection = ServerConnection.getServerConnection()
-
-
 
     application(exitProcessOnExit = true) {
         var login by remember { mutableStateOf(false) }
         var showSettings by remember { mutableStateOf(false) }
         var showRegister by remember { mutableStateOf(false) }
 
+
         if (!login)
-            DefaultView(onCloseRequest = ::exitApplication, state = centerWindowState(500.dp, 500.dp), title = "NetDesign2 - Login") {
+            DefaultView(onCloseRequest = ::exitApplication, state = rememberCenterWindowState(size = DpSize(500.dp, Dp.Unspecified)), title = "NetDesign2 - Login") {
                 LoginView({
                     login = true
                 }, {
@@ -141,7 +143,7 @@ fun main() {
             }
 
         if (showSettings) {
-            SurfaceView(onCloseRequest = { showSettings = false }, state = centerWindowState(500.dp, 400.dp), title = "NetDesign2 - Settings") {
+            SurfaceView(onCloseRequest = { showSettings = false }, state = rememberCenterWindowState(DpSize(400.dp, Dp.Unspecified)), title = "NetDesign2 - Settings") {
                 SettingsView()
             }
         }
@@ -150,7 +152,7 @@ fun main() {
             if (serverConnection.getServer() == null)
 
             else
-                DefaultView(onCloseRequest = { showRegister = false }, title = "NetDesign2 - Register") {
+                SurfaceView(onCloseRequest = { showRegister = false }, title = "NetDesign2 - Register") {
                     RegisterView()
                 }
         }

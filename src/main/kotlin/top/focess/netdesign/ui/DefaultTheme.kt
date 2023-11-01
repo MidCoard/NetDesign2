@@ -1,7 +1,6 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.Colors
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
@@ -9,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 
 object DefaultTheme {
 
-    val FORCE_LIGHT = true
+    val FORCE_LIGHT = false
 
     val darkColors = darkColors(
         primary = Color(0xFF2196F3), // Blue
@@ -32,7 +31,7 @@ object DefaultTheme {
         primaryVariant = Color(0xFF388E3C),
         secondary = Color(0xFF2196F3),
         secondaryVariant = Color(0xFF1976D2),
-        background = Color(0xFFFFEB3B),
+        background = Color(0xFFFFFFFF),
         surface = Color(0xFFEEEEEE),
         error = Color(0xFFF44336),
         onPrimary = Color(0xFFFFFFFF),
