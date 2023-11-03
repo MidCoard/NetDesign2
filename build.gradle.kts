@@ -18,6 +18,8 @@ dependencies {
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
 
+    implementation("top.focess:focess-util:1.1.17")
+
     // Include the Test API
     testImplementation(compose.desktop.uiTestJUnit4)
 }
@@ -30,6 +32,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "KotlinJvmComposeDesktopApplication"
             packageVersion = "1.0.0"
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("src/main/resources"))
         }
     }
 }

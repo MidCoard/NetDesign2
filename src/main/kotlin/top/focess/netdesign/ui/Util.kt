@@ -79,8 +79,16 @@ fun  DefaultView(
 
                             Spacer(modifier = Modifier.weight(1f))
 
-                            Button(modifier = Modifier.fillMaxHeight().weight(2f), onClick = onCloseRequest) {
-                                Text("X")
+                            CustomLayout(modifier = Modifier.weight(2f), how = {
+                                measurables, constraints ->
+                                val offset = 128;
+                                measurables[0].measure(
+                                    constraints.copy(minWidth = 0, maxWidth = offset)
+                                ).place(constraints.maxWidth - offset, 0)
+                            }) {
+                                Button(modifier = Modifier.fillMaxHeight(), onClick = onCloseRequest) {
+                                    Text("X")
+                                }
                             }
                         }
                     }

@@ -1,0 +1,15 @@
+title: "NetDesign2"
+login:
+  title: "NetDesign2-登陆"
+  username: "用户名"
+  password: "密码"
+  login: "登陆"
+  register: "注册"
+  settings: "设置"
+settings:
+  title: "NetDesign2-设置"
+  host: "主机"
+  port: "端口"
+  save: "保存"
+register:
+  title: "NetDesign2-注册"

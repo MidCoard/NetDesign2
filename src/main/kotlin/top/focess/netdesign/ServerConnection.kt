@@ -15,4 +15,9 @@ class ServerConnection {
     fun getServer() : Server? {
         return null
     }
+
+    fun setServer(host: String, port: Int) {
+        this.host = host;
+        this.port = port;
+    }
 }

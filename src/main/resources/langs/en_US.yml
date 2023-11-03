@@ -1,0 +1,15 @@
+title: "NetDesign2"
+login:
+  title: "NetDesign2-Login"
+  username: "Username"
+  password: "Password"
+  login: "Login"
+  register: "Register"
+  settings: "Settings"
+settings:
+  title: "NetDesign2-Settings"
+  host: "Host"
+  port: "Port"
+  save: "Save"
+register:
+  title: "NetDesign2-Register"

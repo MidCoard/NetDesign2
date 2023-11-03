@@ -8,15 +8,15 @@ import androidx.compose.ui.graphics.Color
 
 object DefaultTheme {
 
-    val FORCE_LIGHT = false
+    val FORCE_LIGHT = true
 
     val darkColors = darkColors(
-        primary = Color(0xFF2196F3), // Blue
+        primary = Color(0xFF2196F3),
         primaryVariant = Color(0xFF1976D2),
         secondary = Color(0xFF03DAC6),
         secondaryVariant = Color(0xFF018786),
-        background = Color(0xFF1C1C1C),
-        surface = Color(0xFFE0E0E0),
+        background = Color(0xFF262626),
+        surface = Color(0xFF4d4d4d),
         error = Color(0xFFCF6679),
         onPrimary = Color(0xFFFFFFFF),
         onSecondary = Color(0xFF000000),
@@ -47,9 +47,6 @@ object DefaultTheme {
             darkColors
         else
             lightColors
-
-    @Composable
-    fun slightlyColors() = if (isSystemInDarkTheme()) darkColors else lightColors
 
 
 }
