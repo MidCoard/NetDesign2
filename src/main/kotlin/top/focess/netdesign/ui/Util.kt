@@ -49,7 +49,6 @@ fun  DefaultView(
         Box(Modifier.clip(RoundedCornerShape(5.dp))) {
 
             MaterialTheme(colors = colors) {
-
                 Column(
                     Modifier.background(colors.background)
                 ) {

@@ -1,0 +1,47 @@
+syntax = "proto3";
+package netdesign2;
+option java_package = "top.focess.netdesign.proto";
+option optimize_for = LITE_RUNTIME;
+
+message Packet {
+  int32 packetId = 1;
+}
+
+//packet id = 0
+message ServerStatusRequest {
+  int32 packetId = 1;
+  optional string clientPublicKey = 2;
+}
+
+//packet id = 1
+message ServerStatusResponse {
+  int32 packetId = 1;
+  bool online = 2;
+  bool registrable = 3;
+  optional string serverPublicKey = 4;
+}
+
+//packet id = 2
+message LoginPreRequest {
+  int32 packetId = 1;
+  string username = 2;
+}
+
+//packet id = 3
+message LoginPreResponse {
+  int32 packetId = 1;
+  string challenge = 2;
+}
+
+//packet id = 4
+message LoginRequest{
+  int32 packetId = 1;
+  string username = 2;
+  string hashPassword = 3;
+}
+
+//packet id = 5
+message LoginResponse {
+  int32 packetId = 1;
+  bool logined = 2;
+}

@@ -19,6 +19,8 @@ dependencies {
     implementation(compose.desktop.currentOs)
 
     implementation("top.focess:focess-util:1.1.17")
+    implementation("com.google.protobuf:protobuf-java:3.25.0")
+    implementation("com.google.protobuf:protobuf-kotlin:3.25.0")
 
     // Include the Test API
     testImplementation(compose.desktop.uiTestJUnit4)

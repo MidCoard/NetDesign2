@@ -4,6 +4,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -13,16 +14,20 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
-import top.focess.netdesign.ServerConnection
+import kotlinx.coroutines.launch
 import top.focess.netdesign.config.LangFile
+import top.focess.netdesign.server.RemoteServer
+import top.focess.netdesign.server.SingleServer
 import top.focess.netdesign.ui.DefaultView
 import top.focess.netdesign.ui.IntTextField
 import top.focess.netdesign.ui.SurfaceView
+import java.util.*
 
 @Composable
 @Preview
-fun LangFile.LandScope.LoginView(logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegister: () -> Unit = {}) {
+fun LangFile.LandScope.LoginView(status : RemoteServer.ConnectionStatus, logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegister: () -> Unit = {}) {
 
     var username by remember { mutableStateOf("") }
 
@@ -63,13 +68,17 @@ fun LangFile.LandScope.LoginView(logined: () -> Unit = {}, showSettings: () -> U
             Text("login.settings".l)
         }
     }
+
+    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
+        Text(status.toString())
+    }
 }
 
 
 @Composable
-fun LangFile.LandScope.SettingsView(saveSettings: (host :String, port :Int) -> Unit) {
-    var host by remember { mutableStateOf("") }
-    var port by remember { mutableStateOf(0) }
+fun LangFile.LandScope.SettingsView(_host :String, _port :Int, saveSettings: (host :String, port :Int) -> Unit) {
+    var host by remember { mutableStateOf(_host) }
+    var port by remember { mutableStateOf(_port) }
     var clicked by remember { mutableStateOf(false) }
 
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
@@ -84,7 +93,7 @@ fun LangFile.LandScope.SettingsView(saveSettings: (host :String, port :Int) -> U
         Spacer(Modifier.width(8.dp))
 
         IntTextField(
-            "",
+            port.toString(),
             port,
             onValueChange = { port = it },
             modifier = Modifier.fillMaxWidth(0.8f).weight(1f),
@@ -135,17 +144,22 @@ fun rememberCenterWindowState(size: DpSize): WindowState = rememberWindowState(s
 
 fun main() {
 
-    val serverConnection = ServerConnection.getServerConnection()
+    SingleServer()
 
     val l = LangFile("langs/zh_CN.yml");
 
     LangFile.createLandScope(l) {
 
         application(exitProcessOnExit = true) {
+            val server = rememberSaveable(saver = RemoteServer.Saver()) { RemoteServer() }
             var login by remember { mutableStateOf(false) }
             var showSettings by remember { mutableStateOf(false) }
             var showRegister by remember { mutableStateOf(false) }
 
+            LaunchedEffect(server.host, server.port) {
+                if (!server.connected)
+                    server.connect()
+            }
 
             if (!login)
                 DefaultView(
@@ -153,7 +167,7 @@ fun main() {
                     state = rememberCenterWindowState(size = DpSize(500.dp, Dp.Unspecified)),
                     title = "login.title".l
                 ) {
-                    LoginView({
+                    LoginView(server.connected,{
                         login = true
                         showSettings = false
                         showRegister = false
@@ -170,22 +184,28 @@ fun main() {
 
 
             if (showRegister) {
-                if (serverConnection.getServer() == null)
-                else
+                if (server.registerable)
                     SurfaceView(onCloseRequest = { showRegister = false }, title = "register.title".l) {
                         RegisterView()
                     }
+                else {
+                    showRegister = false
+                    println("not registerable")
+                }
             }
 
             if (showSettings) {
                 SurfaceView(
                     onCloseRequest = { showSettings = false },
                     state = rememberCenterWindowState(DpSize(400.dp, Dp.Unspecified)),
-                    title = "settings.title".l
+                    title = "settings.title".l,
                 ) {
-                    SettingsView { host, port ->
+                    SettingsView(server.host, server.port) { host, port ->
                         showSettings = false
-                        serverConnection.setServer(host, port)
+                        if (server.host != host || server.port != port)
+                            server.disconnect()
+                        server.host = host
+                        server.port = port
                     }
                 }
             }
