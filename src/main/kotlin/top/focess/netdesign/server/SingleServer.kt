@@ -173,6 +173,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     }
                     is LoginRequestPacket -> {
                         this.logined = this.username == packet.username
+                        if (packet.username.length < 6 || packet.username.length > 20)
+                            this.logined = false
                         this.username = null
                         LoginResponsePacket(this.logined)
                     }

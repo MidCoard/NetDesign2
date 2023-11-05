@@ -28,7 +28,7 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "NetDesign2Kt"
+        mainClass = "top.focess.netdesign.ui.NetDesign2Kt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

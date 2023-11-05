@@ -5697,12 +5697,18 @@ public final class PacketOuterClass {
         getNameBytes();
 
     /**
-     * <code>.netdesign2.Contact.ContactType type = 3;</code>
+     * <code>bool online = 3;</code>
+     * @return The online.
+     */
+    boolean getOnline();
+
+    /**
+     * <code>.netdesign2.Contact.ContactType type = 4;</code>
      * @return The enum numeric value on the wire for type.
      */
     int getTypeValue();
     /**
-     * <code>.netdesign2.Contact.ContactType type = 3;</code>
+     * <code>.netdesign2.Contact.ContactType type = 4;</code>
      * @return The type.
      */
     top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType getType();
@@ -5911,17 +5917,28 @@ public final class PacketOuterClass {
       }
     }
 
-    public static final int TYPE_FIELD_NUMBER = 3;
+    public static final int ONLINE_FIELD_NUMBER = 3;
+    private boolean online_ = false;
+    /**
+     * <code>bool online = 3;</code>
+     * @return The online.
+     */
+    @java.lang.Override
+    public boolean getOnline() {
+      return online_;
+    }
+
+    public static final int TYPE_FIELD_NUMBER = 4;
     private int type_ = 0;
     /**
-     * <code>.netdesign2.Contact.ContactType type = 3;</code>
+     * <code>.netdesign2.Contact.ContactType type = 4;</code>
      * @return The enum numeric value on the wire for type.
      */
     @java.lang.Override public int getTypeValue() {
       return type_;
     }
     /**
-     * <code>.netdesign2.Contact.ContactType type = 3;</code>
+     * <code>.netdesign2.Contact.ContactType type = 4;</code>
      * @return The type.
      */
     @java.lang.Override public top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType getType() {
@@ -5949,8 +5966,11 @@ public final class PacketOuterClass {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
       }
+      if (online_ != false) {
+        output.writeBool(3, online_);
+      }
       if (type_ != top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType.FRIEND.getNumber()) {
-        output.writeEnum(3, type_);
+        output.writeEnum(4, type_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -5968,9 +5988,13 @@ public final class PacketOuterClass {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
       }
+      if (online_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, online_);
+      }
       if (type_ != top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType.FRIEND.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(3, type_);
+          .computeEnumSize(4, type_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -5991,6 +6015,8 @@ public final class PacketOuterClass {
           != other.getId()) return false;
       if (!getName()
           .equals(other.getName())) return false;
+      if (getOnline()
+          != other.getOnline()) return false;
       if (type_ != other.type_) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
@@ -6007,6 +6033,9 @@ public final class PacketOuterClass {
       hash = (53 * hash) + getId();
       hash = (37 * hash) + NAME_FIELD_NUMBER;
       hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + ONLINE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getOnline());
       hash = (37 * hash) + TYPE_FIELD_NUMBER;
       hash = (53 * hash) + type_;
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -6142,6 +6171,7 @@ public final class PacketOuterClass {
         bitField0_ = 0;
         id_ = 0;
         name_ = "";
+        online_ = false;
         type_ = 0;
         return this;
       }
@@ -6183,6 +6213,9 @@ public final class PacketOuterClass {
           result.name_ = name_;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.online_ = online_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
           result.type_ = type_;
         }
       }
@@ -6239,6 +6272,9 @@ public final class PacketOuterClass {
           bitField0_ |= 0x00000002;
           onChanged();
         }
+        if (other.getOnline() != false) {
+          setOnline(other.getOnline());
+        }
         if (other.type_ != 0) {
           setTypeValue(other.getTypeValue());
         }
@@ -6279,10 +6315,15 @@ public final class PacketOuterClass {
                 break;
               } // case 18
               case 24: {
-                type_ = input.readEnum();
+                online_ = input.readBool();
                 bitField0_ |= 0x00000004;
                 break;
               } // case 24
+              case 32: {
+                type_ = input.readEnum();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -6404,27 +6445,59 @@ public final class PacketOuterClass {
         return this;
       }
 
+      private boolean online_ ;
+      /**
+       * <code>bool online = 3;</code>
+       * @return The online.
+       */
+      @java.lang.Override
+      public boolean getOnline() {
+        return online_;
+      }
+      /**
+       * <code>bool online = 3;</code>
+       * @param value The online to set.
+       * @return This builder for chaining.
+       */
+      public Builder setOnline(boolean value) {
+
+        online_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool online = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearOnline() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        online_ = false;
+        onChanged();
+        return this;
+      }
+
       private int type_ = 0;
       /**
-       * <code>.netdesign2.Contact.ContactType type = 3;</code>
+       * <code>.netdesign2.Contact.ContactType type = 4;</code>
        * @return The enum numeric value on the wire for type.
        */
       @java.lang.Override public int getTypeValue() {
         return type_;
       }
       /**
-       * <code>.netdesign2.Contact.ContactType type = 3;</code>
+       * <code>.netdesign2.Contact.ContactType type = 4;</code>
        * @param value The enum numeric value on the wire for type to set.
        * @return This builder for chaining.
        */
       public Builder setTypeValue(int value) {
         type_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
-       * <code>.netdesign2.Contact.ContactType type = 3;</code>
+       * <code>.netdesign2.Contact.ContactType type = 4;</code>
        * @return The type.
        */
       @java.lang.Override
@@ -6433,7 +6506,7 @@ public final class PacketOuterClass {
         return result == null ? top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType.UNRECOGNIZED : result;
       }
       /**
-       * <code>.netdesign2.Contact.ContactType type = 3;</code>
+       * <code>.netdesign2.Contact.ContactType type = 4;</code>
        * @param value The type to set.
        * @return This builder for chaining.
        */
@@ -6441,17 +6514,17 @@ public final class PacketOuterClass {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         type_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
-       * <code>.netdesign2.Contact.ContactType type = 3;</code>
+       * <code>.netdesign2.Contact.ContactType type = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearType() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         type_ = 0;
         onChanged();
         return this;
@@ -10869,21 +10942,22 @@ public final class PacketOuterClass {
       "\001 \001(\005\022\021\n\tchallenge\030\002 \001(\t\"H\n\014LoginRequest" +
       "\022\020\n\010packetId\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\022\024\n\014" +
       "hashPassword\030\003 \001(\t\"2\n\rLoginResponse\022\020\n\010p" +
-      "acketId\030\001 \001(\005\022\017\n\007logined\030\002 \001(\010\"\204\001\n\007Conta" +
-      "ct\022\n\n\002id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022-\n\004type\030\003 \001" +
-      "(\0162\037.netdesign2.Contact.ContactType\"0\n\013C" +
-      "ontactType\022\n\n\006FRIEND\020\000\022\t\n\005GROUP\020\001\022\n\n\006MEM" +
-      "BER\020\002\"&\n\022ContactListRequest\022\020\n\010packetId\030" +
-      "\001 \001(\005\"N\n\023ContactListResponse\022\020\n\010packetId" +
-      "\030\001 \001(\005\022%\n\010contacts\030\002 \003(\0132\023.netdesign2.Co" +
-      "ntact\"1\n\021FriendInfoRequest\022\020\n\010packetId\030\001" +
-      " \001(\005\022\n\n\002id\030\002 \001(\005\"@\n\022FriendInfoResponse\022\020" +
-      "\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\022\014\n\004name\030\003 \001" +
-      "(\t\"0\n\020GroupInfoRequest\022\020\n\010packetId\030\001 \001(\005" +
-      "\022\n\n\002id\030\002 \001(\005\"e\n\021GroupInfoResponse\022\020\n\010pac" +
-      "ketId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\022\014\n\004name\030\003 \001(\t\022$\n" +
-      "\007members\030\004 \003(\0132\023.netdesign2.ContactB\036\n\032t" +
-      "op.focess.netdesign.protoH\003b\006proto3"
+      "acketId\030\001 \001(\005\022\017\n\007logined\030\002 \001(\010\"\224\001\n\007Conta" +
+      "ct\022\n\n\002id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\016\n\006online\030\003" +
+      " \001(\010\022-\n\004type\030\004 \001(\0162\037.netdesign2.Contact." +
+      "ContactType\"0\n\013ContactType\022\n\n\006FRIEND\020\000\022\t" +
+      "\n\005GROUP\020\001\022\n\n\006MEMBER\020\002\"&\n\022ContactListRequ" +
+      "est\022\020\n\010packetId\030\001 \001(\005\"N\n\023ContactListResp" +
+      "onse\022\020\n\010packetId\030\001 \001(\005\022%\n\010contacts\030\002 \003(\013" +
+      "2\023.netdesign2.Contact\"1\n\021FriendInfoReque" +
+      "st\022\020\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\"@\n\022Frie" +
+      "ndInfoResponse\022\020\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002" +
+      " \001(\005\022\014\n\004name\030\003 \001(\t\"0\n\020GroupInfoRequest\022\020" +
+      "\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\"e\n\021GroupInf" +
+      "oResponse\022\020\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\022" +
+      "\014\n\004name\030\003 \001(\t\022$\n\007members\030\004 \003(\0132\023.netdesi" +
+      "gn2.ContactB\036\n\032top.focess.netdesign.prot" +
+      "oH\003b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -10948,7 +11022,7 @@ public final class PacketOuterClass {
     internal_static_netdesign2_Contact_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_Contact_descriptor,
-        new java.lang.String[] { "Id", "Name", "Type", });
+        new java.lang.String[] { "Id", "Name", "Online", "Type", });
     internal_static_netdesign2_ContactListRequest_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_netdesign2_ContactListRequest_fieldAccessorTable = new

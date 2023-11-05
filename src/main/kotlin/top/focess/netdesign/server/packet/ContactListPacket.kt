@@ -16,6 +16,7 @@ data class ContactListResponsePacket(val contacts: List<ContactInfo>) : ServerPa
             top.focess.netdesign.proto.contact {
                 this.id = contact.id
                 this.name = contact.name
+                this.online = contact.online
                 this.type = contact.type
             }
         }.toList())
@@ -37,6 +38,7 @@ class ContactListRequestPacket : ClientPacket(PACKET_ID) {
 data class ContactInfo(
     val id: Int,
     val name: String,
+    val online: Boolean,
     val type: PacketOuterClass.Contact.ContactType,
 )
 

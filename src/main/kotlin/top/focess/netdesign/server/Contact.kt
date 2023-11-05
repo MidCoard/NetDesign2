@@ -2,7 +2,7 @@ package top.focess.netdesign.server
 
 import androidx.compose.runtime.mutableStateListOf
 
-abstract class Contact(val id: Int, val name: String) {
+abstract class Contact(val id: Int, val name: String, val online: Boolean) {
 
     abstract fun sendMessage(message: Message) : Boolean
 
@@ -18,20 +18,20 @@ abstract class Contact(val id: Int, val name: String) {
     }
 }
 
-class Friend(id: Int, name: String) : Contact(id, name) {
+class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
     override fun sendMessage(message: Message): Boolean {
         TODO("Not yet implemented")
     }
 
 }
 
-class Member(id: Int, name: String) : Contact(id, name) {
+class Member(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
     override fun sendMessage(message: Message) =
         getContact(this.id)?.sendMessage(message) ?: false
 
 }
 
-class Group(id: Int, name: String, members: List<Member>) : Contact(id, name) {
+class Group(id: Int, name: String, online: Boolean, members: List<Member>) : Contact(id, name, online) {
 
     val members = mutableStateListOf(members)
     override fun sendMessage(message: Message): Boolean {

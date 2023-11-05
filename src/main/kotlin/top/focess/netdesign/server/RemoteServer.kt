@@ -25,6 +25,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
     var online by mutableStateOf(true)
     var registerable by mutableStateOf(false)
+    var lastLoginedUsername: String? = null
     private var serverPublicKey: String? = null
 
     private lateinit var socket: Socket
@@ -37,6 +38,8 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             // if you want to update the server status, send an update packet or reconnect
             return ServerStatusResponsePacket(online, registerable, serverPublicKey)
         try {
+            if (packet is LoginRequestPacket)
+                lastLoginedUsername = packet.username
             var bytes = packet.toProtoType().toByteArray()
             if (serverPublicKey != null)
                 bytes = RSA.encryptRSA(bytes, serverPublicKey)
@@ -89,6 +92,20 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                 }
 
                 9 -> {
+                    val contactListResponse = PacketOuterClass.ContactListResponse.parseFrom(bytes)
+                    ContactListResponsePacket(
+                        contactListResponse.contactsList.map { contact ->
+                            ContactInfo(
+                                contact.id,
+                                contact.name,
+                                contact.online,
+                                contact.type
+                            )
+                        }.toList()
+                    )
+                }
+
+                11 -> {
                     val friendInfoResponse = PacketOuterClass.FriendInfoResponse.parseFrom(bytes)
                     FriendInfoResponsePacket(
                         friendInfoResponse.id,
@@ -96,11 +113,11 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                     )
                 }
 
-                11 -> {
+                13 -> {
                     val groupInfoResponse = PacketOuterClass.GroupInfoResponse.parseFrom(bytes)
                     val members = mutableListOf<Member>()
                     for (member in groupInfoResponse.membersList)
-                        members.add(Member(member.id, member.name))
+                        members.add(Member(member.id, member.name, member.online))
                     GroupInfoResponsePacket(
                         groupInfoResponse.id,
                         groupInfoResponse.name,

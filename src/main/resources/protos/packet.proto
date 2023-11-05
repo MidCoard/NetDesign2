@@ -61,7 +61,8 @@ message LoginResponse {
 message Contact {
   int32 id = 1;
   string name = 2;
-  ContactType type = 3;
+  bool online = 3;
+  ContactType type = 4;
 
   enum ContactType {
     FRIEND = 0;
