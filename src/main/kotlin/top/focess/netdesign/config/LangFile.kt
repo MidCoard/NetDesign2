@@ -27,12 +27,12 @@ class LangFile(filename: String) {
     }
 
     companion object {
-        fun createLandScope(langFile: LangFile, block: LandScope.() -> Unit) {
-            LandScope(langFile).block()
+        fun createLandScope(langFile: LangFile, block: LangScope.() -> Unit) {
+            LangScope(langFile).block()
         }
     }
 
-    class LandScope(private val langFile: LangFile) {
+    class LangScope(private val langFile: LangFile) {
 
         @Composable
         fun String.l(vararg args: Any) : String {

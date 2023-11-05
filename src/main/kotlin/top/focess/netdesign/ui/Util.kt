@@ -1,16 +1,24 @@
 package top.focess.netdesign.ui
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
@@ -18,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
+import top.focess.netdesign.config.LangFile
 
 @Composable
 fun CustomLayout(
@@ -31,7 +40,7 @@ fun CustomLayout(
 }
 
 @Composable
-fun  DefaultView(
+fun LangFile.LangScope.DefaultView(
     state: WindowState = rememberWindowState(),
     title: String,
     onCloseRequest: () -> Unit = {},
@@ -86,7 +95,7 @@ fun  DefaultView(
                                 ).place(constraints.maxWidth - offset, 0)
                             }) {
                                 Button(modifier = Modifier.fillMaxHeight(), onClick = onCloseRequest) {
-                                    Text("X")
+                                    Icon(Icons.Default.Close, "close".l)
                                 }
                             }
                         }
@@ -99,7 +108,7 @@ fun  DefaultView(
 }
 
 @Composable
-fun SurfaceView(
+fun LangFile.LangScope.SurfaceView(
     state: WindowState = rememberWindowState(),
     title: String,
     onCloseRequest: () -> Unit = {},
@@ -113,5 +122,24 @@ fun SurfaceView(
             }
         }
     }
+}
+
+@Composable
+fun LangFile.LangScope.ProgressionIcon(contentDescription: String? = "progress".l) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Icon(
+        painter = painterResource("icons/progress_activity.svg"),
+        contentDescription = contentDescription,
+        modifier = Modifier.rotate(angle)
+    )
 }
 

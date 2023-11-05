@@ -1,4 +1,6 @@
 title: "NetDesign2"
+close: "关闭"
+progress: "处理中"
 login:
   title: "NetDesign2-登陆"
   username: "用户名"
@@ -6,6 +8,9 @@ login:
   login: "登陆"
   register: "注册"
   settings: "设置"
+  connected: "已连接"
+  disconnected: "未连接"
+  reconnect: "重新连接"
 settings:
   title: "NetDesign2-设置"
   host: "主机"

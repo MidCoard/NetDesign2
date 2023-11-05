@@ -1,8 +1,14 @@
+import androidx.compose.animation.Crossfade
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -14,26 +20,30 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.RemoteServer
 import top.focess.netdesign.server.SingleServer
-import top.focess.netdesign.ui.DefaultView
-import top.focess.netdesign.ui.IntTextField
-import top.focess.netdesign.ui.SurfaceView
-import java.util.*
+import top.focess.netdesign.ui.*
 
 @Composable
 @Preview
-fun LangFile.LandScope.LoginView(status : RemoteServer.ConnectionStatus, logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegister: () -> Unit = {}) {
+fun LangFile.LangScope.LoginView(server : RemoteServer, logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegister: () -> Unit = {}) {
 
     var username by remember { mutableStateOf("") }
-
     var password by remember { mutableStateOf("") }
 
-    Spacer(Modifier.fillMaxWidth().padding(10.dp))
+    var clicked by remember { mutableStateOf(false) }
+
+    LaunchedEffect(clicked) {
+        if (clicked) {
+            delay(1000)
+            server.reconnect()
+            clicked = false
+        }
+    }
+
+    Spacer(Modifier.padding(10.dp))
 
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
         TextField(
@@ -56,27 +66,43 @@ fun LangFile.LandScope.LoginView(status : RemoteServer.ConnectionStatus, logined
     }
 
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
-        Button(onClick = { logined() }, modifier = Modifier.padding(16.dp)) {
+        Button(onClick = { logined() }, modifier = Modifier.padding(16.dp), enabled = server.connected()) {
             Text("login.login".l)
+            Spacer(Modifier.width(5.dp))
+
+            Crossfade(server.connected) {
+                if (server.connected())
+                    Icon(Icons.Default.Done, "login.connected".l)
+                else if (!server.connected)
+                    Icon(Icons.Default.Close, "login.disconnected".l)
+                else ProgressionIcon()
+            }
         }
 
-        Button(onClick = { showRegister() }, modifier = Modifier.padding(16.dp)) {
+        Button(onClick = { clicked = true }, modifier = Modifier.padding(16.dp), enabled = !clicked && !server.connected) {
+            Icon(Icons.Default.Refresh, "login.reconnect".l)
+        }
+
+        Button(onClick = { showRegister() }, modifier = Modifier.padding(16.dp), enabled = server.connected() && server.registerable) {
             Text("login.register".l)
+            Spacer(Modifier.width(5.dp))
+            Crossfade(server.connected() && server.registerable) {
+                if (it)
+                    Icon(Icons.Default.Done, "login.connected".l)
+                else
+                    Icon(Icons.Default.Close, "login.disconnected".l)
+            }
         }
 
         Button(onClick = { showSettings() }, modifier = Modifier.padding(16.dp)) {
             Text("login.settings".l)
         }
     }
-
-    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
-        Text(status.toString())
-    }
 }
 
 
 @Composable
-fun LangFile.LandScope.SettingsView(_host :String, _port :Int, saveSettings: (host :String, port :Int) -> Unit) {
+fun LangFile.LangScope.SettingsView(_host :String, _port :Int, saveSettings: (host :String, port :Int) -> Unit) {
     var host by remember { mutableStateOf(_host) }
     var port by remember { mutableStateOf(_port) }
     var clicked by remember { mutableStateOf(false) }
@@ -167,7 +193,7 @@ fun main() {
                     state = rememberCenterWindowState(size = DpSize(500.dp, Dp.Unspecified)),
                     title = "login.title".l
                 ) {
-                    LoginView(server.connected,{
+                    LoginView(server,{
                         login = true
                         showSettings = false
                         showRegister = false

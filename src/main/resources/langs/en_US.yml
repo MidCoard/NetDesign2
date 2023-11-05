@@ -1,4 +1,6 @@
 title: "NetDesign2"
+close: "Close"
+progress: "Processing"
 login:
   title: "NetDesign2-Login"
   username: "Username"
@@ -6,6 +8,9 @@ login:
   login: "Login"
   register: "Register"
   settings: "Settings"
+  connected: "Connected"
+  disconnected: "Disconnected"
+  reconnect: "Reconnect"
 settings:
   title: "NetDesign2-Settings"
   host: "Host"
