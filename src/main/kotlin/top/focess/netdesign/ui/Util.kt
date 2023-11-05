@@ -8,13 +8,14 @@ import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.Key.Companion.Menu
+import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
@@ -54,6 +56,14 @@ fun LangFile.LangScope.DefaultView(
         resizable = false,
         undecorated = true
     ) {
+
+        MenuBar {
+            Menu("menu.status.title".l, mnemonic = 'S') {
+                Item("menu.status.quit".l, onClick = {
+                    onCloseRequest()
+                }, shortcut = KeyShortcut(Key.Q, ctrl = true))
+            }
+        }
 
         Box(Modifier.clip(RoundedCornerShape(5.dp))) {
 

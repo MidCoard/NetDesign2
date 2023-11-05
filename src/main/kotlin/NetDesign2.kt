@@ -13,26 +13,26 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
-import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.*
 import kotlinx.coroutines.delay
 import top.focess.netdesign.config.LangFile
+import top.focess.netdesign.proto.PacketOuterClass
+import top.focess.netdesign.proto.PacketOuterClass.ContactListRequest
 import top.focess.netdesign.proto.loginRequest
-import top.focess.netdesign.server.RemoteServer
-import top.focess.netdesign.server.SingleServer
-import top.focess.netdesign.server.packet.LoginPreRequestPacket
-import top.focess.netdesign.server.packet.LoginPreResponsePacket
-import top.focess.netdesign.server.packet.LoginRequestPacket
-import top.focess.netdesign.server.packet.LoginResponsePacket
+import top.focess.netdesign.server.*
+import top.focess.netdesign.server.packet.*
 import top.focess.netdesign.ui.DefaultView
 import top.focess.netdesign.ui.IntTextField
 import top.focess.netdesign.ui.ProgressionIcon
 import top.focess.netdesign.ui.SurfaceView
+import java.awt.TrayIcon
 import java.security.MessageDigest
 
 @Composable
@@ -199,8 +199,48 @@ fun RegisterView() {
 
 
 @Composable
-fun MainView() {
+fun MainView(server : RemoteServer) {
+
     var text by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val packet = server.sendPacket(ContactListRequestPacket())
+        if (packet is ContactListResponsePacket) {
+            val friendList = mutableListOf<Friend>()
+            val groupList = mutableListOf<Group>()
+            val groupMap = mutableMapOf<Int, Group>()
+            for (contact in packet.contacts) {
+                if (contact.type == PacketOuterClass.Contact.ContactType.FRIEND) {
+                    val contactPacket = server.sendPacket(FriendInfoRequestPacket(contact.id))
+                    if (contactPacket is FriendInfoResponsePacket)
+                        friendList.add(Friend(contact.id, contact.name))
+                } else if (contact.type == PacketOuterClass.Contact.ContactType.GROUP) {
+                    val contactPacket = server.sendPacket(GroupInfoRequestPacket(contact.id))
+                    if (contactPacket is GroupInfoResponsePacket) {
+                        val group = Group(contact.id, contact.name, contactPacket.members)
+                        groupList.add(group)
+                        groupMap[contact.id] = group
+                    }
+                }
+            }
+
+            compareAndAddOrRemove(contacts, friendList) {
+                it is Group
+            }
+
+            for (group in contacts.filterIsInstance<Group>()) {
+                val target = groupMap[group.id]
+                if (target != null)
+                    compareAndAddOrRemove(group.members, target.members)
+            }
+
+            compareAndAddOrRemove(contacts, groupList) {
+                it is Friend
+            }
+
+        }
+    }
+
     TextField(
         text,
         onValueChange = { text = it },
@@ -211,7 +251,7 @@ fun MainView() {
 }
 
 @Composable
-fun rememberCenterWindowState(size: DpSize): WindowState =
+fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified)): WindowState =
     rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
 
 private fun hashString(input: String, algorithm: String): String {
@@ -221,11 +261,26 @@ private fun hashString(input: String, algorithm: String): String {
         .fold("") { str, it -> str + "%02x".format(it) }
 }
 
+private fun <T> compareAndAddOrRemove(list: MutableList<T>, newList: List<T>, except: (T) -> Boolean = { false }) {
+    val toAdd = newList.filter { !list.contains(it) }
+    val toRemove = list.filter  { !newList.contains(it) || except(it) }
+    list.addAll(toAdd)
+    list.removeAll(toRemove)
+}
+
 private fun String.sha256(): String = hashString(this, "SHA-256")
+
+object TrayIcon : Painter() {
+    override val intrinsicSize = Size(256f, 256f)
+
+    override fun DrawScope.onDraw() {
+        drawOval(Color(0xFFFFA500))
+    }
+}
 
 fun main() {
 
-    SingleServer()
+    SingleServer("Local")
 
     val l = LangFile("langs/zh_CN.yml");
 
@@ -237,6 +292,7 @@ fun main() {
             var logined by remember { mutableStateOf(false) }
             var showSettings by remember { mutableStateOf(false) }
             var showRegister by remember { mutableStateOf(false) }
+            var showTray by remember { mutableStateOf(false) }
 
             LaunchedEffect(server.host, server.port) {
                 if (!server.connected)
@@ -246,7 +302,7 @@ fun main() {
             if (!logined)
                 DefaultView(
                     onCloseRequest = ::exitApplication,
-                    state = rememberCenterWindowState(size = DpSize(500.dp, Dp.Unspecified)),
+                    state = rememberCenterWindowState(DpSize(500.dp, Dp.Unspecified)),
                     title = "login.title".l
                 ) {
                     LoginView(server, {
@@ -257,10 +313,27 @@ fun main() {
                         showRegister = true
                     })
                 }
-            else
-                DefaultView(onCloseRequest = ::exitApplication, title = "title".l) {
-                    MainView()
+            else if (!showTray)
+                DefaultView(
+                    onCloseRequest = { showTray = true },
+                    state = rememberCenterWindowState(DpSize(400.dp, 720.dp)),
+                    title = "title".l
+                ) {
+                    MainView(server)
                 }
+            else
+                Tray(
+                    state = rememberTrayState(),
+                    icon = TrayIcon,
+                    menu = {
+                        Item("tray.show".l) {
+                            showTray = false
+                        }
+                        Item("tray.quit".l) {
+                            exitApplication()
+                        }
+                    }
+                )
 
 
             if (showRegister) {

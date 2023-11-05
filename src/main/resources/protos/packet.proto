@@ -21,6 +21,18 @@ message ServerStatusResponse {
   optional string serverPublicKey = 4;
 }
 
+//packet id = 6
+message ServerStatusUpdateRequest {
+  int32 packetId = 1;
+}
+
+//packet id = 7
+message ServerStatusUpdateResponse {
+  int32 packetId = 1;
+  bool online = 2;
+  bool registrable = 3;
+}
+
 //packet id = 2
 message LoginPreRequest {
   int32 packetId = 1;
@@ -44,4 +56,54 @@ message LoginRequest{
 message LoginResponse {
   int32 packetId = 1;
   bool logined = 2;
+}
+
+message Contact {
+  int32 id = 1;
+  string name = 2;
+  ContactType type = 3;
+
+  enum ContactType {
+    FRIEND = 0;
+    GROUP = 1;
+    MEMBER = 2;
+  }
+}
+
+//packet id = 8
+message ContactListRequest {
+  int32 packetId = 1;
+}
+
+//packet id = 9
+message ContactListResponse {
+  int32 packetId = 1;
+  repeated Contact contacts = 2;
+}
+
+//packet id = 10
+message FriendInfoRequest {
+  int32 packetId = 1;
+  int32 id = 2;
+}
+
+//packet id = 11
+message FriendInfoResponse {
+  int32 packetId = 1;
+  int32 id = 2;
+  string name = 3;
+}
+
+//packet id = 12
+message GroupInfoRequest {
+  int32 packetId = 1;
+  int32 id = 2;
+}
+
+//packet id = 13
+message GroupInfoResponse {
+  int32 packetId = 1;
+  int32 id = 2;
+  string name = 3;
+  repeated Contact members = 4;
 }

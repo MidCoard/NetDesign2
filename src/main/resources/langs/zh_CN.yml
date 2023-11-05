@@ -11,6 +11,13 @@ login:
   connected: "已连接"
   disconnected: "未连接"
   reconnect: "重新连接"
+tray:
+  show: "显示"
+  quit: "退出"
+menu:
+  status:
+    title: "状态"
+    quit: "退出"
 settings:
   title: "NetDesign2-设置"
   host: "主机"

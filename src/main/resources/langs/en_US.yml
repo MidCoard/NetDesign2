@@ -11,6 +11,13 @@ login:
   connected: "Connected"
   disconnected: "Disconnected"
   reconnect: "Reconnect"
+tray:
+  show: "Show"
+  quit: "Quit"
+menu:
+  status:
+    title: "Status"
+    quit: "Quit"
 settings:
   title: "NetDesign2-Settings"
   host: "Host"

@@ -80,6 +80,34 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                     )
                 }
 
+                7 -> {
+                    val serverStatusUpdateResponse = PacketOuterClass.ServerStatusUpdateResponse.parseFrom(bytes)
+                    ServerStatusUpdateResponsePacket(
+                        serverStatusUpdateResponse.online,
+                        serverStatusUpdateResponse.registrable,
+                    )
+                }
+
+                9 -> {
+                    val friendInfoResponse = PacketOuterClass.FriendInfoResponse.parseFrom(bytes)
+                    FriendInfoResponsePacket(
+                        friendInfoResponse.id,
+                        friendInfoResponse.name,
+                    )
+                }
+
+                11 -> {
+                    val groupInfoResponse = PacketOuterClass.GroupInfoResponse.parseFrom(bytes)
+                    val members = mutableListOf<Member>()
+                    for (member in groupInfoResponse.membersList)
+                        members.add(Member(member.id, member.name))
+                    GroupInfoResponsePacket(
+                        groupInfoResponse.id,
+                        groupInfoResponse.name,
+                        members
+                    )
+                }
+
                 else -> {
                     throw IllegalArgumentException("Unknown packet id: $packetId")
                 }

@@ -12,9 +12,12 @@ import java.io.Closeable
 import java.net.ServerSocket
 import java.net.Socket
 import java.security.SecureRandom
+import java.util.concurrent.atomic.AtomicInteger
 
 @OptIn(DelicateCoroutinesApi::class)
-class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
+class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
+
+    private var friendId = AtomicInteger(1)
 
     private val serverSocket = ServerSocket(port)
 
@@ -61,6 +64,36 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
                                     LoginRequestPacket(
                                         loginRequest.username,
                                         loginRequest.hashPassword
+                                    )
+                                )
+                            }
+
+                            6 -> {
+                                DEFAULT_PACKET_HANDLER.handle(
+                                    ServerStatusUpdateRequestPacket()
+                                )
+                            }
+
+                            8 -> {
+                                DEFAULT_PACKET_HANDLER.handle(
+                                    ContactListRequestPacket()
+                                )
+                            }
+
+                            10 -> {
+                                val friendInfoRequestPacket = PacketOuterClass.FriendInfoRequest.parseFrom(bytes)
+                                DEFAULT_PACKET_HANDLER.handle(
+                                    FriendInfoRequestPacket(
+                                        friendInfoRequestPacket.id
+                                    )
+                                )
+                            }
+
+                            12 -> {
+                                val groupInfoRequestPacket = PacketOuterClass.GroupInfoRequest.parseFrom(bytes)
+                                DEFAULT_PACKET_HANDLER.handle(
+                                    GroupInfoRequestPacket(
+                                        groupInfoRequestPacket.id
                                     )
                                 )
                             }
@@ -122,7 +155,7 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
 
         private val DEFAULT_PACKET_HANDLER = object : SingleServerPacketHandler {
 
-            override fun ClientScope.handle(packet: ClientPacket): ServerPacket =
+            override fun ClientScope.handle(packet: ClientPacket): ServerPacket? =
                 when (packet) {
                     is ServerStatusRequestPacket -> {
                         this.clientPublicKey = packet.clientPublicKey
@@ -133,16 +166,45 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
                         )
                     }
                     is LoginPreRequestPacket -> {
-                        this.challenge = genChallenge()
                         this.username = packet.username
                         LoginPreResponsePacket(
-                            this.challenge
+                            genChallenge()
                         )
                     }
                     is LoginRequestPacket -> {
                         this.logined = this.username == packet.username
+                        this.username = null
                         LoginResponsePacket(this.logined)
                     }
+
+                    is ServerStatusUpdateRequestPacket ->
+                        ServerStatusUpdateResponsePacket(
+                            online = false,
+                            registrable = false
+                        )
+
+                    is ContactListRequestPacket ->
+                        if (this.logined)
+                        ContactListResponsePacket(
+                            listOf(
+                                ContactInfo(0, this@handle.server.name, PacketOuterClass.Contact.ContactType.FRIEND)
+                            )
+                        ) else null
+
+                    is FriendInfoRequestPacket ->
+                        if (this.logined)
+                            if (packet.id == 0)
+                                FriendInfoResponsePacket(
+                                    packet.id,
+                                    this.server.name
+                                )
+                            else FriendInfoResponsePacket(-1, "")
+                        else null
+
+                    is GroupInfoRequestPacket ->
+                        if (this.logined)
+                            GroupInfoResponsePacket(-1, "", listOf())
+                        else null
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")
                 }
@@ -155,12 +217,11 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
 
         var clientPublicKey: String? = null
 
-        lateinit var challenge: String
-        lateinit var username: String
+        var username: String? = null
 
         var logined = false
         var shouldClose = false
-        fun SingleServerPacketHandler.handle(packet: ClientPacket): ServerPacket = this@ClientScope.handle(packet)
+        fun SingleServerPacketHandler.handle(packet: ClientPacket): ServerPacket? = this@ClientScope.handle(packet)
 
         fun break0() {
             shouldClose = true
@@ -168,7 +229,7 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
     }
 
     private interface SingleServerPacketHandler {
-        fun ClientScope.handle(packet: ClientPacket): ServerPacket
+        fun ClientScope.handle(packet: ClientPacket): ServerPacket?
     }
 
 

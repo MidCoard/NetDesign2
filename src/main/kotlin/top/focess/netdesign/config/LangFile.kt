@@ -19,7 +19,7 @@ class LangFile(filename: String) {
         var configuration : YamlConfiguration = this.configuration
         for (i in 0 until keys.size - 1)
             configuration = configuration.getSection(keys[i])
-        return configuration.get(keys[keys.size - 1])?: key
+        return try { configuration.get(keys[keys.size - 1])?: key } catch (e : Exception) { key }
     }
     @Composable
     fun get(key: String, vararg args: Any) : String {

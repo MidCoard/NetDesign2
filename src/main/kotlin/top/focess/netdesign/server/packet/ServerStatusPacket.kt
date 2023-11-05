@@ -27,6 +27,5 @@ data class ServerStatusRequestPacket(val clientPublicKey: String?) : ClientPacke
         this.clientPublicKey = this@ServerStatusRequestPacket.clientPublicKey
     }
 
-
 }
 
