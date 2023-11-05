@@ -5,16 +5,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
-import top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest
-import top.focess.netdesign.server.packet.ClientPacket
-import top.focess.netdesign.server.packet.ServerPacket
-import top.focess.netdesign.server.packet.ServerStatusPacket
-import top.focess.netdesign.server.packet.ServerStatusRequestPacket
+import top.focess.netdesign.server.packet.*
 import top.focess.util.RSA
 import java.io.BufferedInputStream
 import java.io.Closeable
 import java.net.ServerSocket
 import java.net.Socket
+import java.security.SecureRandom
 
 @OptIn(DelicateCoroutinesApi::class)
 class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
@@ -36,10 +33,12 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
                     BufferedInputStream(socket.getInputStream()).let {
                         var bytes = it.readAvailableBytes()
                         if (this.clientPublicKey != null)
-                            bytes = RSA.decryptRSA(bytes, this.clientPublicKey)
-                        when (val packetId = PacketOuterClass.Packet.parseFrom(bytes).packetId) {
+                            bytes = RSA.decryptRSA(bytes, ownRSAKey.privateKey)
+                        val packetId = PacketOuterClass.Packet.parseFrom(bytes).packetId
+                        println("SingleServer: receive $packetId");
+                        when (packetId) {
                             0 -> {
-                                val serverStatusRequest = ServerStatusRequest.parseFrom(bytes)
+                                val serverStatusRequest = PacketOuterClass.ServerStatusRequest.parseFrom(bytes)
                                 DEFAULT_PACKET_HANDLER.handle(
                                     ServerStatusRequestPacket(
                                         serverStatusRequest.clientPublicKey
@@ -48,22 +47,46 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
                             }
 
                             2 -> {
-                                TODO()
+                                val loginPreRequest = PacketOuterClass.LoginPreRequest.parseFrom(bytes)
+                                DEFAULT_PACKET_HANDLER.handle(
+                                    LoginPreRequestPacket(
+                                        loginPreRequest.username
+                                    )
+                                )
+                            }
+
+                            4 -> {
+                                val loginRequest = PacketOuterClass.LoginRequest.parseFrom(bytes)
+                                DEFAULT_PACKET_HANDLER.handle(
+                                    LoginRequestPacket(
+                                        loginRequest.username,
+                                        loginRequest.hashPassword
+                                    )
+                                )
                             }
 
                             else -> throw IllegalArgumentException("Unknown packet id: $packetId")
                         }
                     }
                 } catch (e: Exception) {
-                    if (e !is IllegalStateException)
+                    e.printStackTrace()
+                    if (e !is IllegalArgumentException)
                         break0()
                     null
                 }?.let { packet ->
-                    socket.getOutputStream().let {
-                        it.write(packet.toProtoType().toByteArray())
-                        it.flush()
+                    try {
+                        println("SingleServer: send ${packet.packetId}");
+                        var bytes = packet.toProtoType().toByteArray()
+                        if (packet !is ServerStatusResponsePacket && this.clientPublicKey != null)
+                            bytes = RSA.encryptRSA(bytes, this.clientPublicKey)
+                        socket.getOutputStream().let {
+                            it.write(bytes)
+                            it.flush()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        break0()
                     }
-                    socket.shutdownOutput()
                 }
 
             }
@@ -101,11 +124,25 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
 
             override fun ClientScope.handle(packet: ClientPacket): ServerPacket =
                 when (packet) {
-                    is ServerStatusRequestPacket -> ServerStatusPacket(
-                        online = false,
-                        registrable = false,
-                        this@handle.server.ownRSAKey.publicKey
-                    )
+                    is ServerStatusRequestPacket -> {
+                        this.clientPublicKey = packet.clientPublicKey
+                        ServerStatusResponsePacket(
+                            online = false,
+                            registrable = false,
+                            server.ownRSAKey.publicKey
+                        )
+                    }
+                    is LoginPreRequestPacket -> {
+                        this.challenge = genChallenge()
+                        this.username = packet.username
+                        LoginPreResponsePacket(
+                            this.challenge
+                        )
+                    }
+                    is LoginRequestPacket -> {
+                        this.logined = this.username == packet.username
+                        LoginResponsePacket(this.logined)
+                    }
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")
                 }
@@ -116,9 +153,13 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
 
     private class ClientScope(val server: SingleServer) {
 
-        var shouldClose = false
         var clientPublicKey: String? = null
-        var connected = false // logined ....
+
+        lateinit var challenge: String
+        lateinit var username: String
+
+        var logined = false
+        var shouldClose = false
         fun SingleServerPacketHandler.handle(packet: ClientPacket): ServerPacket = this@ClientScope.handle(packet)
 
         fun break0() {
@@ -131,4 +172,10 @@ class SingleServer(port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
     }
 
 
+}
+
+internal fun genChallenge(): String {
+    val bytes = ByteArray(16)
+    SecureRandom().nextBytes(bytes)
+    return bytes.joinToString("") { "%02x".format(it) }
 }

@@ -3,7 +3,7 @@ package top.focess.netdesign.server.packet
 import top.focess.netdesign.proto.serverStatusRequest
 import top.focess.netdesign.proto.serverStatusResponse
 
-data class ServerStatusPacket(val online: Boolean, val registrable: Boolean, val serverPublicKey: String?) : ServerPacket(PACKET_ID) {
+data class ServerStatusResponsePacket(val online: Boolean, val registrable: Boolean, val serverPublicKey: String?) : ServerPacket(PACKET_ID) {
 
     companion object {
         const val PACKET_ID = 1
@@ -11,9 +11,9 @@ data class ServerStatusPacket(val online: Boolean, val registrable: Boolean, val
 
     override fun toProtoType() = serverStatusResponse {
         this.packetId = PACKET_ID
-        this.online = this@ServerStatusPacket.online
-        this.registrable = this@ServerStatusPacket.registrable
-        this.serverPublicKey = this@ServerStatusPacket.serverPublicKey
+        this.online = this@ServerStatusResponsePacket.online
+        this.registrable = this@ServerStatusResponsePacket.registrable
+        this.serverPublicKey = this@ServerStatusResponsePacket.serverPublicKey
     }
 }
 

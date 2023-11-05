@@ -1,22 +1,19 @@
 package top.focess.netdesign.server
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.listSaver
-import kotlinx.coroutines.*
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.delay
 import top.focess.netdesign.config.NetworkConfig
-import top.focess.netdesign.proto.PacketOuterClass.Packet
-import top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse
-import top.focess.netdesign.server.packet.ClientPacket
-import top.focess.netdesign.server.packet.ServerPacket
-import top.focess.netdesign.server.packet.ServerStatusPacket
-import top.focess.netdesign.server.packet.ServerStatusRequestPacket
+import top.focess.netdesign.proto.PacketOuterClass
+import top.focess.netdesign.server.packet.*
 import top.focess.util.RSA
 import java.io.BufferedOutputStream
 import java.io.Closeable
-import java.io.DataOutputStream
 import java.io.InputStream
 import java.net.Socket
-import java.util.*
 
 @OptIn(DelicateCoroutinesApi::class)
 class RemoteServer
@@ -34,14 +31,15 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     private val ownRSAKey = RSA.genRSAKeypair()
 
     private suspend fun trySendPacket(packet: ClientPacket) : ServerPacket? {
+        println("RemoteServer: send ${packet.packetId}")
         if (this.connected() && packet is ServerStatusRequestPacket)
             // server is connected, no need to send
             // if you want to update the server status, send an update packet or reconnect
-            return ServerStatusPacket(this.online, this.registerable, this.serverPublicKey)
+            return ServerStatusResponsePacket(online, registerable, serverPublicKey)
         try {
-            val bytes = packet.toProtoType().toByteArray()
+            var bytes = packet.toProtoType().toByteArray()
             if (serverPublicKey != null)
-                RSA.encryptRSA(bytes, serverPublicKey)
+                bytes = RSA.encryptRSA(bytes, serverPublicKey)
             BufferedOutputStream(socket.getOutputStream()).let {
                 it.write(bytes)
                 it.flush()
@@ -51,39 +49,56 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             return null
         }
 
-        return try {
-            socket.getInputStream().let {
-                var bytes = it.readAvailableBytes()
-                if (this.serverPublicKey != null)
-                    bytes = RSA.decryptRSA(bytes, this.serverPublicKey)
-                when (val packetId = Packet.parseFrom(bytes).packetId) {
-                    1 -> {
-                        val serverStatusResponse = ServerStatusResponse.parseFrom(bytes)
-                        ServerStatusPacket(
-                            serverStatusResponse.online,
-                            serverStatusResponse.registrable,
-                            serverStatusResponse.serverPublicKey
-                        )
-                    }
 
-                    3 -> {
-                        TODO()
-                    }
+        return socket.getInputStream().let {
+            var bytes = it.readAvailableBytes()
+            if (this.serverPublicKey != null)
+                bytes = RSA.decryptRSA(bytes, this.ownRSAKey.privateKey)
+            val packetId = PacketOuterClass.Packet.parseFrom(bytes).packetId
+            println("RemoteServer: receive $packetId")
+            when (packetId) {
+                1 -> {
+                    val serverStatusResponse = PacketOuterClass.ServerStatusResponse.parseFrom(bytes)
+                    ServerStatusResponsePacket(
+                        serverStatusResponse.online,
+                        serverStatusResponse.registrable,
+                        serverStatusResponse.serverPublicKey
+                    )
+                }
 
-                    else -> throw IllegalArgumentException("Unknown packet id: $packetId")
+                3 -> {
+                    val loginPreResponse = PacketOuterClass.LoginPreResponse.parseFrom(bytes)
+                    LoginPreResponsePacket(
+                        loginPreResponse.challenge
+                    )
+                }
+
+                5 -> {
+                    val loginResponse = PacketOuterClass.LoginResponse.parseFrom(bytes)
+                    LoginResponsePacket(
+                        loginResponse.logined
+                    )
+                }
+
+                else -> {
+                    throw IllegalArgumentException("Unknown packet id: $packetId")
                 }
             }
-        } catch (e :Exception) {
-            e.printStackTrace()
-            null
         }
     }
 
     suspend fun sendPacket(packet: ClientPacket) : ServerPacket? {
-        if (!connected())
+        if (!connected)
             return null
-        val serverPacket = trySendPacket(packet)
-        if (serverPacket == null)
+        var exception : Exception? = null
+        val serverPacket = try {
+            trySendPacket(packet)
+        } catch (e :Exception) {
+            exception = e;
+            e.printStackTrace()
+            null
+        }
+        if (serverPacket == null && (exception == null || exception !is IllegalArgumentException))
             connected = ConnectionStatus.DISCONNECTED
         return serverPacket
     }
@@ -109,7 +124,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         }
         val packet = this.trySendPacket(ServerStatusRequestPacket(ownRSAKey.publicKey))
         delay(2000)
-        if (packet != null && packet is ServerStatusPacket) {
+        if (packet != null && packet is ServerStatusResponsePacket) {
             this.online = packet.online
             this.registerable = packet.registrable
             this.serverPublicKey = packet.serverPublicKey
@@ -151,7 +166,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
 }
 
-suspend fun InputStream.readAvailableBytes() : ByteArray {
+internal suspend fun InputStream.readAvailableBytes() : ByteArray {
     while (this.available() == 0)
         delay(1)
     val bytes = ByteArray(this.available())

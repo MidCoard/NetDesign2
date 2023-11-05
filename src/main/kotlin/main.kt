@@ -22,24 +22,57 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.delay
 import top.focess.netdesign.config.LangFile
+import top.focess.netdesign.proto.loginRequest
 import top.focess.netdesign.server.RemoteServer
 import top.focess.netdesign.server.SingleServer
-import top.focess.netdesign.ui.*
+import top.focess.netdesign.server.packet.LoginPreRequestPacket
+import top.focess.netdesign.server.packet.LoginPreResponsePacket
+import top.focess.netdesign.server.packet.LoginRequestPacket
+import top.focess.netdesign.server.packet.LoginResponsePacket
+import top.focess.netdesign.ui.DefaultView
+import top.focess.netdesign.ui.IntTextField
+import top.focess.netdesign.ui.ProgressionIcon
+import top.focess.netdesign.ui.SurfaceView
+import java.security.MessageDigest
 
 @Composable
 @Preview
-fun LangFile.LangScope.LoginView(server : RemoteServer, logined: () -> Unit = {}, showSettings: () -> Unit = {}, showRegister: () -> Unit = {}) {
+fun LangFile.LangScope.LoginView(
+    server: RemoteServer,
+    logined: () -> Unit = {},
+    showSettings: () -> Unit = {},
+    showRegister: () -> Unit = {}
+) {
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    var clicked by remember { mutableStateOf(false) }
+    var reconnect by remember { mutableStateOf(false) }
 
-    LaunchedEffect(clicked) {
-        if (clicked) {
+    var loginRequest by remember { mutableStateOf(false) }
+
+    LaunchedEffect(reconnect) {
+        if (reconnect) {
             delay(1000)
             server.reconnect()
-            clicked = false
+            reconnect = false
+        }
+    }
+
+
+    LaunchedEffect(loginRequest) {
+        if (loginRequest) {
+            if (server.connected()) {
+                val packet = server.sendPacket(LoginPreRequestPacket(username))
+                if (packet is LoginPreResponsePacket) {
+                    val rawPassword = password + packet.challenge
+                    val encryptedPassword = rawPassword.sha256()
+                    val loginPacket = server.sendPacket(LoginRequestPacket(username, encryptedPassword))
+                    if (loginPacket is LoginResponsePacket && loginPacket.logined)
+                        logined()
+                }
+            }
+            loginRequest = false
         }
     }
 
@@ -66,7 +99,11 @@ fun LangFile.LangScope.LoginView(server : RemoteServer, logined: () -> Unit = {}
     }
 
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
-        Button(onClick = { logined() }, modifier = Modifier.padding(16.dp), enabled = server.connected()) {
+        Button(
+            onClick = { loginRequest = true },
+            modifier = Modifier.padding(16.dp),
+            enabled = server.connected() && !loginRequest
+        ) {
             Text("login.login".l)
             Spacer(Modifier.width(5.dp))
 
@@ -79,11 +116,19 @@ fun LangFile.LangScope.LoginView(server : RemoteServer, logined: () -> Unit = {}
             }
         }
 
-        Button(onClick = { clicked = true }, modifier = Modifier.padding(16.dp), enabled = !clicked && !server.connected) {
+        Button(
+            onClick = { reconnect = true },
+            modifier = Modifier.padding(16.dp),
+            enabled = !reconnect && !server.connected
+        ) {
             Icon(Icons.Default.Refresh, "login.reconnect".l)
         }
 
-        Button(onClick = { showRegister() }, modifier = Modifier.padding(16.dp), enabled = server.connected() && server.registerable) {
+        Button(
+            onClick = { showRegister() },
+            modifier = Modifier.padding(16.dp),
+            enabled = server.connected() && server.registerable
+        ) {
             Text("login.register".l)
             Spacer(Modifier.width(5.dp))
             Crossfade(server.connected() && server.registerable) {
@@ -102,10 +147,10 @@ fun LangFile.LangScope.LoginView(server : RemoteServer, logined: () -> Unit = {}
 
 
 @Composable
-fun LangFile.LangScope.SettingsView(_host :String, _port :Int, saveSettings: (host :String, port :Int) -> Unit) {
+fun LangFile.LangScope.SettingsView(_host: String, _port: Int, saveSettings: (host: String, port: Int) -> Unit) {
     var host by remember { mutableStateOf(_host) }
     var port by remember { mutableStateOf(_port) }
-    var clicked by remember { mutableStateOf(false) }
+    var save by remember { mutableStateOf(false) }
 
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
         TextField(
@@ -130,16 +175,16 @@ fun LangFile.LangScope.SettingsView(_host :String, _port :Int, saveSettings: (ho
         )
     }
 
-    Row(modifier =  Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
+    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
         Button(onClick = {
-            clicked = true
+            save = true
         }) {
             Text("settings.save".l)
         }
     }
 
-    LaunchedEffect(clicked) {
-        if (clicked) {
+    LaunchedEffect(save) {
+        if (save) {
             delay(200)
             saveSettings(host, port)
         }
@@ -166,7 +211,17 @@ fun MainView() {
 }
 
 @Composable
-fun rememberCenterWindowState(size: DpSize): WindowState = rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
+fun rememberCenterWindowState(size: DpSize): WindowState =
+    rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
+
+private fun hashString(input: String, algorithm: String): String {
+    return MessageDigest
+        .getInstance(algorithm)
+        .digest(input.toByteArray())
+        .fold("") { str, it -> str + "%02x".format(it) }
+}
+
+private fun String.sha256(): String = hashString(this, "SHA-256")
 
 fun main() {
 
@@ -178,7 +233,8 @@ fun main() {
 
         application(exitProcessOnExit = true) {
             val server = rememberSaveable(saver = RemoteServer.Saver()) { RemoteServer() }
-            var login by remember { mutableStateOf(false) }
+
+            var logined by remember { mutableStateOf(false) }
             var showSettings by remember { mutableStateOf(false) }
             var showRegister by remember { mutableStateOf(false) }
 
@@ -187,16 +243,14 @@ fun main() {
                     server.connect()
             }
 
-            if (!login)
+            if (!logined)
                 DefaultView(
                     onCloseRequest = ::exitApplication,
                     state = rememberCenterWindowState(size = DpSize(500.dp, Dp.Unspecified)),
                     title = "login.title".l
                 ) {
-                    LoginView(server,{
-                        login = true
-                        showSettings = false
-                        showRegister = false
+                    LoginView(server, {
+                        logined = true
                     }, {
                         showSettings = true
                     }, {
