@@ -1,6 +1,8 @@
 package top.focess.netdesign.server.packet
 
+import com.google.protobuf.Any
 import com.google.protobuf.GeneratedMessageV3
+import com.google.protobuf.kotlin.unpack
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.contact
 import top.focess.netdesign.proto.contactRequest
@@ -11,8 +13,32 @@ import top.focess.netdesign.server.Group
 import top.focess.netdesign.server.Member
 
 data class ContactResponsePacket(val contact: Contact) : ServerPacket(PACKET_ID) {
-    companion object {
-        val PACKET_ID = 11
+    companion object : PacketCompanion<ContactResponsePacket>() {
+        override val PACKET_ID = 11
+        override fun fromProtoType(packet: Any): ContactResponsePacket {
+            val contactResponse: PacketOuterClass.ContactResponse = packet.unpack()
+            val contact = contactResponse.contact
+            return ContactResponsePacket(
+                when (contact.type) {
+                    PacketOuterClass.Contact.ContactType.FRIEND -> Friend(
+                        contact.id,
+                        contact.name,
+                        contact.online
+                    )
+
+                    PacketOuterClass.Contact.ContactType.GROUP -> Group(
+                        contact.id,
+                        contact.name,
+                        contact.online,
+                        contact.membersList.map { member ->
+                            Member(member.id, member.name, member.online)
+                        }.toList()
+                    )
+
+                    else -> throw IllegalArgumentException("Unknown contact type: ${contact.type}")
+                }
+            )
+        }
     }
 
     override fun toProtoType() = contactResponse {
@@ -40,10 +66,13 @@ data class ContactResponsePacket(val contact: Contact) : ServerPacket(PACKET_ID)
 }
 
 data class ContactRequestPacket(val id: Int) : ClientPacket(PACKET_ID) {
-    companion object {
-        val PACKET_ID = 10
+    companion object : PacketCompanion<ContactRequestPacket>() {
+        override val PACKET_ID = 10
+        override fun fromProtoType(packet: Any): ContactRequestPacket {
+            val contactRequest: PacketOuterClass.ContactRequest = packet.unpack()
+            return ContactRequestPacket(contactRequest.id)
+        }
     }
-
     override fun toProtoType() = contactRequest {
         this.id = this@ContactRequestPacket.id
     }

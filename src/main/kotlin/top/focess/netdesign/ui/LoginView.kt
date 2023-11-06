@@ -2,10 +2,7 @@ package top.focess.netdesign.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
@@ -37,6 +34,10 @@ fun LangFile.LangScope.LoginView(
     var reconnect by remember { mutableStateOf(false) }
     var loginRequest by remember { mutableStateOf(false) }
 
+    val showDialog = remember { mutableStateOf(false) }
+
+    var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
+
     LaunchedEffect(reconnect) {
         if (reconnect) {
             delay(1000)
@@ -47,19 +48,27 @@ fun LangFile.LangScope.LoginView(
 
     LaunchedEffect(loginRequest) {
         if (loginRequest) {
-            if (server.connected()) {
+            var flag = false
+            if (username.length in 6..20 && password.length in 6..20) {
                 val packet = server.sendPacket(LoginPreRequestPacket(username))
                 if (packet is LoginPreResponsePacket) {
-                    val rawPassword = password + packet.challenge
-                    val encryptedPassword = rawPassword.sha256()
-                    val loginPacket = server.sendPacket(LoginRequestPacket(username, encryptedPassword))
-                    if (loginPacket is LoginResponsePacket && loginPacket.logined)
+                    val rawPassword = password.sha256() + packet.challenge
+                    val loginPacket = server.sendPacket(LoginRequestPacket(username, rawPassword))
+                    if (loginPacket is LoginResponsePacket && loginPacket.logined) {
+                        flag = true
                         logined()
+                    }
                 }
+            }
+            if (!flag) {
+                dialog = FocessDialog("login.loginFailed", "login.loginFailedMessage", showDialog)
+                dialog.show()
             }
             loginRequest = false
         }
     }
+
+    FocessDialogWindow(dialog)
 
     Spacer(Modifier.padding(10.dp))
 
@@ -79,13 +88,18 @@ fun LangFile.LangScope.LoginView(
             onValueChange = { password = it },
             modifier = Modifier.fillMaxWidth(0.8f),
             label = { Text("login.password".l) },
-            singleLine = true
+            singleLine = true,
+            onEnterKey = {
+                loginRequest = true
+            }
         )
     }
 
     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
         Button(
-            onClick = { loginRequest = true },
+            onClick = {
+                loginRequest = true
+                      },
             modifier = Modifier.padding(16.dp),
             enabled = server.connected() && !loginRequest
         ) {

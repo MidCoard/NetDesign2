@@ -14,7 +14,6 @@ class LangFile(filename: String) {
     }
     );
 
-    @Composable
     fun get(key: String) : String {
         val keys = key.split(".");
         var configuration : YamlConfiguration = this.configuration
@@ -22,7 +21,7 @@ class LangFile(filename: String) {
             configuration = configuration.getSection(keys[i])
         return try { configuration.get(keys[keys.size - 1])?: key } catch (e : Exception) { key }
     }
-    @Composable
+
     fun get(key: String, vararg args: Any) : String {
         return String.format(get(key), *args)
     }
@@ -44,17 +43,15 @@ class LangFile(filename: String) {
         var langFile: LangFile = langFile
             set(value) = setLangFile(value)
 
-        @Composable
         fun String.l(vararg args: Any) : String {
             return String.format(langFile.get(this), *args)
         }
 
         val String.l: String
-            @Composable
             get() = langFile.get(this)
 
         @Composable
-        fun ColumnScope.enterColumn(block: @Composable ColumnLangScope.() -> Unit) {
+        fun ColumnScope.useColumn(block: @Composable ColumnLangScope.() -> Unit) {
             ColumnLangScope(this, langFile, setLangFile).block()
         }
     }

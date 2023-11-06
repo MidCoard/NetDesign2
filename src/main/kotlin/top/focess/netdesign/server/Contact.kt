@@ -20,6 +20,10 @@ abstract class Contact(id: Int, name: String, online: Boolean) {
     override fun hashCode(): Int {
         return id
     }
+
+    override fun toString(): String {
+        return "Contact(id=$id, name='$name', online=$online)"
+    }
 }
 
 class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
@@ -27,11 +31,19 @@ class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online)
         TODO("Not yet implemented")
     }
 
+    override fun toString(): String {
+        return "Friend(id=$id, name='$name', online=$online)"
+    }
+
 }
 
 class Member(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
     override fun sendMessage(message: Message) =
         getContact(this.id)?.sendMessage(message) ?: false
+
+    override fun toString(): String {
+        return "Member(id=$id, name='$name', online=$online)"
+    }
 
 }
 
@@ -41,6 +53,10 @@ class Group(id: Int, name: String, online: Boolean, members: List<Member>) : Con
 
     override fun sendMessage(message: Message): Boolean {
         TODO("Not yet implemented")
+    }
+
+    override fun toString(): String {
+        return "Group(id=$id, name='$name', online=$online, members=$members)"
     }
 }
 

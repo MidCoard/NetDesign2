@@ -1,6 +1,8 @@
 package top.focess.netdesign.server.packet
 
+import com.google.protobuf.Any
 import com.google.protobuf.GeneratedMessageV3
+import com.google.protobuf.kotlin.unpack
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.contact
 import top.focess.netdesign.proto.contactListRequest
@@ -8,10 +10,38 @@ import top.focess.netdesign.proto.contactListResponse
 import top.focess.netdesign.server.Contact
 import top.focess.netdesign.server.Friend
 import top.focess.netdesign.server.Group
+import top.focess.netdesign.server.Member
 
 data class ContactListResponsePacket(val contacts: List<Contact>) : ServerPacket(PACKET_ID) {
-    companion object {
-        val PACKET_ID = 9
+    companion object : PacketCompanion<ContactListResponsePacket>() {
+        override val PACKET_ID = 9
+
+        override fun fromProtoType(packet: Any): ContactListResponsePacket {
+            val contactListResponse: PacketOuterClass.ContactListResponse = packet.unpack()
+            return ContactListResponsePacket(
+                contactListResponse.contactsList.map { contact ->
+                    when (contact.type) {
+                        PacketOuterClass.Contact.ContactType.FRIEND -> Friend(
+                            contact.id,
+                            contact.name,
+                            contact.online
+                        )
+
+                        PacketOuterClass.Contact.ContactType.GROUP -> Group(
+                            contact.id,
+                            contact.name,
+                            contact.online,
+                            contact.membersList.map { member ->
+                                Member(member.id, member.name, member.online)
+                            }.toList()
+                        )
+
+                        else -> throw IllegalArgumentException("Unknown contact type: ${contact.type}")
+                    }
+                }.toList()
+            )
+        }
+
     }
 
     override fun toProtoType(): GeneratedMessageV3 = contactListResponse {
@@ -43,11 +73,12 @@ data class ContactListResponsePacket(val contacts: List<Contact>) : ServerPacket
 
 class ContactListRequestPacket : ClientPacket(PACKET_ID) {
 
-    companion object {
-        val PACKET_ID = 8
+    companion object : PacketCompanion<ContactListRequestPacket>() {
+        override val PACKET_ID = 8
+
+        override fun fromProtoType(packet: Any): ContactListRequestPacket = ContactListRequestPacket()
     }
 
-    override fun toProtoType(): GeneratedMessageV3 = contactListRequest {
-    }
+    override fun toProtoType(): GeneratedMessageV3 = contactListRequest {}
 
 }

@@ -1,0 +1,8 @@
+CREATE TABLE Message (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender INTEGER NOT NULL,
+    receiver INTEGER NOT NULL,
+    data TEXT NOT NULL,
+    type INTEGER NOT NULL
+);
+

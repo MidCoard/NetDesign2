@@ -1,7 +1,6 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.repeatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -25,12 +25,15 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import kotlinx.coroutines.delay
-import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.server.*
-import top.focess.netdesign.server.packet.*
+import top.focess.netdesign.server.packet.ContactListRequestPacket
+import top.focess.netdesign.server.packet.ContactListResponsePacket
 
 
 @Composable
@@ -40,9 +43,12 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
         while (true) {
             val packet = server.sendPacket(ContactListRequestPacket())
             if (packet is ContactListResponsePacket) {
-                val contactMap = packet.contacts.associateBy { it.id }
+                server.self =
+                    packet.contacts.filterIsInstance<Friend>().find { it.name == server.lastLoginedUsername }!!
+                val filtered = packet.contacts.filter { it.name != server.lastLoginedUsername }
+                val contactMap = filtered.associateBy { it.id }
                 val visitedMap = mutableMapOf<Int, Boolean>()
-                for (contact in packet.contacts)
+                for (contact in filtered)
                     visitedMap[contact.id] = false
 
                 val toRemove = mutableListOf<Contact>()
@@ -80,9 +86,9 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
                 }
 
                 contacts.removeAll(toRemove)
-                contacts.addAll(packet.contacts.filter { !visitedMap[it.id]!! })
+                contacts.addAll(filtered.filter { !visitedMap[it.id]!! })
 
-                contacts.add(Friend(1, "test", true))
+                contacts.add(Friend(1, "WWWWWWWWWWWWWWWWWWWW", true))
                 contacts.add(Friend(2, "test2", false))
 
             }
@@ -99,8 +105,11 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
     ) {
 
         val contactList = contacts.toList()
-
-        item { MyView(server.lastLoginedUsername!!) }
+        item {
+            server.self?.let {
+                MyView(server.self!!)
+            }
+        }
 
         items(contactList) { contact ->
             if (contact is Friend) {
@@ -112,23 +121,30 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MyView(username: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+fun MyView(self: Friend) {
 
-        Icon(
-            Icons.Default.Person,
-            contentDescription = username,
+    SelectionContainer {
+        Row(
             modifier = Modifier
-                .size(125.dp)
-                .padding(8.dp)
-                .clip(CircleShape)
-        )
-        Text(text = username, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+                Icons.Default.Person,
+                contentDescription = self.name,
+                modifier = Modifier
+                    .size(125.dp)
+                    .padding(8.dp)
+                    .clip(CircleShape)
+            )
+            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
+                Text(text = self.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
+                Text(text = "ID: ${self.id}", style = TextStyle(fontSize = 15.sp))
+            }
+        }
     }
 }
 
@@ -143,9 +159,10 @@ fun FriendView(friend: Friend, showContact: (Contact) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor)
-            .onPointerEvent(PointerEventType.Enter) { isHovered = true }.onPointerEvent(PointerEventType.Exit) { isHovered = false }
+            .onPointerEvent(PointerEventType.Enter) { isHovered = true }
+            .onPointerEvent(PointerEventType.Exit) { isHovered = false }
             .pointerHoverIcon(PointerIcon.Hand)
-            .clickable { showContact(friend)  },
+            .clickable { showContact(friend) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(8.dp))
@@ -173,12 +190,4 @@ fun FriendView(friend: Friend, showContact: (Contact) -> Unit) {
 @Composable
 fun GroupView(group: Group) {
     Text(group.name)
-}
-
-private fun <T> compareAndAddOrRemove(list: MutableList<T>, newList: List<T>, except: (T) -> Boolean = { false }) {
-    val toAdd = newList.filter { !list.contains(it) }
-    val toRemove = list.filter { !newList.contains(it) && !except(it) }
-    list.removeAll(toRemove)
-
-    list.addAll(toAdd)
 }

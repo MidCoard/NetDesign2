@@ -1,0 +1,13 @@
+CREATE TABLE Friend (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
+
+CREATE INDEX idx_Friend_name ON Friend (name);
+
+selectByName:
+SELECT * FROM Friend WHERE name = ?;
+
+insert:
+INSERT INTO Friend (name, password) VALUES (?, ?);

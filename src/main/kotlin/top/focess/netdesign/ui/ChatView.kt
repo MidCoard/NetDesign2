@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -14,6 +15,9 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import top.focess.netdesign.config.LangFile
@@ -49,6 +53,9 @@ fun LangFile.ColumnLangScope.ChatView(contact: Contact) {
             onValueChange = { text = it },
             modifier = Modifier.fillMaxWidth().weight(1f),
             singleLine = true,
+            placeholder = {
+                Text("chat.placeholder".l)
+            },
             trailingIcon = {
                 if (text.isNotEmpty()) {
                     Row(
@@ -56,7 +63,10 @@ fun LangFile.ColumnLangScope.ChatView(contact: Contact) {
                             .clickable {
 //                                sendMessage(inputText)
                             }
-                            .padding(10.dp),
+                            .clip(RoundedCornerShape(5.dp))
+                            .padding(10.dp)
+                            .pointerHoverIcon(PointerIcon.Hand)
+                        ,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
@@ -64,7 +74,7 @@ fun LangFile.ColumnLangScope.ChatView(contact: Contact) {
                             contentDescription = "Send",
                             tint = MaterialTheme.colors.primary
                         )
-                        Text("Send")
+                        Text("chat.send".l)
                     }
                 }
             }

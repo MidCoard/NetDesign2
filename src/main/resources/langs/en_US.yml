@@ -11,6 +11,8 @@ login:
   connected: "Connected"
   disconnected: "Disconnected"
   reconnect: "Reconnect"
+  loginFailed: "Login Failed"
+  loginFailedMessage: "Username or password is incorrect."
 tray:
   show: "Show"
   quit: "Quit"
@@ -29,3 +31,8 @@ settings:
   save: "Save"
 register:
   title: "NetDesign2-Register"
+chat:
+  placeholder: "Input message"
+  send: "Send"
+dialog:
+  ok: "OK"

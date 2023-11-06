@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
+    id("app.cash.sqldelight") version "2.0.0"
 }
 
 repositories {
@@ -21,9 +22,18 @@ dependencies {
     implementation("top.focess:focess-util:1.1.17")
     implementation("com.google.protobuf:protobuf-java:3.25.0")
     implementation("com.google.protobuf:protobuf-kotlin:3.25.0")
+    implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
 
     // Include the Test API
     testImplementation(compose.desktop.uiTestJUnit4)
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("top.focess.netdesign")
+        }
+    }
 }
 
 compose.desktop {

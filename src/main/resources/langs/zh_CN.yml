@@ -11,6 +11,8 @@ login:
   connected: "已连接"
   disconnected: "未连接"
   reconnect: "重新连接"
+  loginFailed: "登陆失败"
+  loginFailedMessage: "用户名或密码错误。"
 tray:
   show: "显示"
   quit: "退出"
@@ -29,3 +31,8 @@ settings:
   save: "保存"
 register:
   title: "NetDesign2-注册"
+chat:
+  placeholder: "输入消息"
+  send: "发送"
+dialog:
+  ok: "确定"

@@ -29,6 +29,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     var online by mutableStateOf(true)
     var registerable by mutableStateOf(false)
     var lastLoginedUsername: String? = null
+    var self: Friend? = null
     private var serverPublicKey: String? = null
 
     private lateinit var socket: Socket
@@ -45,7 +46,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             try {
                 if (packet is LoginRequestPacket)
                     lastLoginedUsername = packet.username
-                var bytes = packet.toProtoType().toByteArray()
+                var bytes = packet.toProtoPacket().toByteArray()
                 if (serverPublicKey != null)
                     bytes = RSA.encryptRSA(bytes, serverPublicKey)
                 BufferedOutputStream(socket.getOutputStream()).let {
@@ -62,95 +63,10 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                 var bytes = it.readAvailableBytes()
                 if (this.serverPublicKey != null)
                     bytes = RSA.decryptRSA(bytes, this.ownRSAKey.privateKey)
-                val packetId = PacketOuterClass.Packet.parseFrom(bytes).packetId
+                val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                val packetId = protoPacket.packetId
                 println("RemoteServer: receive $packetId")
-                when (packetId) {
-                    1 -> {
-                        val serverStatusResponse = PacketOuterClass.ServerStatusResponse.parseFrom(bytes)
-                        ServerStatusResponsePacket(
-                            serverStatusResponse.online,
-                            serverStatusResponse.registrable,
-                            serverStatusResponse.serverPublicKey
-                        )
-                    }
-
-                    3 -> {
-                        val loginPreResponse = PacketOuterClass.LoginPreResponse.parseFrom(bytes)
-                        LoginPreResponsePacket(
-                            loginPreResponse.challenge
-                        )
-                    }
-
-                    5 -> {
-                        val loginResponse = PacketOuterClass.LoginResponse.parseFrom(bytes)
-                        LoginResponsePacket(
-                            loginResponse.logined
-                        )
-                    }
-
-                    7 -> {
-                        val serverStatusUpdateResponse = PacketOuterClass.ServerStatusUpdateResponse.parseFrom(bytes)
-                        ServerStatusUpdateResponsePacket(
-                            serverStatusUpdateResponse.online,
-                            serverStatusUpdateResponse.registrable,
-                        )
-                    }
-
-                    9 -> {
-                        val contactListResponse = PacketOuterClass.ContactListResponse.parseFrom(bytes)
-                        ContactListResponsePacket(
-                            contactListResponse.contactsList.map { contact ->
-                                when (contact.type) {
-                                    PacketOuterClass.Contact.ContactType.FRIEND -> Friend(
-                                        contact.id,
-                                        contact.name,
-                                        contact.online
-                                    )
-
-                                    PacketOuterClass.Contact.ContactType.GROUP -> Group(
-                                        contact.id,
-                                        contact.name,
-                                        contact.online,
-                                        contact.membersList.map { member ->
-                                            Member(member.id, member.name, member.online)
-                                        }.toList()
-                                    )
-
-                                    else -> throw IllegalArgumentException("Unknown contact type: ${contact.type}")
-                                }
-                            }.toList()
-                        )
-                    }
-
-                    11 -> {
-                        val contactResponse = PacketOuterClass.ContactResponse.parseFrom(bytes)
-                        val contact = contactResponse.contact
-                        ContactResponsePacket(
-                            when (contact.type) {
-                                PacketOuterClass.Contact.ContactType.FRIEND -> Friend(
-                                    contact.id,
-                                    contact.name,
-                                    contact.online
-                                )
-
-                                PacketOuterClass.Contact.ContactType.GROUP -> Group(
-                                    contact.id,
-                                    contact.name,
-                                    contact.online,
-                                    contact.membersList.map { member ->
-                                        Member(member.id, member.name, member.online)
-                                    }.toList()
-                                )
-
-                                else -> throw IllegalArgumentException("Unknown contact type: ${contact.type}")
-                            }
-                        )
-                    }
-
-                    else -> {
-                        throw IllegalArgumentException("Unknown packet id: $packetId")
-                    }
-                }
+                Packets.fromProtoPacket(protoPacket) as ServerPacket
             }
         }
     }

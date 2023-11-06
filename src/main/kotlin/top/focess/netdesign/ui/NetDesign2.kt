@@ -1,8 +1,6 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -14,11 +12,29 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import top.focess.netdesign.Database
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.config.LangFile.Companion.createLandScope
 import top.focess.netdesign.server.Contact
 import top.focess.netdesign.server.RemoteServer
 import top.focess.netdesign.server.SingleServer
+import java.awt.EventQueue
+import java.sql.SQLException
+
+
+val driver: SqlDriver = JdbcSqliteDriver(
+    "jdbc:sqlite:netdesign.db"
+).apply {
+    try {
+        Database.Schema.create(this)
+    } catch (e: SQLException) {}
+
+}
+
+val database = Database(driver)
+val friendQueries = database.friendQueries
 
 @Composable
 fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified)): WindowState =
@@ -40,24 +56,43 @@ fun main() {
 
         var currentContact by remember { mutableStateOf<Contact?>(null) }
 
-        var clicked by remember { mutableStateOf(0) }
+        var alwaysOnTop by remember { mutableStateOf(false) }
+
 
         LaunchedEffect(server.host, server.port) {
             if (!server.connected)
                 server.connect()
         }
 
+        var showDialog by remember { mutableStateOf(true) }
+
         createLandScope(LangFile("langs/zh_CN.yml")) {
+
 
             if (currentContact != null) {
                 DefaultView(
                     onCloseRequest = { currentContact = null },
                     state = rememberCenterWindowState(DpSize(600.dp, 680.dp)),
-                    title = currentContact?.name ?: "title".l
+                    title = "${currentContact?.name} #${currentContact?.id}",
+                    alwaysOnTop = alwaysOnTop
                 ) {
-                    currentContact?.let {
-                        enterColumn {
-                            ChatView(currentContact!!)
+
+                    useWindow {
+                        LaunchedEffect(currentContact) {
+                            if (currentContact != null) {
+                                EventQueue.invokeLater {
+                                    window.toFront()
+                                }
+                            }
+                        }
+                    }
+
+
+                    useColumn {
+                        currentContact?.let {
+                            useColumn {
+                                ChatView(currentContact!!)
+                            }
                         }
                     }
                 }
@@ -66,7 +101,7 @@ fun main() {
             if (!logined)
                 DefaultView(
                     onCloseRequest = ::exitApplication,
-                    state = rememberCenterWindowState(DpSize(500.dp, Dp.Unspecified)),
+                    state = rememberCenterWindowState(DpSize(600.dp, Dp.Unspecified)),
                     title = "login.title".l
                 ) {
                     LoginView(server, {
@@ -103,13 +138,8 @@ fun main() {
 
 
             if (showRegister) {
-                if (server.registerable)
-                    SurfaceView(onCloseRequest = { showRegister = false }, title = "register.title".l) {
-                        RegisterView()
-                    }
-                else {
-                    showRegister = false
-                    println("not registerable")
+                SurfaceView(onCloseRequest = { showRegister = false }, title = "register.title".l) {
+                    RegisterView()
                 }
             }
 
