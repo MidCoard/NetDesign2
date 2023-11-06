@@ -43,9 +43,36 @@ public object PacketKt {
     public fun clearPacketId() {
       _builder.clearPacketId()
     }
+
+    /**
+     * `.google.protobuf.Any content = 2;`
+     */
+    public var content: com.google.protobuf.Any
+      @JvmName("getContent")
+      get() = _builder.getContent()
+      @JvmName("setContent")
+      set(value) {
+        _builder.setContent(value)
+      }
+    /**
+     * `.google.protobuf.Any content = 2;`
+     */
+    public fun clearContent() {
+      _builder.clearContent()
+    }
+    /**
+     * `.google.protobuf.Any content = 2;`
+     * @return Whether the content field is set.
+     */
+    public fun hasContent(): kotlin.Boolean {
+      return _builder.hasContent()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic
 public inline fun top.focess.netdesign.proto.PacketOuterClass.Packet.copy(block: `top.focess.netdesign.proto`.PacketKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.Packet =
   `top.focess.netdesign.proto`.PacketKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+
+public val top.focess.netdesign.proto.PacketOuterClass.PacketOrBuilder.contentOrNull: com.google.protobuf.Any?
+  get() = if (hasContent()) getContent() else null
 

@@ -24,6 +24,21 @@ public final class PacketOuterClass {
      * @return The packetId.
      */
     int getPacketId();
+
+    /**
+     * <code>.google.protobuf.Any content = 2;</code>
+     * @return Whether the content field is set.
+     */
+    boolean hasContent();
+    /**
+     * <code>.google.protobuf.Any content = 2;</code>
+     * @return The content.
+     */
+    com.google.protobuf.Any getContent();
+    /**
+     * <code>.google.protobuf.Any content = 2;</code>
+     */
+    com.google.protobuf.AnyOrBuilder getContentOrBuilder();
   }
   /**
    * Protobuf type {@code netdesign2.Packet}
@@ -60,6 +75,7 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.Packet.class, top.focess.netdesign.proto.PacketOuterClass.Packet.Builder.class);
     }
 
+    private int bitField0_;
     public static final int PACKETID_FIELD_NUMBER = 1;
     private int packetId_ = 0;
     /**
@@ -69,6 +85,32 @@ public final class PacketOuterClass {
     @java.lang.Override
     public int getPacketId() {
       return packetId_;
+    }
+
+    public static final int CONTENT_FIELD_NUMBER = 2;
+    private com.google.protobuf.Any content_;
+    /**
+     * <code>.google.protobuf.Any content = 2;</code>
+     * @return Whether the content field is set.
+     */
+    @java.lang.Override
+    public boolean hasContent() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>.google.protobuf.Any content = 2;</code>
+     * @return The content.
+     */
+    @java.lang.Override
+    public com.google.protobuf.Any getContent() {
+      return content_ == null ? com.google.protobuf.Any.getDefaultInstance() : content_;
+    }
+    /**
+     * <code>.google.protobuf.Any content = 2;</code>
+     */
+    @java.lang.Override
+    public com.google.protobuf.AnyOrBuilder getContentOrBuilder() {
+      return content_ == null ? com.google.protobuf.Any.getDefaultInstance() : content_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -88,6 +130,9 @@ public final class PacketOuterClass {
       if (packetId_ != 0) {
         output.writeInt32(1, packetId_);
       }
+      if (((bitField0_ & 0x00000001) != 0)) {
+        output.writeMessage(2, getContent());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -100,6 +145,10 @@ public final class PacketOuterClass {
       if (packetId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, packetId_);
+      }
+      if (((bitField0_ & 0x00000001) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getContent());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -118,6 +167,11 @@ public final class PacketOuterClass {
 
       if (getPacketId()
           != other.getPacketId()) return false;
+      if (hasContent() != other.hasContent()) return false;
+      if (hasContent()) {
+        if (!getContent()
+            .equals(other.getContent())) return false;
+      }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -131,6 +185,10 @@ public final class PacketOuterClass {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + PACKETID_FIELD_NUMBER;
       hash = (53 * hash) + getPacketId();
+      if (hasContent()) {
+        hash = (37 * hash) + CONTENT_FIELD_NUMBER;
+        hash = (53 * hash) + getContent().hashCode();
+      }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -250,19 +308,30 @@ public final class PacketOuterClass {
 
       // Construct using top.focess.netdesign.proto.PacketOuterClass.Packet.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getContentFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
         packetId_ = 0;
+        content_ = null;
+        if (contentBuilder_ != null) {
+          contentBuilder_.dispose();
+          contentBuilder_ = null;
+        }
         return this;
       }
 
@@ -299,6 +368,14 @@ public final class PacketOuterClass {
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.packetId_ = packetId_;
         }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.content_ = contentBuilder_ == null
+              ? content_
+              : contentBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -348,6 +425,9 @@ public final class PacketOuterClass {
         if (other.getPacketId() != 0) {
           setPacketId(other.getPacketId());
         }
+        if (other.hasContent()) {
+          mergeContent(other.getContent());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -379,6 +459,13 @@ public final class PacketOuterClass {
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
+              case 18: {
+                input.readMessage(
+                    getContentFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -426,6 +513,127 @@ public final class PacketOuterClass {
         packetId_ = 0;
         onChanged();
         return this;
+      }
+
+      private com.google.protobuf.Any content_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> contentBuilder_;
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       * @return Whether the content field is set.
+       */
+      public boolean hasContent() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       * @return The content.
+       */
+      public com.google.protobuf.Any getContent() {
+        if (contentBuilder_ == null) {
+          return content_ == null ? com.google.protobuf.Any.getDefaultInstance() : content_;
+        } else {
+          return contentBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       */
+      public Builder setContent(com.google.protobuf.Any value) {
+        if (contentBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          content_ = value;
+        } else {
+          contentBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       */
+      public Builder setContent(
+          com.google.protobuf.Any.Builder builderForValue) {
+        if (contentBuilder_ == null) {
+          content_ = builderForValue.build();
+        } else {
+          contentBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       */
+      public Builder mergeContent(com.google.protobuf.Any value) {
+        if (contentBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) != 0) &&
+            content_ != null &&
+            content_ != com.google.protobuf.Any.getDefaultInstance()) {
+            getContentBuilder().mergeFrom(value);
+          } else {
+            content_ = value;
+          }
+        } else {
+          contentBuilder_.mergeFrom(value);
+        }
+        if (content_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       */
+      public Builder clearContent() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        content_ = null;
+        if (contentBuilder_ != null) {
+          contentBuilder_.dispose();
+          contentBuilder_ = null;
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       */
+      public com.google.protobuf.Any.Builder getContentBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getContentFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       */
+      public com.google.protobuf.AnyOrBuilder getContentOrBuilder() {
+        if (contentBuilder_ != null) {
+          return contentBuilder_.getMessageOrBuilder();
+        } else {
+          return content_ == null ?
+              com.google.protobuf.Any.getDefaultInstance() : content_;
+        }
+      }
+      /**
+       * <code>.google.protobuf.Any content = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> 
+          getContentFieldBuilder() {
+        if (contentBuilder_ == null) {
+          contentBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
+                  getContent(),
+                  getParentForChildren(),
+                  isClean());
+          content_ = null;
+        }
+        return contentBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -496,23 +704,17 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>optional string clientPublicKey = 2;</code>
+     * <code>optional string clientPublicKey = 1;</code>
      * @return Whether the clientPublicKey field is set.
      */
     boolean hasClientPublicKey();
     /**
-     * <code>optional string clientPublicKey = 2;</code>
+     * <code>optional string clientPublicKey = 1;</code>
      * @return The clientPublicKey.
      */
     java.lang.String getClientPublicKey();
     /**
-     * <code>optional string clientPublicKey = 2;</code>
+     * <code>optional string clientPublicKey = 1;</code>
      * @return The bytes for clientPublicKey.
      */
     com.google.protobuf.ByteString
@@ -559,22 +761,11 @@ public final class PacketOuterClass {
     }
 
     private int bitField0_;
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int CLIENTPUBLICKEY_FIELD_NUMBER = 2;
+    public static final int CLIENTPUBLICKEY_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
     private volatile java.lang.Object clientPublicKey_ = "";
     /**
-     * <code>optional string clientPublicKey = 2;</code>
+     * <code>optional string clientPublicKey = 1;</code>
      * @return Whether the clientPublicKey field is set.
      */
     @java.lang.Override
@@ -582,7 +773,7 @@ public final class PacketOuterClass {
       return ((bitField0_ & 0x00000001) != 0);
     }
     /**
-     * <code>optional string clientPublicKey = 2;</code>
+     * <code>optional string clientPublicKey = 1;</code>
      * @return The clientPublicKey.
      */
     @java.lang.Override
@@ -599,7 +790,7 @@ public final class PacketOuterClass {
       }
     }
     /**
-     * <code>optional string clientPublicKey = 2;</code>
+     * <code>optional string clientPublicKey = 1;</code>
      * @return The bytes for clientPublicKey.
      */
     @java.lang.Override
@@ -631,11 +822,8 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (((bitField0_ & 0x00000001) != 0)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, clientPublicKey_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clientPublicKey_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -646,12 +834,8 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (((bitField0_ & 0x00000001) != 0)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, clientPublicKey_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clientPublicKey_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -668,8 +852,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest other = (top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (hasClientPublicKey() != other.hasClientPublicKey()) return false;
       if (hasClientPublicKey()) {
         if (!getClientPublicKey()
@@ -686,8 +868,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       if (hasClientPublicKey()) {
         hash = (37 * hash) + CLIENTPUBLICKEY_FIELD_NUMBER;
         hash = (53 * hash) + getClientPublicKey().hashCode();
@@ -827,7 +1007,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         clientPublicKey_ = "";
         return this;
       }
@@ -862,11 +1041,8 @@ public final class PacketOuterClass {
 
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest result) {
         int from_bitField0_ = bitField0_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
         int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
+        if (((from_bitField0_ & 0x00000001) != 0)) {
           result.clientPublicKey_ = clientPublicKey_;
           to_bitField0_ |= 0x00000001;
         }
@@ -917,12 +1093,9 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (other.hasClientPublicKey()) {
           clientPublicKey_ = other.clientPublicKey_;
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -951,16 +1124,11 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
+              case 10: {
+                clientPublicKey_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000001;
                 break;
-              } // case 8
-              case 18: {
-                clientPublicKey_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 18
+              } // case 10
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -978,48 +1146,16 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object clientPublicKey_ = "";
       /**
-       * <code>optional string clientPublicKey = 2;</code>
+       * <code>optional string clientPublicKey = 1;</code>
        * @return Whether the clientPublicKey field is set.
        */
       public boolean hasClientPublicKey() {
-        return ((bitField0_ & 0x00000002) != 0);
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
-       * <code>optional string clientPublicKey = 2;</code>
+       * <code>optional string clientPublicKey = 1;</code>
        * @return The clientPublicKey.
        */
       public java.lang.String getClientPublicKey() {
@@ -1035,7 +1171,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>optional string clientPublicKey = 2;</code>
+       * <code>optional string clientPublicKey = 1;</code>
        * @return The bytes for clientPublicKey.
        */
       public com.google.protobuf.ByteString
@@ -1052,7 +1188,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>optional string clientPublicKey = 2;</code>
+       * <code>optional string clientPublicKey = 1;</code>
        * @param value The clientPublicKey to set.
        * @return This builder for chaining.
        */
@@ -1060,22 +1196,22 @@ public final class PacketOuterClass {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         clientPublicKey_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string clientPublicKey = 2;</code>
+       * <code>optional string clientPublicKey = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearClientPublicKey() {
         clientPublicKey_ = getDefaultInstance().getClientPublicKey();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>optional string clientPublicKey = 2;</code>
+       * <code>optional string clientPublicKey = 1;</code>
        * @param value The bytes for clientPublicKey to set.
        * @return This builder for chaining.
        */
@@ -1084,7 +1220,7 @@ public final class PacketOuterClass {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         clientPublicKey_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1157,35 +1293,29 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>bool online = 2;</code>
+     * <code>bool online = 1;</code>
      * @return The online.
      */
     boolean getOnline();
 
     /**
-     * <code>bool registrable = 3;</code>
+     * <code>bool registrable = 2;</code>
      * @return The registrable.
      */
     boolean getRegistrable();
 
     /**
-     * <code>optional string serverPublicKey = 4;</code>
+     * <code>optional string serverPublicKey = 3;</code>
      * @return Whether the serverPublicKey field is set.
      */
     boolean hasServerPublicKey();
     /**
-     * <code>optional string serverPublicKey = 4;</code>
+     * <code>optional string serverPublicKey = 3;</code>
      * @return The serverPublicKey.
      */
     java.lang.String getServerPublicKey();
     /**
-     * <code>optional string serverPublicKey = 4;</code>
+     * <code>optional string serverPublicKey = 3;</code>
      * @return The bytes for serverPublicKey.
      */
     com.google.protobuf.ByteString
@@ -1232,21 +1362,10 @@ public final class PacketOuterClass {
     }
 
     private int bitField0_;
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int ONLINE_FIELD_NUMBER = 2;
+    public static final int ONLINE_FIELD_NUMBER = 1;
     private boolean online_ = false;
     /**
-     * <code>bool online = 2;</code>
+     * <code>bool online = 1;</code>
      * @return The online.
      */
     @java.lang.Override
@@ -1254,10 +1373,10 @@ public final class PacketOuterClass {
       return online_;
     }
 
-    public static final int REGISTRABLE_FIELD_NUMBER = 3;
+    public static final int REGISTRABLE_FIELD_NUMBER = 2;
     private boolean registrable_ = false;
     /**
-     * <code>bool registrable = 3;</code>
+     * <code>bool registrable = 2;</code>
      * @return The registrable.
      */
     @java.lang.Override
@@ -1265,11 +1384,11 @@ public final class PacketOuterClass {
       return registrable_;
     }
 
-    public static final int SERVERPUBLICKEY_FIELD_NUMBER = 4;
+    public static final int SERVERPUBLICKEY_FIELD_NUMBER = 3;
     @SuppressWarnings("serial")
     private volatile java.lang.Object serverPublicKey_ = "";
     /**
-     * <code>optional string serverPublicKey = 4;</code>
+     * <code>optional string serverPublicKey = 3;</code>
      * @return Whether the serverPublicKey field is set.
      */
     @java.lang.Override
@@ -1277,7 +1396,7 @@ public final class PacketOuterClass {
       return ((bitField0_ & 0x00000001) != 0);
     }
     /**
-     * <code>optional string serverPublicKey = 4;</code>
+     * <code>optional string serverPublicKey = 3;</code>
      * @return The serverPublicKey.
      */
     @java.lang.Override
@@ -1294,7 +1413,7 @@ public final class PacketOuterClass {
       }
     }
     /**
-     * <code>optional string serverPublicKey = 4;</code>
+     * <code>optional string serverPublicKey = 3;</code>
      * @return The bytes for serverPublicKey.
      */
     @java.lang.Override
@@ -1326,17 +1445,14 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (online_ != false) {
-        output.writeBool(2, online_);
+        output.writeBool(1, online_);
       }
       if (registrable_ != false) {
-        output.writeBool(3, registrable_);
+        output.writeBool(2, registrable_);
       }
       if (((bitField0_ & 0x00000001) != 0)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, serverPublicKey_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, serverPublicKey_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1347,20 +1463,16 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (online_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(2, online_);
+          .computeBoolSize(1, online_);
       }
       if (registrable_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, registrable_);
+          .computeBoolSize(2, registrable_);
       }
       if (((bitField0_ & 0x00000001) != 0)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, serverPublicKey_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, serverPublicKey_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1377,8 +1489,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse other = (top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (getOnline()
           != other.getOnline()) return false;
       if (getRegistrable()
@@ -1399,8 +1509,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (37 * hash) + ONLINE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getOnline());
@@ -1546,7 +1654,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         online_ = false;
         registrable_ = false;
         serverPublicKey_ = "";
@@ -1584,16 +1691,13 @@ public final class PacketOuterClass {
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.online_ = online_;
         }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
+        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.registrable_ = registrable_;
         }
         int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000008) != 0)) {
+        if (((from_bitField0_ & 0x00000004) != 0)) {
           result.serverPublicKey_ = serverPublicKey_;
           to_bitField0_ |= 0x00000001;
         }
@@ -1644,9 +1748,6 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (other.getOnline() != false) {
           setOnline(other.getOnline());
         }
@@ -1655,7 +1756,7 @@ public final class PacketOuterClass {
         }
         if (other.hasServerPublicKey()) {
           serverPublicKey_ = other.serverPublicKey_;
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -1685,25 +1786,20 @@ public final class PacketOuterClass {
                 done = true;
                 break;
               case 8: {
-                packetId_ = input.readInt32();
+                online_ = input.readBool();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 16: {
-                online_ = input.readBool();
+                registrable_ = input.readBool();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 16
-              case 24: {
-                registrable_ = input.readBool();
+              case 26: {
+                serverPublicKey_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000004;
                 break;
-              } // case 24
-              case 34: {
-                serverPublicKey_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000008;
-                break;
-              } // case 34
+              } // case 26
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -1721,41 +1817,9 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private boolean online_ ;
       /**
-       * <code>bool online = 2;</code>
+       * <code>bool online = 1;</code>
        * @return The online.
        */
       @java.lang.Override
@@ -1763,23 +1827,23 @@ public final class PacketOuterClass {
         return online_;
       }
       /**
-       * <code>bool online = 2;</code>
+       * <code>bool online = 1;</code>
        * @param value The online to set.
        * @return This builder for chaining.
        */
       public Builder setOnline(boolean value) {
 
         online_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>bool online = 2;</code>
+       * <code>bool online = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearOnline() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         online_ = false;
         onChanged();
         return this;
@@ -1787,7 +1851,7 @@ public final class PacketOuterClass {
 
       private boolean registrable_ ;
       /**
-       * <code>bool registrable = 3;</code>
+       * <code>bool registrable = 2;</code>
        * @return The registrable.
        */
       @java.lang.Override
@@ -1795,23 +1859,23 @@ public final class PacketOuterClass {
         return registrable_;
       }
       /**
-       * <code>bool registrable = 3;</code>
+       * <code>bool registrable = 2;</code>
        * @param value The registrable to set.
        * @return This builder for chaining.
        */
       public Builder setRegistrable(boolean value) {
 
         registrable_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>bool registrable = 3;</code>
+       * <code>bool registrable = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearRegistrable() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         registrable_ = false;
         onChanged();
         return this;
@@ -1819,14 +1883,14 @@ public final class PacketOuterClass {
 
       private java.lang.Object serverPublicKey_ = "";
       /**
-       * <code>optional string serverPublicKey = 4;</code>
+       * <code>optional string serverPublicKey = 3;</code>
        * @return Whether the serverPublicKey field is set.
        */
       public boolean hasServerPublicKey() {
-        return ((bitField0_ & 0x00000008) != 0);
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
-       * <code>optional string serverPublicKey = 4;</code>
+       * <code>optional string serverPublicKey = 3;</code>
        * @return The serverPublicKey.
        */
       public java.lang.String getServerPublicKey() {
@@ -1842,7 +1906,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>optional string serverPublicKey = 4;</code>
+       * <code>optional string serverPublicKey = 3;</code>
        * @return The bytes for serverPublicKey.
        */
       public com.google.protobuf.ByteString
@@ -1859,7 +1923,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>optional string serverPublicKey = 4;</code>
+       * <code>optional string serverPublicKey = 3;</code>
        * @param value The serverPublicKey to set.
        * @return This builder for chaining.
        */
@@ -1867,22 +1931,22 @@ public final class PacketOuterClass {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         serverPublicKey_ = value;
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string serverPublicKey = 4;</code>
+       * <code>optional string serverPublicKey = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearServerPublicKey() {
         serverPublicKey_ = getDefaultInstance().getServerPublicKey();
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
-       * <code>optional string serverPublicKey = 4;</code>
+       * <code>optional string serverPublicKey = 3;</code>
        * @param value The bytes for serverPublicKey to set.
        * @return This builder for chaining.
        */
@@ -1891,7 +1955,7 @@ public final class PacketOuterClass {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         serverPublicKey_ = value;
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1962,12 +2026,6 @@ public final class PacketOuterClass {
   public interface ServerStatusUpdateRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:netdesign2.ServerStatusUpdateRequest)
       com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
   }
   /**
    * <pre>
@@ -2008,17 +2066,6 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest.class, top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2033,9 +2080,6 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2045,10 +2089,6 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -2064,8 +2104,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest other = (top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -2077,8 +2115,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2213,8 +2249,6 @@ public final class PacketOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        packetId_ = 0;
         return this;
       }
 
@@ -2241,16 +2275,8 @@ public final class PacketOuterClass {
       @java.lang.Override
       public top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest buildPartial() {
         top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest result = new top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
-      }
-
-      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest result) {
-        int from_bitField0_ = bitField0_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
       }
 
       @java.lang.Override
@@ -2297,9 +2323,6 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -2326,11 +2349,6 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 8
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -2344,39 +2362,6 @@ public final class PacketOuterClass {
         } finally {
           onChanged();
         } // finally
-        return this;
-      }
-      private int bitField0_;
-
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
         return this;
       }
       @java.lang.Override
@@ -2448,19 +2433,13 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>bool online = 2;</code>
+     * <code>bool online = 1;</code>
      * @return The online.
      */
     boolean getOnline();
 
     /**
-     * <code>bool registrable = 3;</code>
+     * <code>bool registrable = 2;</code>
      * @return The registrable.
      */
     boolean getRegistrable();
@@ -2504,21 +2483,10 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse.class, top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int ONLINE_FIELD_NUMBER = 2;
+    public static final int ONLINE_FIELD_NUMBER = 1;
     private boolean online_ = false;
     /**
-     * <code>bool online = 2;</code>
+     * <code>bool online = 1;</code>
      * @return The online.
      */
     @java.lang.Override
@@ -2526,10 +2494,10 @@ public final class PacketOuterClass {
       return online_;
     }
 
-    public static final int REGISTRABLE_FIELD_NUMBER = 3;
+    public static final int REGISTRABLE_FIELD_NUMBER = 2;
     private boolean registrable_ = false;
     /**
-     * <code>bool registrable = 3;</code>
+     * <code>bool registrable = 2;</code>
      * @return The registrable.
      */
     @java.lang.Override
@@ -2551,14 +2519,11 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (online_ != false) {
-        output.writeBool(2, online_);
+        output.writeBool(1, online_);
       }
       if (registrable_ != false) {
-        output.writeBool(3, registrable_);
+        output.writeBool(2, registrable_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2569,17 +2534,13 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (online_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(2, online_);
+          .computeBoolSize(1, online_);
       }
       if (registrable_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, registrable_);
+          .computeBoolSize(2, registrable_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2596,8 +2557,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse other = (top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (getOnline()
           != other.getOnline()) return false;
       if (getRegistrable()
@@ -2613,8 +2572,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (37 * hash) + ONLINE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getOnline());
@@ -2756,7 +2713,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         online_ = false;
         registrable_ = false;
         return this;
@@ -2793,12 +2749,9 @@ public final class PacketOuterClass {
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.online_ = online_;
         }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
+        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.registrable_ = registrable_;
         }
       }
@@ -2847,9 +2800,6 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (other.getOnline() != false) {
           setOnline(other.getOnline());
         }
@@ -2883,20 +2833,15 @@ public final class PacketOuterClass {
                 done = true;
                 break;
               case 8: {
-                packetId_ = input.readInt32();
+                online_ = input.readBool();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 16: {
-                online_ = input.readBool();
+                registrable_ = input.readBool();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 16
-              case 24: {
-                registrable_ = input.readBool();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 24
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -2914,41 +2859,9 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private boolean online_ ;
       /**
-       * <code>bool online = 2;</code>
+       * <code>bool online = 1;</code>
        * @return The online.
        */
       @java.lang.Override
@@ -2956,23 +2869,23 @@ public final class PacketOuterClass {
         return online_;
       }
       /**
-       * <code>bool online = 2;</code>
+       * <code>bool online = 1;</code>
        * @param value The online to set.
        * @return This builder for chaining.
        */
       public Builder setOnline(boolean value) {
 
         online_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>bool online = 2;</code>
+       * <code>bool online = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearOnline() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         online_ = false;
         onChanged();
         return this;
@@ -2980,7 +2893,7 @@ public final class PacketOuterClass {
 
       private boolean registrable_ ;
       /**
-       * <code>bool registrable = 3;</code>
+       * <code>bool registrable = 2;</code>
        * @return The registrable.
        */
       @java.lang.Override
@@ -2988,23 +2901,23 @@ public final class PacketOuterClass {
         return registrable_;
       }
       /**
-       * <code>bool registrable = 3;</code>
+       * <code>bool registrable = 2;</code>
        * @param value The registrable to set.
        * @return This builder for chaining.
        */
       public Builder setRegistrable(boolean value) {
 
         registrable_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>bool registrable = 3;</code>
+       * <code>bool registrable = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearRegistrable() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         registrable_ = false;
         onChanged();
         return this;
@@ -3078,18 +2991,12 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The username.
      */
     java.lang.String getUsername();
     /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The bytes for username.
      */
     com.google.protobuf.ByteString
@@ -3135,22 +3042,11 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest.class, top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int USERNAME_FIELD_NUMBER = 2;
+    public static final int USERNAME_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
     private volatile java.lang.Object username_ = "";
     /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The username.
      */
     @java.lang.Override
@@ -3167,7 +3063,7 @@ public final class PacketOuterClass {
       }
     }
     /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The bytes for username.
      */
     @java.lang.Override
@@ -3199,11 +3095,8 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, username_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, username_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3214,12 +3107,8 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, username_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, username_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -3236,8 +3125,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest other = (top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (!getUsername()
           .equals(other.getUsername())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -3251,8 +3138,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (37 * hash) + USERNAME_FIELD_NUMBER;
       hash = (53 * hash) + getUsername().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -3390,7 +3275,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         username_ = "";
         return this;
       }
@@ -3426,9 +3310,6 @@ public final class PacketOuterClass {
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.username_ = username_;
         }
       }
@@ -3477,12 +3358,9 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (!other.getUsername().isEmpty()) {
           username_ = other.username_;
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -3511,16 +3389,11 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
+              case 10: {
+                username_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000001;
                 break;
-              } // case 8
-              case 18: {
-                username_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 18
+              } // case 10
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -3538,41 +3411,9 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object username_ = "";
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @return The username.
        */
       public java.lang.String getUsername() {
@@ -3588,7 +3429,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @return The bytes for username.
        */
       public com.google.protobuf.ByteString
@@ -3605,7 +3446,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @param value The username to set.
        * @return This builder for chaining.
        */
@@ -3613,22 +3454,22 @@ public final class PacketOuterClass {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         username_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearUsername() {
         username_ = getDefaultInstance().getUsername();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @param value The bytes for username to set.
        * @return This builder for chaining.
        */
@@ -3637,7 +3478,7 @@ public final class PacketOuterClass {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         username_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3710,18 +3551,12 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>string challenge = 2;</code>
+     * <code>string challenge = 1;</code>
      * @return The challenge.
      */
     java.lang.String getChallenge();
     /**
-     * <code>string challenge = 2;</code>
+     * <code>string challenge = 1;</code>
      * @return The bytes for challenge.
      */
     com.google.protobuf.ByteString
@@ -3767,22 +3602,11 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse.class, top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int CHALLENGE_FIELD_NUMBER = 2;
+    public static final int CHALLENGE_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
     private volatile java.lang.Object challenge_ = "";
     /**
-     * <code>string challenge = 2;</code>
+     * <code>string challenge = 1;</code>
      * @return The challenge.
      */
     @java.lang.Override
@@ -3799,7 +3623,7 @@ public final class PacketOuterClass {
       }
     }
     /**
-     * <code>string challenge = 2;</code>
+     * <code>string challenge = 1;</code>
      * @return The bytes for challenge.
      */
     @java.lang.Override
@@ -3831,11 +3655,8 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(challenge_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, challenge_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, challenge_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3846,12 +3667,8 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(challenge_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, challenge_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, challenge_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -3868,8 +3685,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse other = (top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (!getChallenge()
           .equals(other.getChallenge())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -3883,8 +3698,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (37 * hash) + CHALLENGE_FIELD_NUMBER;
       hash = (53 * hash) + getChallenge().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -4022,7 +3835,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         challenge_ = "";
         return this;
       }
@@ -4058,9 +3870,6 @@ public final class PacketOuterClass {
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.challenge_ = challenge_;
         }
       }
@@ -4109,12 +3918,9 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (!other.getChallenge().isEmpty()) {
           challenge_ = other.challenge_;
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -4143,16 +3949,11 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
+              case 10: {
+                challenge_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000001;
                 break;
-              } // case 8
-              case 18: {
-                challenge_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 18
+              } // case 10
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -4170,41 +3971,9 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object challenge_ = "";
       /**
-       * <code>string challenge = 2;</code>
+       * <code>string challenge = 1;</code>
        * @return The challenge.
        */
       public java.lang.String getChallenge() {
@@ -4220,7 +3989,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string challenge = 2;</code>
+       * <code>string challenge = 1;</code>
        * @return The bytes for challenge.
        */
       public com.google.protobuf.ByteString
@@ -4237,7 +4006,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string challenge = 2;</code>
+       * <code>string challenge = 1;</code>
        * @param value The challenge to set.
        * @return This builder for chaining.
        */
@@ -4245,22 +4014,22 @@ public final class PacketOuterClass {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         challenge_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>string challenge = 2;</code>
+       * <code>string challenge = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearChallenge() {
         challenge_ = getDefaultInstance().getChallenge();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>string challenge = 2;</code>
+       * <code>string challenge = 1;</code>
        * @param value The bytes for challenge to set.
        * @return This builder for chaining.
        */
@@ -4269,7 +4038,7 @@ public final class PacketOuterClass {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         challenge_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -4342,30 +4111,24 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The username.
      */
     java.lang.String getUsername();
     /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The bytes for username.
      */
     com.google.protobuf.ByteString
         getUsernameBytes();
 
     /**
-     * <code>string hashPassword = 3;</code>
+     * <code>string hashPassword = 2;</code>
      * @return The hashPassword.
      */
     java.lang.String getHashPassword();
     /**
-     * <code>string hashPassword = 3;</code>
+     * <code>string hashPassword = 2;</code>
      * @return The bytes for hashPassword.
      */
     com.google.protobuf.ByteString
@@ -4412,22 +4175,11 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.LoginRequest.class, top.focess.netdesign.proto.PacketOuterClass.LoginRequest.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int USERNAME_FIELD_NUMBER = 2;
+    public static final int USERNAME_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
     private volatile java.lang.Object username_ = "";
     /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The username.
      */
     @java.lang.Override
@@ -4444,7 +4196,7 @@ public final class PacketOuterClass {
       }
     }
     /**
-     * <code>string username = 2;</code>
+     * <code>string username = 1;</code>
      * @return The bytes for username.
      */
     @java.lang.Override
@@ -4462,11 +4214,11 @@ public final class PacketOuterClass {
       }
     }
 
-    public static final int HASHPASSWORD_FIELD_NUMBER = 3;
+    public static final int HASHPASSWORD_FIELD_NUMBER = 2;
     @SuppressWarnings("serial")
     private volatile java.lang.Object hashPassword_ = "";
     /**
-     * <code>string hashPassword = 3;</code>
+     * <code>string hashPassword = 2;</code>
      * @return The hashPassword.
      */
     @java.lang.Override
@@ -4483,7 +4235,7 @@ public final class PacketOuterClass {
       }
     }
     /**
-     * <code>string hashPassword = 3;</code>
+     * <code>string hashPassword = 2;</code>
      * @return The bytes for hashPassword.
      */
     @java.lang.Override
@@ -4515,14 +4267,11 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, username_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, username_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(hashPassword_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, hashPassword_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, hashPassword_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4533,15 +4282,11 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, username_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, username_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(hashPassword_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, hashPassword_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, hashPassword_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4558,8 +4303,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.LoginRequest other = (top.focess.netdesign.proto.PacketOuterClass.LoginRequest) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (!getUsername()
           .equals(other.getUsername())) return false;
       if (!getHashPassword()
@@ -4575,8 +4318,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (37 * hash) + USERNAME_FIELD_NUMBER;
       hash = (53 * hash) + getUsername().hashCode();
       hash = (37 * hash) + HASHPASSWORD_FIELD_NUMBER;
@@ -4716,7 +4457,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         username_ = "";
         hashPassword_ = "";
         return this;
@@ -4753,12 +4493,9 @@ public final class PacketOuterClass {
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.LoginRequest result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.username_ = username_;
         }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
+        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.hashPassword_ = hashPassword_;
         }
       }
@@ -4807,17 +4544,14 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.LoginRequest other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.LoginRequest.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (!other.getUsername().isEmpty()) {
           username_ = other.username_;
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getHashPassword().isEmpty()) {
           hashPassword_ = other.hashPassword_;
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -4846,21 +4580,16 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
+              case 10: {
+                username_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000001;
                 break;
-              } // case 8
+              } // case 10
               case 18: {
-                username_ = input.readStringRequireUtf8();
+                hashPassword_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
-              case 26: {
-                hashPassword_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 26
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -4878,41 +4607,9 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object username_ = "";
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @return The username.
        */
       public java.lang.String getUsername() {
@@ -4928,7 +4625,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @return The bytes for username.
        */
       public com.google.protobuf.ByteString
@@ -4945,7 +4642,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @param value The username to set.
        * @return This builder for chaining.
        */
@@ -4953,22 +4650,22 @@ public final class PacketOuterClass {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         username_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearUsername() {
         username_ = getDefaultInstance().getUsername();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>string username = 2;</code>
+       * <code>string username = 1;</code>
        * @param value The bytes for username to set.
        * @return This builder for chaining.
        */
@@ -4977,14 +4674,14 @@ public final class PacketOuterClass {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         username_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
       private java.lang.Object hashPassword_ = "";
       /**
-       * <code>string hashPassword = 3;</code>
+       * <code>string hashPassword = 2;</code>
        * @return The hashPassword.
        */
       public java.lang.String getHashPassword() {
@@ -5000,7 +4697,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string hashPassword = 3;</code>
+       * <code>string hashPassword = 2;</code>
        * @return The bytes for hashPassword.
        */
       public com.google.protobuf.ByteString
@@ -5017,7 +4714,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string hashPassword = 3;</code>
+       * <code>string hashPassword = 2;</code>
        * @param value The hashPassword to set.
        * @return This builder for chaining.
        */
@@ -5025,22 +4722,22 @@ public final class PacketOuterClass {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         hashPassword_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>string hashPassword = 3;</code>
+       * <code>string hashPassword = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearHashPassword() {
         hashPassword_ = getDefaultInstance().getHashPassword();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>string hashPassword = 3;</code>
+       * <code>string hashPassword = 2;</code>
        * @param value The bytes for hashPassword to set.
        * @return This builder for chaining.
        */
@@ -5049,7 +4746,7 @@ public final class PacketOuterClass {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         hashPassword_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5122,13 +4819,7 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>bool logined = 2;</code>
+     * <code>bool logined = 1;</code>
      * @return The logined.
      */
     boolean getLogined();
@@ -5172,21 +4863,10 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.LoginResponse.class, top.focess.netdesign.proto.PacketOuterClass.LoginResponse.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int LOGINED_FIELD_NUMBER = 2;
+    public static final int LOGINED_FIELD_NUMBER = 1;
     private boolean logined_ = false;
     /**
-     * <code>bool logined = 2;</code>
+     * <code>bool logined = 1;</code>
      * @return The logined.
      */
     @java.lang.Override
@@ -5208,11 +4888,8 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (logined_ != false) {
-        output.writeBool(2, logined_);
+        output.writeBool(1, logined_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -5223,13 +4900,9 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (logined_ != false) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(2, logined_);
+          .computeBoolSize(1, logined_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -5246,8 +4919,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.LoginResponse other = (top.focess.netdesign.proto.PacketOuterClass.LoginResponse) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (getLogined()
           != other.getLogined()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -5261,8 +4932,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (37 * hash) + LOGINED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getLogined());
@@ -5401,7 +5070,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         logined_ = false;
         return this;
       }
@@ -5437,9 +5105,6 @@ public final class PacketOuterClass {
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.LoginResponse result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.logined_ = logined_;
         }
       }
@@ -5488,9 +5153,6 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.LoginResponse other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.LoginResponse.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (other.getLogined() != false) {
           setLogined(other.getLogined());
         }
@@ -5521,15 +5183,10 @@ public final class PacketOuterClass {
                 done = true;
                 break;
               case 8: {
-                packetId_ = input.readInt32();
+                logined_ = input.readBool();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
-              case 16: {
-                logined_ = input.readBool();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 16
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5547,41 +5204,9 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private boolean logined_ ;
       /**
-       * <code>bool logined = 2;</code>
+       * <code>bool logined = 1;</code>
        * @return The logined.
        */
       @java.lang.Override
@@ -5589,23 +5214,23 @@ public final class PacketOuterClass {
         return logined_;
       }
       /**
-       * <code>bool logined = 2;</code>
+       * <code>bool logined = 1;</code>
        * @param value The logined to set.
        * @return This builder for chaining.
        */
       public Builder setLogined(boolean value) {
 
         logined_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>bool logined = 2;</code>
+       * <code>bool logined = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearLogined() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         logined_ = false;
         onChanged();
         return this;
@@ -5712,6 +5337,50 @@ public final class PacketOuterClass {
      * @return The type.
      */
     top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType getType();
+
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> 
+        getMembersList();
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    top.focess.netdesign.proto.PacketOuterClass.Contact getMembers(int index);
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    int getMembersCount();
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
+        getMembersOrBuilderList();
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getMembersOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code netdesign2.Contact}
@@ -5728,6 +5397,7 @@ public final class PacketOuterClass {
     private Contact() {
       name_ = "";
       type_ = 0;
+      members_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -5946,6 +5616,67 @@ public final class PacketOuterClass {
       return result == null ? top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType.UNRECOGNIZED : result;
     }
 
+    public static final int MEMBERS_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
+    private java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> members_;
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    @java.lang.Override
+    public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> getMembersList() {
+      return members_;
+    }
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
+        getMembersOrBuilderList() {
+      return members_;
+    }
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    @java.lang.Override
+    public int getMembersCount() {
+      return members_.size();
+    }
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    @java.lang.Override
+    public top.focess.netdesign.proto.PacketOuterClass.Contact getMembers(int index) {
+      return members_.get(index);
+    }
+    /**
+     * <pre>
+     * optional, only if type is GROUP
+     * </pre>
+     *
+     * <code>repeated .netdesign2.Contact members = 5;</code>
+     */
+    @java.lang.Override
+    public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getMembersOrBuilder(
+        int index) {
+      return members_.get(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -5972,6 +5703,9 @@ public final class PacketOuterClass {
       if (type_ != top.focess.netdesign.proto.PacketOuterClass.Contact.ContactType.FRIEND.getNumber()) {
         output.writeEnum(4, type_);
       }
+      for (int i = 0; i < members_.size(); i++) {
+        output.writeMessage(5, members_.get(i));
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -5996,6 +5730,10 @@ public final class PacketOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(4, type_);
       }
+      for (int i = 0; i < members_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, members_.get(i));
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -6018,6 +5756,8 @@ public final class PacketOuterClass {
       if (getOnline()
           != other.getOnline()) return false;
       if (type_ != other.type_) return false;
+      if (!getMembersList()
+          .equals(other.getMembersList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -6038,6 +5778,10 @@ public final class PacketOuterClass {
           getOnline());
       hash = (37 * hash) + TYPE_FIELD_NUMBER;
       hash = (53 * hash) + type_;
+      if (getMembersCount() > 0) {
+        hash = (37 * hash) + MEMBERS_FIELD_NUMBER;
+        hash = (53 * hash) + getMembersList().hashCode();
+      }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -6173,6 +5917,13 @@ public final class PacketOuterClass {
         name_ = "";
         online_ = false;
         type_ = 0;
+        if (membersBuilder_ == null) {
+          members_ = java.util.Collections.emptyList();
+        } else {
+          members_ = null;
+          membersBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -6199,9 +5950,22 @@ public final class PacketOuterClass {
       @java.lang.Override
       public top.focess.netdesign.proto.PacketOuterClass.Contact buildPartial() {
         top.focess.netdesign.proto.PacketOuterClass.Contact result = new top.focess.netdesign.proto.PacketOuterClass.Contact(this);
+        buildPartialRepeatedFields(result);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartialRepeatedFields(top.focess.netdesign.proto.PacketOuterClass.Contact result) {
+        if (membersBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) != 0)) {
+            members_ = java.util.Collections.unmodifiableList(members_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.members_ = members_;
+        } else {
+          result.members_ = membersBuilder_.build();
+        }
       }
 
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.Contact result) {
@@ -6278,6 +6042,32 @@ public final class PacketOuterClass {
         if (other.type_ != 0) {
           setTypeValue(other.getTypeValue());
         }
+        if (membersBuilder_ == null) {
+          if (!other.members_.isEmpty()) {
+            if (members_.isEmpty()) {
+              members_ = other.members_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureMembersIsMutable();
+              members_.addAll(other.members_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.members_.isEmpty()) {
+            if (membersBuilder_.isEmpty()) {
+              membersBuilder_.dispose();
+              membersBuilder_ = null;
+              members_ = other.members_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              membersBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getMembersFieldBuilder() : null;
+            } else {
+              membersBuilder_.addAllMessages(other.members_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -6324,6 +6114,19 @@ public final class PacketOuterClass {
                 bitField0_ |= 0x00000008;
                 break;
               } // case 32
+              case 42: {
+                top.focess.netdesign.proto.PacketOuterClass.Contact m =
+                    input.readMessage(
+                        top.focess.netdesign.proto.PacketOuterClass.Contact.parser(),
+                        extensionRegistry);
+                if (membersBuilder_ == null) {
+                  ensureMembersIsMutable();
+                  members_.add(m);
+                } else {
+                  membersBuilder_.addMessage(m);
+                }
+                break;
+              } // case 42
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -6529,6 +6332,318 @@ public final class PacketOuterClass {
         onChanged();
         return this;
       }
+
+      private java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> members_ =
+        java.util.Collections.emptyList();
+      private void ensureMembersIsMutable() {
+        if (!((bitField0_ & 0x00000010) != 0)) {
+          members_ = new java.util.ArrayList<top.focess.netdesign.proto.PacketOuterClass.Contact>(members_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> membersBuilder_;
+
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> getMembersList() {
+        if (membersBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(members_);
+        } else {
+          return membersBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public int getMembersCount() {
+        if (membersBuilder_ == null) {
+          return members_.size();
+        } else {
+          return membersBuilder_.getCount();
+        }
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public top.focess.netdesign.proto.PacketOuterClass.Contact getMembers(int index) {
+        if (membersBuilder_ == null) {
+          return members_.get(index);
+        } else {
+          return membersBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder setMembers(
+          int index, top.focess.netdesign.proto.PacketOuterClass.Contact value) {
+        if (membersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMembersIsMutable();
+          members_.set(index, value);
+          onChanged();
+        } else {
+          membersBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder setMembers(
+          int index, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
+        if (membersBuilder_ == null) {
+          ensureMembersIsMutable();
+          members_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          membersBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder addMembers(top.focess.netdesign.proto.PacketOuterClass.Contact value) {
+        if (membersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMembersIsMutable();
+          members_.add(value);
+          onChanged();
+        } else {
+          membersBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder addMembers(
+          int index, top.focess.netdesign.proto.PacketOuterClass.Contact value) {
+        if (membersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMembersIsMutable();
+          members_.add(index, value);
+          onChanged();
+        } else {
+          membersBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder addMembers(
+          top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
+        if (membersBuilder_ == null) {
+          ensureMembersIsMutable();
+          members_.add(builderForValue.build());
+          onChanged();
+        } else {
+          membersBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder addMembers(
+          int index, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
+        if (membersBuilder_ == null) {
+          ensureMembersIsMutable();
+          members_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          membersBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder addAllMembers(
+          java.lang.Iterable<? extends top.focess.netdesign.proto.PacketOuterClass.Contact> values) {
+        if (membersBuilder_ == null) {
+          ensureMembersIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, members_);
+          onChanged();
+        } else {
+          membersBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder clearMembers() {
+        if (membersBuilder_ == null) {
+          members_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          membersBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public Builder removeMembers(int index) {
+        if (membersBuilder_ == null) {
+          ensureMembersIsMutable();
+          members_.remove(index);
+          onChanged();
+        } else {
+          membersBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder getMembersBuilder(
+          int index) {
+        return getMembersFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getMembersOrBuilder(
+          int index) {
+        if (membersBuilder_ == null) {
+          return members_.get(index);  } else {
+          return membersBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
+           getMembersOrBuilderList() {
+        if (membersBuilder_ != null) {
+          return membersBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(members_);
+        }
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addMembersBuilder() {
+        return getMembersFieldBuilder().addBuilder(
+            top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addMembersBuilder(
+          int index) {
+        return getMembersFieldBuilder().addBuilder(
+            index, top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       * optional, only if type is GROUP
+       * </pre>
+       *
+       * <code>repeated .netdesign2.Contact members = 5;</code>
+       */
+      public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact.Builder> 
+           getMembersBuilderList() {
+        return getMembersFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
+          getMembersFieldBuilder() {
+        if (membersBuilder_ == null) {
+          membersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder>(
+                  members_,
+                  ((bitField0_ & 0x00000010) != 0),
+                  getParentForChildren(),
+                  isClean());
+          members_ = null;
+        }
+        return membersBuilder_;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -6596,12 +6711,6 @@ public final class PacketOuterClass {
   public interface ContactListRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:netdesign2.ContactListRequest)
       com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
   }
   /**
    * <pre>
@@ -6642,17 +6751,6 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.ContactListRequest.class, top.focess.netdesign.proto.PacketOuterClass.ContactListRequest.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -6667,9 +6765,6 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -6679,10 +6774,6 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -6698,8 +6789,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.ContactListRequest other = (top.focess.netdesign.proto.PacketOuterClass.ContactListRequest) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -6711,8 +6800,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -6847,8 +6934,6 @@ public final class PacketOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        bitField0_ = 0;
-        packetId_ = 0;
         return this;
       }
 
@@ -6875,16 +6960,8 @@ public final class PacketOuterClass {
       @java.lang.Override
       public top.focess.netdesign.proto.PacketOuterClass.ContactListRequest buildPartial() {
         top.focess.netdesign.proto.PacketOuterClass.ContactListRequest result = new top.focess.netdesign.proto.PacketOuterClass.ContactListRequest(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
-      }
-
-      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ContactListRequest result) {
-        int from_bitField0_ = bitField0_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
       }
 
       @java.lang.Override
@@ -6931,9 +7008,6 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ContactListRequest other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.ContactListRequest.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -6960,11 +7034,6 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 8
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -6978,39 +7047,6 @@ public final class PacketOuterClass {
         } finally {
           onChanged();
         } // finally
-        return this;
-      }
-      private int bitField0_;
-
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
         return this;
       }
       @java.lang.Override
@@ -7082,31 +7118,25 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> 
         getContactsList();
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     top.focess.netdesign.proto.PacketOuterClass.Contact getContacts(int index);
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     int getContactsCount();
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
         getContactsOrBuilderList();
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactsOrBuilder(
         int index);
@@ -7151,29 +7181,18 @@ public final class PacketOuterClass {
               top.focess.netdesign.proto.PacketOuterClass.ContactListResponse.class, top.focess.netdesign.proto.PacketOuterClass.ContactListResponse.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int CONTACTS_FIELD_NUMBER = 2;
+    public static final int CONTACTS_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
     private java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> contacts_;
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
     public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> getContactsList() {
       return contacts_;
     }
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
     public java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
@@ -7181,21 +7200,21 @@ public final class PacketOuterClass {
       return contacts_;
     }
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
     public int getContactsCount() {
       return contacts_.size();
     }
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
     public top.focess.netdesign.proto.PacketOuterClass.Contact getContacts(int index) {
       return contacts_.get(index);
     }
     /**
-     * <code>repeated .netdesign2.Contact contacts = 2;</code>
+     * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
     public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactsOrBuilder(
@@ -7217,11 +7236,8 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       for (int i = 0; i < contacts_.size(); i++) {
-        output.writeMessage(2, contacts_.get(i));
+        output.writeMessage(1, contacts_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -7232,13 +7248,9 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       for (int i = 0; i < contacts_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, contacts_.get(i));
+          .computeMessageSize(1, contacts_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -7255,8 +7267,6 @@ public final class PacketOuterClass {
       }
       top.focess.netdesign.proto.PacketOuterClass.ContactListResponse other = (top.focess.netdesign.proto.PacketOuterClass.ContactListResponse) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (!getContactsList()
           .equals(other.getContactsList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -7270,8 +7280,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       if (getContactsCount() > 0) {
         hash = (37 * hash) + CONTACTS_FIELD_NUMBER;
         hash = (53 * hash) + getContactsList().hashCode();
@@ -7411,14 +7419,13 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         if (contactsBuilder_ == null) {
           contacts_ = java.util.Collections.emptyList();
         } else {
           contacts_ = null;
           contactsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -7453,9 +7460,9 @@ public final class PacketOuterClass {
 
       private void buildPartialRepeatedFields(top.focess.netdesign.proto.PacketOuterClass.ContactListResponse result) {
         if (contactsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             contacts_ = java.util.Collections.unmodifiableList(contacts_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.contacts_ = contacts_;
         } else {
@@ -7465,9 +7472,6 @@ public final class PacketOuterClass {
 
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ContactListResponse result) {
         int from_bitField0_ = bitField0_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
       }
 
       @java.lang.Override
@@ -7514,14 +7518,11 @@ public final class PacketOuterClass {
 
       public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ContactListResponse other) {
         if (other == top.focess.netdesign.proto.PacketOuterClass.ContactListResponse.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
         if (contactsBuilder_ == null) {
           if (!other.contacts_.isEmpty()) {
             if (contacts_.isEmpty()) {
               contacts_ = other.contacts_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureContactsIsMutable();
               contacts_.addAll(other.contacts_);
@@ -7534,7 +7535,7 @@ public final class PacketOuterClass {
               contactsBuilder_.dispose();
               contactsBuilder_ = null;
               contacts_ = other.contacts_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000001);
               contactsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getContactsFieldBuilder() : null;
@@ -7569,12 +7570,7 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 8
-              case 18: {
+              case 10: {
                 top.focess.netdesign.proto.PacketOuterClass.Contact m =
                     input.readMessage(
                         top.focess.netdesign.proto.PacketOuterClass.Contact.parser(),
@@ -7586,7 +7582,7 @@ public final class PacketOuterClass {
                   contactsBuilder_.addMessage(m);
                 }
                 break;
-              } // case 18
+              } // case 10
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -7604,44 +7600,12 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> contacts_ =
         java.util.Collections.emptyList();
       private void ensureContactsIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           contacts_ = new java.util.ArrayList<top.focess.netdesign.proto.PacketOuterClass.Contact>(contacts_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000001;
          }
       }
 
@@ -7649,7 +7613,7 @@ public final class PacketOuterClass {
           top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> contactsBuilder_;
 
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> getContactsList() {
         if (contactsBuilder_ == null) {
@@ -7659,7 +7623,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public int getContactsCount() {
         if (contactsBuilder_ == null) {
@@ -7669,7 +7633,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact getContacts(int index) {
         if (contactsBuilder_ == null) {
@@ -7679,7 +7643,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder setContacts(
           int index, top.focess.netdesign.proto.PacketOuterClass.Contact value) {
@@ -7696,7 +7660,7 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder setContacts(
           int index, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
@@ -7710,7 +7674,7 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(top.focess.netdesign.proto.PacketOuterClass.Contact value) {
         if (contactsBuilder_ == null) {
@@ -7726,7 +7690,7 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(
           int index, top.focess.netdesign.proto.PacketOuterClass.Contact value) {
@@ -7743,7 +7707,7 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(
           top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
@@ -7757,7 +7721,7 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(
           int index, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
@@ -7771,7 +7735,7 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addAllContacts(
           java.lang.Iterable<? extends top.focess.netdesign.proto.PacketOuterClass.Contact> values) {
@@ -7786,12 +7750,12 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder clearContacts() {
         if (contactsBuilder_ == null) {
           contacts_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           contactsBuilder_.clear();
@@ -7799,7 +7763,7 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder removeContacts(int index) {
         if (contactsBuilder_ == null) {
@@ -7812,14 +7776,14 @@ public final class PacketOuterClass {
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder getContactsBuilder(
           int index) {
         return getContactsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactsOrBuilder(
           int index) {
@@ -7829,7 +7793,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
            getContactsOrBuilderList() {
@@ -7840,14 +7804,14 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addContactsBuilder() {
         return getContactsFieldBuilder().addBuilder(
             top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addContactsBuilder(
           int index) {
@@ -7855,7 +7819,7 @@ public final class PacketOuterClass {
             index, top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
       }
       /**
-       * <code>repeated .netdesign2.Contact contacts = 2;</code>
+       * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact.Builder> 
            getContactsBuilderList() {
@@ -7868,7 +7832,7 @@ public final class PacketOuterClass {
           contactsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder>(
                   contacts_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           contacts_ = null;
@@ -7939,18 +7903,12 @@ public final class PacketOuterClass {
 
   }
 
-  public interface FriendInfoRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:netdesign2.FriendInfoRequest)
+  public interface ContactRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:netdesign2.ContactRequest)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>int32 id = 2;</code>
+     * <code>int32 id = 1;</code>
      * @return The id.
      */
     int getId();
@@ -7960,55 +7918,44 @@ public final class PacketOuterClass {
    *packet id = 10
    * </pre>
    *
-   * Protobuf type {@code netdesign2.FriendInfoRequest}
+   * Protobuf type {@code netdesign2.ContactRequest}
    */
-  public static final class FriendInfoRequest extends
+  public static final class ContactRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:netdesign2.FriendInfoRequest)
-      FriendInfoRequestOrBuilder {
+      // @@protoc_insertion_point(message_implements:netdesign2.ContactRequest)
+      ContactRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use FriendInfoRequest.newBuilder() to construct.
-    private FriendInfoRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use ContactRequest.newBuilder() to construct.
+    private ContactRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private FriendInfoRequest() {
+    private ContactRequest() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new FriendInfoRequest();
+      return new ContactRequest();
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoRequest_descriptor;
+      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoRequest_fieldAccessorTable
+      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest.class, top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest.Builder.class);
+              top.focess.netdesign.proto.PacketOuterClass.ContactRequest.class, top.focess.netdesign.proto.PacketOuterClass.ContactRequest.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int ID_FIELD_NUMBER = 2;
+    public static final int ID_FIELD_NUMBER = 1;
     private int id_ = 0;
     /**
-     * <code>int32 id = 2;</code>
+     * <code>int32 id = 1;</code>
      * @return The id.
      */
     @java.lang.Override
@@ -8030,11 +7977,8 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
       if (id_ != 0) {
-        output.writeInt32(2, id_);
+        output.writeInt32(1, id_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -8045,13 +7989,9 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
       if (id_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, id_);
+          .computeInt32Size(1, id_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -8063,13 +8003,11 @@ public final class PacketOuterClass {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest)) {
+      if (!(obj instanceof top.focess.netdesign.proto.PacketOuterClass.ContactRequest)) {
         return super.equals(obj);
       }
-      top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest other = (top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest) obj;
+      top.focess.netdesign.proto.PacketOuterClass.ContactRequest other = (top.focess.netdesign.proto.PacketOuterClass.ContactRequest) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
       if (getId()
           != other.getId()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -8083,8 +8021,6 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
       hash = (37 * hash) + ID_FIELD_NUMBER;
       hash = (53 * hash) + getId();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -8092,44 +8028,44 @@ public final class PacketOuterClass {
       return hash;
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(byte[] data)
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(java.io.InputStream input)
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -8137,26 +8073,26 @@ public final class PacketOuterClass {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseDelimitedFrom(java.io.InputStream input)
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseDelimitedFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -8169,7 +8105,7 @@ public final class PacketOuterClass {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest prototype) {
+    public static Builder newBuilder(top.focess.netdesign.proto.PacketOuterClass.ContactRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -8189,26 +8125,26 @@ public final class PacketOuterClass {
      *packet id = 10
      * </pre>
      *
-     * Protobuf type {@code netdesign2.FriendInfoRequest}
+     * Protobuf type {@code netdesign2.ContactRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:netdesign2.FriendInfoRequest)
-        top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequestOrBuilder {
+        // @@protoc_insertion_point(builder_implements:netdesign2.ContactRequest)
+        top.focess.netdesign.proto.PacketOuterClass.ContactRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoRequest_descriptor;
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoRequest_fieldAccessorTable
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest.class, top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest.Builder.class);
+                top.focess.netdesign.proto.PacketOuterClass.ContactRequest.class, top.focess.netdesign.proto.PacketOuterClass.ContactRequest.Builder.class);
       }
 
-      // Construct using top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest.newBuilder()
+      // Construct using top.focess.netdesign.proto.PacketOuterClass.ContactRequest.newBuilder()
       private Builder() {
 
       }
@@ -8222,7 +8158,6 @@ public final class PacketOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
         id_ = 0;
         return this;
       }
@@ -8230,17 +8165,17 @@ public final class PacketOuterClass {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoRequest_descriptor;
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactRequest_descriptor;
       }
 
       @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest getDefaultInstanceForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest.getDefaultInstance();
+      public top.focess.netdesign.proto.PacketOuterClass.ContactRequest getDefaultInstanceForType() {
+        return top.focess.netdesign.proto.PacketOuterClass.ContactRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest build() {
-        top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest result = buildPartial();
+      public top.focess.netdesign.proto.PacketOuterClass.ContactRequest build() {
+        top.focess.netdesign.proto.PacketOuterClass.ContactRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -8248,19 +8183,16 @@ public final class PacketOuterClass {
       }
 
       @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest buildPartial() {
-        top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest result = new top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest(this);
+      public top.focess.netdesign.proto.PacketOuterClass.ContactRequest buildPartial() {
+        top.focess.netdesign.proto.PacketOuterClass.ContactRequest result = new top.focess.netdesign.proto.PacketOuterClass.ContactRequest(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest result) {
+      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ContactRequest result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.id_ = id_;
         }
       }
@@ -8299,19 +8231,16 @@ public final class PacketOuterClass {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest) {
-          return mergeFrom((top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest)other);
+        if (other instanceof top.focess.netdesign.proto.PacketOuterClass.ContactRequest) {
+          return mergeFrom((top.focess.netdesign.proto.PacketOuterClass.ContactRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest other) {
-        if (other == top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
+      public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ContactRequest other) {
+        if (other == top.focess.netdesign.proto.PacketOuterClass.ContactRequest.getDefaultInstance()) return this;
         if (other.getId() != 0) {
           setId(other.getId());
         }
@@ -8342,15 +8271,10 @@ public final class PacketOuterClass {
                 done = true;
                 break;
               case 8: {
-                packetId_ = input.readInt32();
+                id_ = input.readInt32();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
-              case 16: {
-                id_ = input.readInt32();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 16
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -8368,41 +8292,9 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
       private int id_ ;
       /**
-       * <code>int32 id = 2;</code>
+       * <code>int32 id = 1;</code>
        * @return The id.
        */
       @java.lang.Override
@@ -8410,23 +8302,23 @@ public final class PacketOuterClass {
         return id_;
       }
       /**
-       * <code>int32 id = 2;</code>
+       * <code>int32 id = 1;</code>
        * @param value The id to set.
        * @return This builder for chaining.
        */
       public Builder setId(int value) {
 
         id_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 id = 2;</code>
+       * <code>int32 id = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000001);
         id_ = 0;
         onChanged();
         return this;
@@ -8444,23 +8336,23 @@ public final class PacketOuterClass {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:netdesign2.FriendInfoRequest)
+      // @@protoc_insertion_point(builder_scope:netdesign2.ContactRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:netdesign2.FriendInfoRequest)
-    private static final top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:netdesign2.ContactRequest)
+    private static final top.focess.netdesign.proto.PacketOuterClass.ContactRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest();
+      DEFAULT_INSTANCE = new top.focess.netdesign.proto.PacketOuterClass.ContactRequest();
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest getDefaultInstance() {
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<FriendInfoRequest>
-        PARSER = new com.google.protobuf.AbstractParser<FriendInfoRequest>() {
+    private static final com.google.protobuf.Parser<ContactRequest>
+        PARSER = new com.google.protobuf.AbstractParser<ContactRequest>() {
       @java.lang.Override
-      public FriendInfoRequest parsePartialFrom(
+      public ContactRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -8479,149 +8371,105 @@ public final class PacketOuterClass {
       }
     };
 
-    public static com.google.protobuf.Parser<FriendInfoRequest> parser() {
+    public static com.google.protobuf.Parser<ContactRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<FriendInfoRequest> getParserForType() {
+    public com.google.protobuf.Parser<ContactRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public top.focess.netdesign.proto.PacketOuterClass.FriendInfoRequest getDefaultInstanceForType() {
+    public top.focess.netdesign.proto.PacketOuterClass.ContactRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface FriendInfoResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:netdesign2.FriendInfoResponse)
+  public interface ContactResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:netdesign2.ContactResponse)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
+     * <code>.netdesign2.Contact contact = 1;</code>
+     * @return Whether the contact field is set.
      */
-    int getPacketId();
-
+    boolean hasContact();
     /**
-     * <code>int32 id = 2;</code>
-     * @return The id.
+     * <code>.netdesign2.Contact contact = 1;</code>
+     * @return The contact.
      */
-    int getId();
-
+    top.focess.netdesign.proto.PacketOuterClass.Contact getContact();
     /**
-     * <code>string name = 3;</code>
-     * @return The name.
+     * <code>.netdesign2.Contact contact = 1;</code>
      */
-    java.lang.String getName();
-    /**
-     * <code>string name = 3;</code>
-     * @return The bytes for name.
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
+    top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactOrBuilder();
   }
   /**
    * <pre>
    *packet id = 11
    * </pre>
    *
-   * Protobuf type {@code netdesign2.FriendInfoResponse}
+   * Protobuf type {@code netdesign2.ContactResponse}
    */
-  public static final class FriendInfoResponse extends
+  public static final class ContactResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:netdesign2.FriendInfoResponse)
-      FriendInfoResponseOrBuilder {
+      // @@protoc_insertion_point(message_implements:netdesign2.ContactResponse)
+      ContactResponseOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use FriendInfoResponse.newBuilder() to construct.
-    private FriendInfoResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use ContactResponse.newBuilder() to construct.
+    private ContactResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private FriendInfoResponse() {
-      name_ = "";
+    private ContactResponse() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new FriendInfoResponse();
+      return new ContactResponse();
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoResponse_descriptor;
+      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoResponse_fieldAccessorTable
+      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse.class, top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse.Builder.class);
+              top.focess.netdesign.proto.PacketOuterClass.ContactResponse.class, top.focess.netdesign.proto.PacketOuterClass.ContactResponse.Builder.class);
     }
 
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
+    private int bitField0_;
+    public static final int CONTACT_FIELD_NUMBER = 1;
+    private top.focess.netdesign.proto.PacketOuterClass.Contact contact_;
     /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
+     * <code>.netdesign2.Contact contact = 1;</code>
+     * @return Whether the contact field is set.
      */
     @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int ID_FIELD_NUMBER = 2;
-    private int id_ = 0;
-    /**
-     * <code>int32 id = 2;</code>
-     * @return The id.
-     */
-    @java.lang.Override
-    public int getId() {
-      return id_;
-    }
-
-    public static final int NAME_FIELD_NUMBER = 3;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object name_ = "";
-    /**
-     * <code>string name = 3;</code>
-     * @return The name.
-     */
-    @java.lang.Override
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        name_ = s;
-        return s;
-      }
+    public boolean hasContact() {
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
-     * <code>string name = 3;</code>
-     * @return The bytes for name.
+     * <code>.netdesign2.Contact contact = 1;</code>
+     * @return The contact.
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public top.focess.netdesign.proto.PacketOuterClass.Contact getContact() {
+      return contact_ == null ? top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance() : contact_;
+    }
+    /**
+     * <code>.netdesign2.Contact contact = 1;</code>
+     */
+    @java.lang.Override
+    public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactOrBuilder() {
+      return contact_ == null ? top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance() : contact_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -8638,14 +8486,8 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
-      if (id_ != 0) {
-        output.writeInt32(2, id_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, name_);
+      if (((bitField0_ & 0x00000001) != 0)) {
+        output.writeMessage(1, getContact());
       }
       getUnknownFields().writeTo(output);
     }
@@ -8656,16 +8498,9 @@ public final class PacketOuterClass {
       if (size != -1) return size;
 
       size = 0;
-      if (packetId_ != 0) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
-      if (id_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, id_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, name_);
+          .computeMessageSize(1, getContact());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -8677,17 +8512,16 @@ public final class PacketOuterClass {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse)) {
+      if (!(obj instanceof top.focess.netdesign.proto.PacketOuterClass.ContactResponse)) {
         return super.equals(obj);
       }
-      top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse other = (top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse) obj;
+      top.focess.netdesign.proto.PacketOuterClass.ContactResponse other = (top.focess.netdesign.proto.PacketOuterClass.ContactResponse) obj;
 
-      if (getPacketId()
-          != other.getPacketId()) return false;
-      if (getId()
-          != other.getId()) return false;
-      if (!getName()
-          .equals(other.getName())) return false;
+      if (hasContact() != other.hasContact()) return false;
+      if (hasContact()) {
+        if (!getContact()
+            .equals(other.getContact())) return false;
+      }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -8699,55 +8533,53 @@ public final class PacketOuterClass {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
-      hash = (37 * hash) + ID_FIELD_NUMBER;
-      hash = (53 * hash) + getId();
-      hash = (37 * hash) + NAME_FIELD_NUMBER;
-      hash = (53 * hash) + getName().hashCode();
+      if (hasContact()) {
+        hash = (37 * hash) + CONTACT_FIELD_NUMBER;
+        hash = (53 * hash) + getContact().hashCode();
+      }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(byte[] data)
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(java.io.InputStream input)
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -8755,26 +8587,26 @@ public final class PacketOuterClass {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseDelimitedFrom(java.io.InputStream input)
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseDelimitedFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse parseFrom(
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -8787,7 +8619,7 @@ public final class PacketOuterClass {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse prototype) {
+    public static Builder newBuilder(top.focess.netdesign.proto.PacketOuterClass.ContactResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -8807,59 +8639,67 @@ public final class PacketOuterClass {
      *packet id = 11
      * </pre>
      *
-     * Protobuf type {@code netdesign2.FriendInfoResponse}
+     * Protobuf type {@code netdesign2.ContactResponse}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:netdesign2.FriendInfoResponse)
-        top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponseOrBuilder {
+        // @@protoc_insertion_point(builder_implements:netdesign2.ContactResponse)
+        top.focess.netdesign.proto.PacketOuterClass.ContactResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoResponse_descriptor;
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactResponse_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoResponse_fieldAccessorTable
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse.class, top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse.Builder.class);
+                top.focess.netdesign.proto.PacketOuterClass.ContactResponse.class, top.focess.netdesign.proto.PacketOuterClass.ContactResponse.Builder.class);
       }
 
-      // Construct using top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse.newBuilder()
+      // Construct using top.focess.netdesign.proto.PacketOuterClass.ContactResponse.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getContactFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        packetId_ = 0;
-        id_ = 0;
-        name_ = "";
+        contact_ = null;
+        if (contactBuilder_ != null) {
+          contactBuilder_.dispose();
+          contactBuilder_ = null;
+        }
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FriendInfoResponse_descriptor;
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_ContactResponse_descriptor;
       }
 
       @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse getDefaultInstanceForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse.getDefaultInstance();
+      public top.focess.netdesign.proto.PacketOuterClass.ContactResponse getDefaultInstanceForType() {
+        return top.focess.netdesign.proto.PacketOuterClass.ContactResponse.getDefaultInstance();
       }
 
       @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse build() {
-        top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse result = buildPartial();
+      public top.focess.netdesign.proto.PacketOuterClass.ContactResponse build() {
+        top.focess.netdesign.proto.PacketOuterClass.ContactResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -8867,24 +8707,23 @@ public final class PacketOuterClass {
       }
 
       @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse buildPartial() {
-        top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse result = new top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse(this);
+      public top.focess.netdesign.proto.PacketOuterClass.ContactResponse buildPartial() {
+        top.focess.netdesign.proto.PacketOuterClass.ContactResponse result = new top.focess.netdesign.proto.PacketOuterClass.ContactResponse(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse result) {
+      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ContactResponse result) {
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
+          result.contact_ = contactBuilder_ == null
+              ? contact_
+              : contactBuilder_.build();
+          to_bitField0_ |= 0x00000001;
         }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.id_ = id_;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.name_ = name_;
-        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -8921,26 +8760,18 @@ public final class PacketOuterClass {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse) {
-          return mergeFrom((top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse)other);
+        if (other instanceof top.focess.netdesign.proto.PacketOuterClass.ContactResponse) {
+          return mergeFrom((top.focess.netdesign.proto.PacketOuterClass.ContactResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse other) {
-        if (other == top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
-        if (other.getId() != 0) {
-          setId(other.getId());
-        }
-        if (!other.getName().isEmpty()) {
-          name_ = other.name_;
-          bitField0_ |= 0x00000004;
-          onChanged();
+      public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.ContactResponse other) {
+        if (other == top.focess.netdesign.proto.PacketOuterClass.ContactResponse.getDefaultInstance()) return this;
+        if (other.hasContact()) {
+          mergeContact(other.getContact());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -8968,21 +8799,13 @@ public final class PacketOuterClass {
               case 0:
                 done = true;
                 break;
-              case 8: {
-                packetId_ = input.readInt32();
+              case 10: {
+                input.readMessage(
+                    getContactFieldBuilder().getBuilder(),
+                    extensionRegistry);
                 bitField0_ |= 0x00000001;
                 break;
-              } // case 8
-              case 16: {
-                id_ = input.readInt32();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 16
-              case 26: {
-                name_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 26
+              } // case 10
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -9000,1778 +8823,125 @@ public final class PacketOuterClass {
       }
       private int bitField0_;
 
-      private int packetId_ ;
+      private top.focess.netdesign.proto.PacketOuterClass.Contact contact_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> contactBuilder_;
       /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
+       * <code>.netdesign2.Contact contact = 1;</code>
+       * @return Whether the contact field is set.
        */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
+      public boolean hasContact() {
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
+       * <code>.netdesign2.Contact contact = 1;</code>
+       * @return The contact.
        */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
+      public top.focess.netdesign.proto.PacketOuterClass.Contact getContact() {
+        if (contactBuilder_ == null) {
+          return contact_ == null ? top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance() : contact_;
+        } else {
+          return contactBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.netdesign2.Contact contact = 1;</code>
+       */
+      public Builder setContact(top.focess.netdesign.proto.PacketOuterClass.Contact value) {
+        if (contactBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          contact_ = value;
+        } else {
+          contactBuilder_.setMessage(value);
+        }
         bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
+       * <code>.netdesign2.Contact contact = 1;</code>
        */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int id_ ;
-      /**
-       * <code>int32 id = 2;</code>
-       * @return The id.
-       */
-      @java.lang.Override
-      public int getId() {
-        return id_;
-      }
-      /**
-       * <code>int32 id = 2;</code>
-       * @param value The id to set.
-       * @return This builder for chaining.
-       */
-      public Builder setId(int value) {
-
-        id_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 id = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        id_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object name_ = "";
-      /**
-       * <code>string name = 3;</code>
-       * @return The name.
-       */
-      public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          name_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @return The bytes for name.
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @param value The name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setName(
-          java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        name_ = value;
-        bitField0_ |= 0x00000004;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearName() {
-        name_ = getDefaultInstance().getName();
-        bitField0_ = (bitField0_ & ~0x00000004);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @param value The bytes for name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        checkByteStringIsUtf8(value);
-        name_ = value;
-        bitField0_ |= 0x00000004;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:netdesign2.FriendInfoResponse)
-    }
-
-    // @@protoc_insertion_point(class_scope:netdesign2.FriendInfoResponse)
-    private static final top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse();
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<FriendInfoResponse>
-        PARSER = new com.google.protobuf.AbstractParser<FriendInfoResponse>() {
-      @java.lang.Override
-      public FriendInfoResponse parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
-      }
-    };
-
-    public static com.google.protobuf.Parser<FriendInfoResponse> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<FriendInfoResponse> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public top.focess.netdesign.proto.PacketOuterClass.FriendInfoResponse getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface GroupInfoRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:netdesign2.GroupInfoRequest)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>int32 id = 2;</code>
-     * @return The id.
-     */
-    int getId();
-  }
-  /**
-   * <pre>
-   *packet id = 12
-   * </pre>
-   *
-   * Protobuf type {@code netdesign2.GroupInfoRequest}
-   */
-  public static final class GroupInfoRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:netdesign2.GroupInfoRequest)
-      GroupInfoRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use GroupInfoRequest.newBuilder() to construct.
-    private GroupInfoRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private GroupInfoRequest() {
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new GroupInfoRequest();
-    }
-
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest.class, top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest.Builder.class);
-    }
-
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int ID_FIELD_NUMBER = 2;
-    private int id_ = 0;
-    /**
-     * <code>int32 id = 2;</code>
-     * @return The id.
-     */
-    @java.lang.Override
-    public int getId() {
-      return id_;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
-      if (id_ != 0) {
-        output.writeInt32(2, id_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
-      if (id_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, id_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest)) {
-        return super.equals(obj);
-      }
-      top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest other = (top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest) obj;
-
-      if (getPacketId()
-          != other.getPacketId()) return false;
-      if (getId()
-          != other.getId()) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
-      hash = (37 * hash) + ID_FIELD_NUMBER;
-      hash = (53 * hash) + getId();
-      hash = (29 * hash) + getUnknownFields().hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * <pre>
-     *packet id = 12
-     * </pre>
-     *
-     * Protobuf type {@code netdesign2.GroupInfoRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:netdesign2.GroupInfoRequest)
-        top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest.class, top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest.Builder.class);
-      }
-
-      // Construct using top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest.newBuilder()
-      private Builder() {
-
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        bitField0_ = 0;
-        packetId_ = 0;
-        id_ = 0;
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest getDefaultInstanceForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest build() {
-        top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest buildPartial() {
-        top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest result = new top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest result) {
-        int from_bitField0_ = bitField0_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.id_ = id_;
-        }
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest) {
-          return mergeFrom((top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest other) {
-        if (other == top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
-        if (other.getId() != 0) {
-          setId(other.getId());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 8: {
-                packetId_ = input.readInt32();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 8
-              case 16: {
-                id_ = input.readInt32();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 16
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.unwrapIOException();
-        } finally {
-          onChanged();
-        } // finally
-        return this;
-      }
-      private int bitField0_;
-
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int id_ ;
-      /**
-       * <code>int32 id = 2;</code>
-       * @return The id.
-       */
-      @java.lang.Override
-      public int getId() {
-        return id_;
-      }
-      /**
-       * <code>int32 id = 2;</code>
-       * @param value The id to set.
-       * @return This builder for chaining.
-       */
-      public Builder setId(int value) {
-
-        id_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 id = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        id_ = 0;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:netdesign2.GroupInfoRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:netdesign2.GroupInfoRequest)
-    private static final top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest();
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<GroupInfoRequest>
-        PARSER = new com.google.protobuf.AbstractParser<GroupInfoRequest>() {
-      @java.lang.Override
-      public GroupInfoRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
-      }
-    };
-
-    public static com.google.protobuf.Parser<GroupInfoRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<GroupInfoRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public top.focess.netdesign.proto.PacketOuterClass.GroupInfoRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface GroupInfoResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:netdesign2.GroupInfoResponse)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    int getPacketId();
-
-    /**
-     * <code>int32 id = 2;</code>
-     * @return The id.
-     */
-    int getId();
-
-    /**
-     * <code>string name = 3;</code>
-     * @return The name.
-     */
-    java.lang.String getName();
-    /**
-     * <code>string name = 3;</code>
-     * @return The bytes for name.
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
-
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> 
-        getMembersList();
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    top.focess.netdesign.proto.PacketOuterClass.Contact getMembers(int index);
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    int getMembersCount();
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
-        getMembersOrBuilderList();
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getMembersOrBuilder(
-        int index);
-  }
-  /**
-   * <pre>
-   *packet id = 13
-   * </pre>
-   *
-   * Protobuf type {@code netdesign2.GroupInfoResponse}
-   */
-  public static final class GroupInfoResponse extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:netdesign2.GroupInfoResponse)
-      GroupInfoResponseOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use GroupInfoResponse.newBuilder() to construct.
-    private GroupInfoResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private GroupInfoResponse() {
-      name_ = "";
-      members_ = java.util.Collections.emptyList();
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new GroupInfoResponse();
-    }
-
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoResponse_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoResponse_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse.class, top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse.Builder.class);
-    }
-
-    public static final int PACKETID_FIELD_NUMBER = 1;
-    private int packetId_ = 0;
-    /**
-     * <code>int32 packetId = 1;</code>
-     * @return The packetId.
-     */
-    @java.lang.Override
-    public int getPacketId() {
-      return packetId_;
-    }
-
-    public static final int ID_FIELD_NUMBER = 2;
-    private int id_ = 0;
-    /**
-     * <code>int32 id = 2;</code>
-     * @return The id.
-     */
-    @java.lang.Override
-    public int getId() {
-      return id_;
-    }
-
-    public static final int NAME_FIELD_NUMBER = 3;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object name_ = "";
-    /**
-     * <code>string name = 3;</code>
-     * @return The name.
-     */
-    @java.lang.Override
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        name_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string name = 3;</code>
-     * @return The bytes for name.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int MEMBERS_FIELD_NUMBER = 4;
-    @SuppressWarnings("serial")
-    private java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> members_;
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    @java.lang.Override
-    public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> getMembersList() {
-      return members_;
-    }
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
-        getMembersOrBuilderList() {
-      return members_;
-    }
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    @java.lang.Override
-    public int getMembersCount() {
-      return members_.size();
-    }
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    @java.lang.Override
-    public top.focess.netdesign.proto.PacketOuterClass.Contact getMembers(int index) {
-      return members_.get(index);
-    }
-    /**
-     * <code>repeated .netdesign2.Contact members = 4;</code>
-     */
-    @java.lang.Override
-    public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getMembersOrBuilder(
-        int index) {
-      return members_.get(index);
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (packetId_ != 0) {
-        output.writeInt32(1, packetId_);
-      }
-      if (id_ != 0) {
-        output.writeInt32(2, id_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, name_);
-      }
-      for (int i = 0; i < members_.size(); i++) {
-        output.writeMessage(4, members_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (packetId_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, packetId_);
-      }
-      if (id_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, id_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, name_);
-      }
-      for (int i = 0; i < members_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, members_.get(i));
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse)) {
-        return super.equals(obj);
-      }
-      top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse other = (top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse) obj;
-
-      if (getPacketId()
-          != other.getPacketId()) return false;
-      if (getId()
-          != other.getId()) return false;
-      if (!getName()
-          .equals(other.getName())) return false;
-      if (!getMembersList()
-          .equals(other.getMembersList())) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PACKETID_FIELD_NUMBER;
-      hash = (53 * hash) + getPacketId();
-      hash = (37 * hash) + ID_FIELD_NUMBER;
-      hash = (53 * hash) + getId();
-      hash = (37 * hash) + NAME_FIELD_NUMBER;
-      hash = (53 * hash) + getName().hashCode();
-      if (getMembersCount() > 0) {
-        hash = (37 * hash) + MEMBERS_FIELD_NUMBER;
-        hash = (53 * hash) + getMembersList().hashCode();
-      }
-      hash = (29 * hash) + getUnknownFields().hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * <pre>
-     *packet id = 13
-     * </pre>
-     *
-     * Protobuf type {@code netdesign2.GroupInfoResponse}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:netdesign2.GroupInfoResponse)
-        top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponseOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoResponse_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse.class, top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse.Builder.class);
-      }
-
-      // Construct using top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse.newBuilder()
-      private Builder() {
-
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        bitField0_ = 0;
-        packetId_ = 0;
-        id_ = 0;
-        name_ = "";
-        if (membersBuilder_ == null) {
-          members_ = java.util.Collections.emptyList();
-        } else {
-          members_ = null;
-          membersBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000008);
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_GroupInfoResponse_descriptor;
-      }
-
-      @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse getDefaultInstanceForType() {
-        return top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse build() {
-        top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse buildPartial() {
-        top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse result = new top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse(this);
-        buildPartialRepeatedFields(result);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartialRepeatedFields(top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse result) {
-        if (membersBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) != 0)) {
-            members_ = java.util.Collections.unmodifiableList(members_);
-            bitField0_ = (bitField0_ & ~0x00000008);
-          }
-          result.members_ = members_;
-        } else {
-          result.members_ = membersBuilder_.build();
-        }
-      }
-
-      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse result) {
-        int from_bitField0_ = bitField0_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.packetId_ = packetId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.id_ = id_;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.name_ = name_;
-        }
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse) {
-          return mergeFrom((top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse other) {
-        if (other == top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse.getDefaultInstance()) return this;
-        if (other.getPacketId() != 0) {
-          setPacketId(other.getPacketId());
-        }
-        if (other.getId() != 0) {
-          setId(other.getId());
-        }
-        if (!other.getName().isEmpty()) {
-          name_ = other.name_;
-          bitField0_ |= 0x00000004;
-          onChanged();
-        }
-        if (membersBuilder_ == null) {
-          if (!other.members_.isEmpty()) {
-            if (members_.isEmpty()) {
-              members_ = other.members_;
-              bitField0_ = (bitField0_ & ~0x00000008);
-            } else {
-              ensureMembersIsMutable();
-              members_.addAll(other.members_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.members_.isEmpty()) {
-            if (membersBuilder_.isEmpty()) {
-              membersBuilder_.dispose();
-              membersBuilder_ = null;
-              members_ = other.members_;
-              bitField0_ = (bitField0_ & ~0x00000008);
-              membersBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getMembersFieldBuilder() : null;
-            } else {
-              membersBuilder_.addAllMessages(other.members_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 8: {
-                packetId_ = input.readInt32();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 8
-              case 16: {
-                id_ = input.readInt32();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 16
-              case 26: {
-                name_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 26
-              case 34: {
-                top.focess.netdesign.proto.PacketOuterClass.Contact m =
-                    input.readMessage(
-                        top.focess.netdesign.proto.PacketOuterClass.Contact.parser(),
-                        extensionRegistry);
-                if (membersBuilder_ == null) {
-                  ensureMembersIsMutable();
-                  members_.add(m);
-                } else {
-                  membersBuilder_.addMessage(m);
-                }
-                break;
-              } // case 34
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.unwrapIOException();
-        } finally {
-          onChanged();
-        } // finally
-        return this;
-      }
-      private int bitField0_;
-
-      private int packetId_ ;
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return The packetId.
-       */
-      @java.lang.Override
-      public int getPacketId() {
-        return packetId_;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @param value The packetId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPacketId(int value) {
-
-        packetId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 packetId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPacketId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        packetId_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int id_ ;
-      /**
-       * <code>int32 id = 2;</code>
-       * @return The id.
-       */
-      @java.lang.Override
-      public int getId() {
-        return id_;
-      }
-      /**
-       * <code>int32 id = 2;</code>
-       * @param value The id to set.
-       * @return This builder for chaining.
-       */
-      public Builder setId(int value) {
-
-        id_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>int32 id = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        id_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object name_ = "";
-      /**
-       * <code>string name = 3;</code>
-       * @return The name.
-       */
-      public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          name_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @return The bytes for name.
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @param value The name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setName(
-          java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        name_ = value;
-        bitField0_ |= 0x00000004;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearName() {
-        name_ = getDefaultInstance().getName();
-        bitField0_ = (bitField0_ & ~0x00000004);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string name = 3;</code>
-       * @param value The bytes for name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        checkByteStringIsUtf8(value);
-        name_ = value;
-        bitField0_ |= 0x00000004;
-        onChanged();
-        return this;
-      }
-
-      private java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> members_ =
-        java.util.Collections.emptyList();
-      private void ensureMembersIsMutable() {
-        if (!((bitField0_ & 0x00000008) != 0)) {
-          members_ = new java.util.ArrayList<top.focess.netdesign.proto.PacketOuterClass.Contact>(members_);
-          bitField0_ |= 0x00000008;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> membersBuilder_;
-
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> getMembersList() {
-        if (membersBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(members_);
-        } else {
-          return membersBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public int getMembersCount() {
-        if (membersBuilder_ == null) {
-          return members_.size();
-        } else {
-          return membersBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public top.focess.netdesign.proto.PacketOuterClass.Contact getMembers(int index) {
-        if (membersBuilder_ == null) {
-          return members_.get(index);
-        } else {
-          return membersBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public Builder setMembers(
-          int index, top.focess.netdesign.proto.PacketOuterClass.Contact value) {
-        if (membersBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureMembersIsMutable();
-          members_.set(index, value);
-          onChanged();
-        } else {
-          membersBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public Builder setMembers(
-          int index, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
-        if (membersBuilder_ == null) {
-          ensureMembersIsMutable();
-          members_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          membersBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public Builder addMembers(top.focess.netdesign.proto.PacketOuterClass.Contact value) {
-        if (membersBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureMembersIsMutable();
-          members_.add(value);
-          onChanged();
-        } else {
-          membersBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public Builder addMembers(
-          int index, top.focess.netdesign.proto.PacketOuterClass.Contact value) {
-        if (membersBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureMembersIsMutable();
-          members_.add(index, value);
-          onChanged();
-        } else {
-          membersBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public Builder addMembers(
+      public Builder setContact(
           top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
-        if (membersBuilder_ == null) {
-          ensureMembersIsMutable();
-          members_.add(builderForValue.build());
-          onChanged();
+        if (contactBuilder_ == null) {
+          contact_ = builderForValue.build();
         } else {
-          membersBuilder_.addMessage(builderForValue.build());
+          contactBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.netdesign2.Contact contact = 1;</code>
+       */
+      public Builder mergeContact(top.focess.netdesign.proto.PacketOuterClass.Contact value) {
+        if (contactBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0) &&
+            contact_ != null &&
+            contact_ != top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance()) {
+            getContactBuilder().mergeFrom(value);
+          } else {
+            contact_ = value;
+          }
+        } else {
+          contactBuilder_.mergeFrom(value);
+        }
+        if (contact_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
         }
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
+       * <code>.netdesign2.Contact contact = 1;</code>
        */
-      public Builder addMembers(
-          int index, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder builderForValue) {
-        if (membersBuilder_ == null) {
-          ensureMembersIsMutable();
-          members_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          membersBuilder_.addMessage(index, builderForValue.build());
+      public Builder clearContact() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        contact_ = null;
+        if (contactBuilder_ != null) {
+          contactBuilder_.dispose();
+          contactBuilder_ = null;
         }
+        onChanged();
         return this;
       }
       /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
+       * <code>.netdesign2.Contact contact = 1;</code>
        */
-      public Builder addAllMembers(
-          java.lang.Iterable<? extends top.focess.netdesign.proto.PacketOuterClass.Contact> values) {
-        if (membersBuilder_ == null) {
-          ensureMembersIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, members_);
-          onChanged();
+      public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder getContactBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getContactFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.netdesign2.Contact contact = 1;</code>
+       */
+      public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactOrBuilder() {
+        if (contactBuilder_ != null) {
+          return contactBuilder_.getMessageOrBuilder();
         } else {
-          membersBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public Builder clearMembers() {
-        if (membersBuilder_ == null) {
-          members_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
-          onChanged();
-        } else {
-          membersBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public Builder removeMembers(int index) {
-        if (membersBuilder_ == null) {
-          ensureMembersIsMutable();
-          members_.remove(index);
-          onChanged();
-        } else {
-          membersBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder getMembersBuilder(
-          int index) {
-        return getMembersFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getMembersOrBuilder(
-          int index) {
-        if (membersBuilder_ == null) {
-          return members_.get(index);  } else {
-          return membersBuilder_.getMessageOrBuilder(index);
+          return contact_ == null ?
+              top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance() : contact_;
         }
       }
       /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
+       * <code>.netdesign2.Contact contact = 1;</code>
        */
-      public java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
-           getMembersOrBuilderList() {
-        if (membersBuilder_ != null) {
-          return membersBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(members_);
-        }
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addMembersBuilder() {
-        return getMembersFieldBuilder().addBuilder(
-            top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addMembersBuilder(
-          int index) {
-        return getMembersFieldBuilder().addBuilder(
-            index, top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .netdesign2.Contact members = 4;</code>
-       */
-      public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact.Builder> 
-           getMembersBuilderList() {
-        return getMembersFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
+      private com.google.protobuf.SingleFieldBuilderV3<
           top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
-          getMembersFieldBuilder() {
-        if (membersBuilder_ == null) {
-          membersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+          getContactFieldBuilder() {
+        if (contactBuilder_ == null) {
+          contactBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder>(
-                  members_,
-                  ((bitField0_ & 0x00000008) != 0),
+                  getContact(),
                   getParentForChildren(),
                   isClean());
-          members_ = null;
+          contact_ = null;
         }
-        return membersBuilder_;
+        return contactBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -10786,23 +8956,23 @@ public final class PacketOuterClass {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:netdesign2.GroupInfoResponse)
+      // @@protoc_insertion_point(builder_scope:netdesign2.ContactResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:netdesign2.GroupInfoResponse)
-    private static final top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:netdesign2.ContactResponse)
+    private static final top.focess.netdesign.proto.PacketOuterClass.ContactResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse();
+      DEFAULT_INSTANCE = new top.focess.netdesign.proto.PacketOuterClass.ContactResponse();
     }
 
-    public static top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse getDefaultInstance() {
+    public static top.focess.netdesign.proto.PacketOuterClass.ContactResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<GroupInfoResponse>
-        PARSER = new com.google.protobuf.AbstractParser<GroupInfoResponse>() {
+    private static final com.google.protobuf.Parser<ContactResponse>
+        PARSER = new com.google.protobuf.AbstractParser<ContactResponse>() {
       @java.lang.Override
-      public GroupInfoResponse parsePartialFrom(
+      public ContactResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -10821,17 +8991,17 @@ public final class PacketOuterClass {
       }
     };
 
-    public static com.google.protobuf.Parser<GroupInfoResponse> parser() {
+    public static com.google.protobuf.Parser<ContactResponse> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<GroupInfoResponse> getParserForType() {
+    public com.google.protobuf.Parser<ContactResponse> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public top.focess.netdesign.proto.PacketOuterClass.GroupInfoResponse getDefaultInstanceForType() {
+    public top.focess.netdesign.proto.PacketOuterClass.ContactResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -10898,25 +9068,15 @@ public final class PacketOuterClass {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_netdesign2_ContactListResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_netdesign2_FriendInfoRequest_descriptor;
+    internal_static_netdesign2_ContactRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_netdesign2_FriendInfoRequest_fieldAccessorTable;
+      internal_static_netdesign2_ContactRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_netdesign2_FriendInfoResponse_descriptor;
+    internal_static_netdesign2_ContactResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_netdesign2_FriendInfoResponse_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_netdesign2_GroupInfoRequest_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_netdesign2_GroupInfoRequest_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_netdesign2_GroupInfoResponse_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_netdesign2_GroupInfoResponse_fieldAccessorTable;
+      internal_static_netdesign2_ContactResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -10927,138 +9087,121 @@ public final class PacketOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n&src/main/resources/protos/packet.proto" +
-      "\022\nnetdesign2\"\032\n\006Packet\022\020\n\010packetId\030\001 \001(\005" +
-      "\"Y\n\023ServerStatusRequest\022\020\n\010packetId\030\001 \001(" +
-      "\005\022\034\n\017clientPublicKey\030\002 \001(\tH\000\210\001\001B\022\n\020_clie" +
-      "ntPublicKey\"\177\n\024ServerStatusResponse\022\020\n\010p" +
-      "acketId\030\001 \001(\005\022\016\n\006online\030\002 \001(\010\022\023\n\013registr" +
-      "able\030\003 \001(\010\022\034\n\017serverPublicKey\030\004 \001(\tH\000\210\001\001" +
-      "B\022\n\020_serverPublicKey\"-\n\031ServerStatusUpda" +
-      "teRequest\022\020\n\010packetId\030\001 \001(\005\"S\n\032ServerSta" +
-      "tusUpdateResponse\022\020\n\010packetId\030\001 \001(\005\022\016\n\006o" +
-      "nline\030\002 \001(\010\022\023\n\013registrable\030\003 \001(\010\"5\n\017Logi" +
-      "nPreRequest\022\020\n\010packetId\030\001 \001(\005\022\020\n\010usernam" +
-      "e\030\002 \001(\t\"7\n\020LoginPreResponse\022\020\n\010packetId\030" +
-      "\001 \001(\005\022\021\n\tchallenge\030\002 \001(\t\"H\n\014LoginRequest" +
-      "\022\020\n\010packetId\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\022\024\n\014" +
-      "hashPassword\030\003 \001(\t\"2\n\rLoginResponse\022\020\n\010p" +
-      "acketId\030\001 \001(\005\022\017\n\007logined\030\002 \001(\010\"\224\001\n\007Conta" +
-      "ct\022\n\n\002id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\016\n\006online\030\003" +
-      " \001(\010\022-\n\004type\030\004 \001(\0162\037.netdesign2.Contact." +
-      "ContactType\"0\n\013ContactType\022\n\n\006FRIEND\020\000\022\t" +
-      "\n\005GROUP\020\001\022\n\n\006MEMBER\020\002\"&\n\022ContactListRequ" +
-      "est\022\020\n\010packetId\030\001 \001(\005\"N\n\023ContactListResp" +
-      "onse\022\020\n\010packetId\030\001 \001(\005\022%\n\010contacts\030\002 \003(\013" +
-      "2\023.netdesign2.Contact\"1\n\021FriendInfoReque" +
-      "st\022\020\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\"@\n\022Frie" +
-      "ndInfoResponse\022\020\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002" +
-      " \001(\005\022\014\n\004name\030\003 \001(\t\"0\n\020GroupInfoRequest\022\020" +
-      "\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\"e\n\021GroupInf" +
-      "oResponse\022\020\n\010packetId\030\001 \001(\005\022\n\n\002id\030\002 \001(\005\022" +
-      "\014\n\004name\030\003 \001(\t\022$\n\007members\030\004 \003(\0132\023.netdesi" +
-      "gn2.ContactB\036\n\032top.focess.netdesign.prot" +
-      "oH\003b\006proto3"
+      "\022\nnetdesign2\032\031google/protobuf/any.proto\"" +
+      "A\n\006Packet\022\020\n\010packetId\030\001 \001(\005\022%\n\007content\030\002" +
+      " \001(\0132\024.google.protobuf.Any\"G\n\023ServerStat" +
+      "usRequest\022\034\n\017clientPublicKey\030\001 \001(\tH\000\210\001\001B" +
+      "\022\n\020_clientPublicKey\"m\n\024ServerStatusRespo" +
+      "nse\022\016\n\006online\030\001 \001(\010\022\023\n\013registrable\030\002 \001(\010" +
+      "\022\034\n\017serverPublicKey\030\003 \001(\tH\000\210\001\001B\022\n\020_serve" +
+      "rPublicKey\"\033\n\031ServerStatusUpdateRequest\"" +
+      "A\n\032ServerStatusUpdateResponse\022\016\n\006online\030" +
+      "\001 \001(\010\022\023\n\013registrable\030\002 \001(\010\"#\n\017LoginPreRe" +
+      "quest\022\020\n\010username\030\001 \001(\t\"%\n\020LoginPreRespo" +
+      "nse\022\021\n\tchallenge\030\001 \001(\t\"6\n\014LoginRequest\022\020" +
+      "\n\010username\030\001 \001(\t\022\024\n\014hashPassword\030\002 \001(\t\" " +
+      "\n\rLoginResponse\022\017\n\007logined\030\001 \001(\010\"\272\001\n\007Con" +
+      "tact\022\n\n\002id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\016\n\006online" +
+      "\030\003 \001(\010\022-\n\004type\030\004 \001(\0162\037.netdesign2.Contac" +
+      "t.ContactType\022$\n\007members\030\005 \003(\0132\023.netdesi" +
+      "gn2.Contact\"0\n\013ContactType\022\n\n\006FRIEND\020\000\022\t" +
+      "\n\005GROUP\020\001\022\n\n\006MEMBER\020\002\"\024\n\022ContactListRequ" +
+      "est\"<\n\023ContactListResponse\022%\n\010contacts\030\001" +
+      " \003(\0132\023.netdesign2.Contact\"\034\n\016ContactRequ" +
+      "est\022\n\n\002id\030\001 \001(\005\"7\n\017ContactResponse\022$\n\007co" +
+      "ntact\030\001 \001(\0132\023.netdesign2.ContactB\036\n\032top." +
+      "focess.netdesign.protoH\003b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          com.google.protobuf.AnyProto.getDescriptor(),
         });
     internal_static_netdesign2_Packet_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_netdesign2_Packet_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_Packet_descriptor,
-        new java.lang.String[] { "PacketId", });
+        new java.lang.String[] { "PacketId", "Content", });
     internal_static_netdesign2_ServerStatusRequest_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_netdesign2_ServerStatusRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_ServerStatusRequest_descriptor,
-        new java.lang.String[] { "PacketId", "ClientPublicKey", });
+        new java.lang.String[] { "ClientPublicKey", });
     internal_static_netdesign2_ServerStatusResponse_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_netdesign2_ServerStatusResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_ServerStatusResponse_descriptor,
-        new java.lang.String[] { "PacketId", "Online", "Registrable", "ServerPublicKey", });
+        new java.lang.String[] { "Online", "Registrable", "ServerPublicKey", });
     internal_static_netdesign2_ServerStatusUpdateRequest_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_netdesign2_ServerStatusUpdateRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_ServerStatusUpdateRequest_descriptor,
-        new java.lang.String[] { "PacketId", });
+        new java.lang.String[] { });
     internal_static_netdesign2_ServerStatusUpdateResponse_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_netdesign2_ServerStatusUpdateResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_ServerStatusUpdateResponse_descriptor,
-        new java.lang.String[] { "PacketId", "Online", "Registrable", });
+        new java.lang.String[] { "Online", "Registrable", });
     internal_static_netdesign2_LoginPreRequest_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_netdesign2_LoginPreRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_LoginPreRequest_descriptor,
-        new java.lang.String[] { "PacketId", "Username", });
+        new java.lang.String[] { "Username", });
     internal_static_netdesign2_LoginPreResponse_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_netdesign2_LoginPreResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_LoginPreResponse_descriptor,
-        new java.lang.String[] { "PacketId", "Challenge", });
+        new java.lang.String[] { "Challenge", });
     internal_static_netdesign2_LoginRequest_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_netdesign2_LoginRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_LoginRequest_descriptor,
-        new java.lang.String[] { "PacketId", "Username", "HashPassword", });
+        new java.lang.String[] { "Username", "HashPassword", });
     internal_static_netdesign2_LoginResponse_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_netdesign2_LoginResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_LoginResponse_descriptor,
-        new java.lang.String[] { "PacketId", "Logined", });
+        new java.lang.String[] { "Logined", });
     internal_static_netdesign2_Contact_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_netdesign2_Contact_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_Contact_descriptor,
-        new java.lang.String[] { "Id", "Name", "Online", "Type", });
+        new java.lang.String[] { "Id", "Name", "Online", "Type", "Members", });
     internal_static_netdesign2_ContactListRequest_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_netdesign2_ContactListRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_ContactListRequest_descriptor,
-        new java.lang.String[] { "PacketId", });
+        new java.lang.String[] { });
     internal_static_netdesign2_ContactListResponse_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_netdesign2_ContactListResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_ContactListResponse_descriptor,
-        new java.lang.String[] { "PacketId", "Contacts", });
-    internal_static_netdesign2_FriendInfoRequest_descriptor =
+        new java.lang.String[] { "Contacts", });
+    internal_static_netdesign2_ContactRequest_descriptor =
       getDescriptor().getMessageTypes().get(12);
-    internal_static_netdesign2_FriendInfoRequest_fieldAccessorTable = new
+    internal_static_netdesign2_ContactRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_netdesign2_FriendInfoRequest_descriptor,
-        new java.lang.String[] { "PacketId", "Id", });
-    internal_static_netdesign2_FriendInfoResponse_descriptor =
+        internal_static_netdesign2_ContactRequest_descriptor,
+        new java.lang.String[] { "Id", });
+    internal_static_netdesign2_ContactResponse_descriptor =
       getDescriptor().getMessageTypes().get(13);
-    internal_static_netdesign2_FriendInfoResponse_fieldAccessorTable = new
+    internal_static_netdesign2_ContactResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_netdesign2_FriendInfoResponse_descriptor,
-        new java.lang.String[] { "PacketId", "Id", "Name", });
-    internal_static_netdesign2_GroupInfoRequest_descriptor =
-      getDescriptor().getMessageTypes().get(14);
-    internal_static_netdesign2_GroupInfoRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_netdesign2_GroupInfoRequest_descriptor,
-        new java.lang.String[] { "PacketId", "Id", });
-    internal_static_netdesign2_GroupInfoResponse_descriptor =
-      getDescriptor().getMessageTypes().get(15);
-    internal_static_netdesign2_GroupInfoResponse_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_netdesign2_GroupInfoResponse_descriptor,
-        new java.lang.String[] { "PacketId", "Id", "Name", "Members", });
+        internal_static_netdesign2_ContactResponse_descriptor,
+        new java.lang.String[] { "Contact", });
+    com.google.protobuf.AnyProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

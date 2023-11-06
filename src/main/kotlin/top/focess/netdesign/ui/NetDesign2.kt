@@ -1,6 +1,8 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -13,6 +15,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import top.focess.netdesign.config.LangFile
+import top.focess.netdesign.config.LangFile.Companion.createLandScope
 import top.focess.netdesign.server.Contact
 import top.focess.netdesign.server.RemoteServer
 import top.focess.netdesign.server.SingleServer
@@ -26,32 +29,37 @@ fun main() {
 
     SingleServer("Local")
 
-    val l = LangFile("langs/zh_CN.yml");
+    application(exitProcessOnExit = true) {
 
-    LangFile.createLandScope(l) {
+        val server = rememberSaveable(saver = RemoteServer.Saver()) { RemoteServer() }
 
-        application(exitProcessOnExit = true) {
-            val server = rememberSaveable(saver = RemoteServer.Saver()) { RemoteServer() }
+        var logined by remember { mutableStateOf(false) }
+        var showSettings by remember { mutableStateOf(false) }
+        var showRegister by remember { mutableStateOf(false) }
+        var showTray by remember { mutableStateOf(false) }
 
-            var logined by remember { mutableStateOf(false) }
-            var showSettings by remember { mutableStateOf(false) }
-            var showRegister by remember { mutableStateOf(false) }
-            var showTray by remember { mutableStateOf(false) }
+        var currentContact by remember { mutableStateOf<Contact?>(null) }
 
-            var currentContact by remember { mutableStateOf<Contact?>(null) }
+        var clicked by remember { mutableStateOf(0) }
 
-            LaunchedEffect(server.host, server.port) {
-                if (!server.connected)
-                    server.connect()
-            }
+        LaunchedEffect(server.host, server.port) {
+            if (!server.connected)
+                server.connect()
+        }
+
+        createLandScope(LangFile("langs/zh_CN.yml")) {
 
             if (currentContact != null) {
                 DefaultView(
                     onCloseRequest = { currentContact = null },
                     state = rememberCenterWindowState(DpSize(600.dp, 680.dp)),
-                    title = currentContact!!.name
+                    title = currentContact?.name ?: "title".l
                 ) {
-                    ChatView(currentContact!!)
+                    currentContact?.let {
+                        enterColumn {
+                            ChatView(currentContact!!)
+                        }
+                    }
                 }
             }
 

@@ -10,7 +10,6 @@ data class ServerStatusResponsePacket(val online: Boolean, val registrable: Bool
     }
 
     override fun toProtoType() = serverStatusResponse {
-        this.packetId = PACKET_ID
         this.online = this@ServerStatusResponsePacket.online
         this.registrable = this@ServerStatusResponsePacket.registrable
         this.serverPublicKey = this@ServerStatusResponsePacket.serverPublicKey
@@ -23,7 +22,6 @@ data class ServerStatusRequestPacket(val clientPublicKey: String?) : ClientPacke
     }
 
     override fun toProtoType() = serverStatusRequest {
-        this.packetId = PACKET_ID
         this.clientPublicKey = this@ServerStatusRequestPacket.clientPublicKey
     }
 

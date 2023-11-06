@@ -18,6 +18,10 @@ menu:
   status:
     title: "Status"
     quit: "Quit"
+  language:
+    title: "Language"
+    chinese: "中文"
+    english: "English"
 settings:
   title: "NetDesign2-Settings"
   host: "Host"

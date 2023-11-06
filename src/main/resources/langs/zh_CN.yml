@@ -18,6 +18,10 @@ menu:
   status:
     title: "状态"
     quit: "退出"
+  language:
+    title: "语言"
+    chinese: "中文"
+    english: "English"
 settings:
   title: "NetDesign2-设置"
   host: "主机"

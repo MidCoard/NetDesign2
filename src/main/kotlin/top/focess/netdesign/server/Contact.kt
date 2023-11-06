@@ -1,8 +1,12 @@
 package top.focess.netdesign.server
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.*
 
-abstract class Contact(val id: Int, val name: String, val online: Boolean) {
+abstract class Contact(id: Int, name: String, online: Boolean) {
+
+    val id by mutableStateOf(id)
+    var name by mutableStateOf(name)
+    var online by mutableStateOf(online)
 
     abstract fun sendMessage(message: Message) : Boolean
 
@@ -33,7 +37,8 @@ class Member(id: Int, name: String, online: Boolean) : Contact(id, name, online)
 
 class Group(id: Int, name: String, online: Boolean, members: List<Member>) : Contact(id, name, online) {
 
-    val members = mutableStateListOf(members)
+    val members = members.toMutableStateList()
+
     override fun sendMessage(message: Message): Boolean {
         TODO("Not yet implemented")
     }

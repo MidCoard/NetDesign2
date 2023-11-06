@@ -30,23 +30,6 @@ public object ServerStatusUpdateRequestKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest = _builder.build()
-
-    /**
-     * `int32 packetId = 1;`
-     */
-    public var packetId: kotlin.Int
-      @JvmName("getPacketId")
-      get() = _builder.getPacketId()
-      @JvmName("setPacketId")
-      set(value) {
-        _builder.setPacketId(value)
-      }
-    /**
-     * `int32 packetId = 1;`
-     */
-    public fun clearPacketId() {
-      _builder.clearPacketId()
-    }
   }
 }
 @kotlin.jvm.JvmSynthetic

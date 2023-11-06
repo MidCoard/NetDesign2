@@ -3,59 +3,54 @@ package netdesign2;
 option java_package = "top.focess.netdesign.proto";
 option optimize_for = LITE_RUNTIME;
 
+import "google/protobuf/any.proto";
+
 message Packet {
   int32 packetId = 1;
+  google.protobuf.Any content = 2;
 }
 
 //packet id = 0
 message ServerStatusRequest {
-  int32 packetId = 1;
-  optional string clientPublicKey = 2;
+  optional string clientPublicKey = 1;
 }
 
 //packet id = 1
 message ServerStatusResponse {
-  int32 packetId = 1;
-  bool online = 2;
-  bool registrable = 3;
-  optional string serverPublicKey = 4;
+  bool online = 1;
+  bool registrable = 2;
+  optional string serverPublicKey = 3;
 }
 
 //packet id = 6
 message ServerStatusUpdateRequest {
-  int32 packetId = 1;
 }
 
 //packet id = 7
 message ServerStatusUpdateResponse {
-  int32 packetId = 1;
-  bool online = 2;
-  bool registrable = 3;
+  bool online = 1;
+  bool registrable = 2;
 }
 
 //packet id = 2
 message LoginPreRequest {
-  int32 packetId = 1;
-  string username = 2;
+  string username = 1;
 }
 
 //packet id = 3
 message LoginPreResponse {
-  int32 packetId = 1;
-  string challenge = 2;
+  string challenge = 1;
 }
 
 //packet id = 4
 message LoginRequest{
-  int32 packetId = 1;
-  string username = 2;
-  string hashPassword = 3;
+  string username = 1;
+  string hashPassword = 2;
 }
 
 //packet id = 5
 message LoginResponse {
-  int32 packetId = 1;
-  bool logined = 2;
+  bool logined = 1;
 }
 
 message Contact {
@@ -63,6 +58,7 @@ message Contact {
   string name = 2;
   bool online = 3;
   ContactType type = 4;
+  repeated Contact members = 5; // optional, only if type is GROUP
 
   enum ContactType {
     FRIEND = 0;
@@ -73,38 +69,19 @@ message Contact {
 
 //packet id = 8
 message ContactListRequest {
-  int32 packetId = 1;
 }
 
 //packet id = 9
 message ContactListResponse {
-  int32 packetId = 1;
-  repeated Contact contacts = 2;
+  repeated Contact contacts = 1;
 }
 
 //packet id = 10
-message FriendInfoRequest {
-  int32 packetId = 1;
-  int32 id = 2;
+message ContactRequest {
+  int32 id = 1;
 }
 
 //packet id = 11
-message FriendInfoResponse {
-  int32 packetId = 1;
-  int32 id = 2;
-  string name = 3;
-}
-
-//packet id = 12
-message GroupInfoRequest {
-  int32 packetId = 1;
-  int32 id = 2;
-}
-
-//packet id = 13
-message GroupInfoResponse {
-  int32 packetId = 1;
-  int32 id = 2;
-  string name = 3;
-  repeated Contact members = 4;
+message ContactResponse {
+  Contact contact = 1;
 }

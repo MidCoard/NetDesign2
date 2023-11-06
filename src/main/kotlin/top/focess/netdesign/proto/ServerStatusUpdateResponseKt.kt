@@ -32,24 +32,7 @@ public object ServerStatusUpdateResponseKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateResponse = _builder.build()
 
     /**
-     * `int32 packetId = 1;`
-     */
-    public var packetId: kotlin.Int
-      @JvmName("getPacketId")
-      get() = _builder.getPacketId()
-      @JvmName("setPacketId")
-      set(value) {
-        _builder.setPacketId(value)
-      }
-    /**
-     * `int32 packetId = 1;`
-     */
-    public fun clearPacketId() {
-      _builder.clearPacketId()
-    }
-
-    /**
-     * `bool online = 2;`
+     * `bool online = 1;`
      */
     public var online: kotlin.Boolean
       @JvmName("getOnline")
@@ -59,14 +42,14 @@ public object ServerStatusUpdateResponseKt {
         _builder.setOnline(value)
       }
     /**
-     * `bool online = 2;`
+     * `bool online = 1;`
      */
     public fun clearOnline() {
       _builder.clearOnline()
     }
 
     /**
-     * `bool registrable = 3;`
+     * `bool registrable = 2;`
      */
     public var registrable: kotlin.Boolean
       @JvmName("getRegistrable")
@@ -76,7 +59,7 @@ public object ServerStatusUpdateResponseKt {
         _builder.setRegistrable(value)
       }
     /**
-     * `bool registrable = 3;`
+     * `bool registrable = 2;`
      */
     public fun clearRegistrable() {
       _builder.clearRegistrable()

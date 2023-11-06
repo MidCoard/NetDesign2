@@ -19,6 +19,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
     private var friendId = AtomicInteger(1)
 
+    private val defaultContact = Friend(0, name, true)
+
     private val serverSocket = ServerSocket(port)
 
     private var shouldClose = false
@@ -81,19 +83,10 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             }
 
                             10 -> {
-                                val friendInfoRequestPacket = PacketOuterClass.FriendInfoRequest.parseFrom(bytes)
+                                val contactRequest = PacketOuterClass.ContactRequest.parseFrom(bytes)
                                 DEFAULT_PACKET_HANDLER.handle(
-                                    FriendInfoRequestPacket(
-                                        friendInfoRequestPacket.id
-                                    )
-                                )
-                            }
-
-                            12 -> {
-                                val groupInfoRequestPacket = PacketOuterClass.GroupInfoRequest.parseFrom(bytes)
-                                DEFAULT_PACKET_HANDLER.handle(
-                                    GroupInfoRequestPacket(
-                                        groupInfoRequestPacket.id
+                                    ContactRequestPacket(
+                                        contactRequest.id
                                     )
                                 )
                             }
@@ -188,25 +181,14 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     is ContactListRequestPacket ->
                         if (this.logined)
                         ContactListResponsePacket(
-                            listOf(
-                                ContactInfo(0, this@handle.server.name, PacketOuterClass.Contact.ContactType.FRIEND)
-                            )
+                            listOf(this.server.defaultContact)
                         ) else null
 
-                    is FriendInfoRequestPacket ->
-                        if (this.logined)
-                            if (packet.id == 0)
-                                FriendInfoResponsePacket(
-                                    packet.id,
-                                    this.server.name
-                                )
-                            else FriendInfoResponsePacket(-1, "")
-                        else null
-
-                    is GroupInfoRequestPacket ->
-                        if (this.logined)
-                            GroupInfoResponsePacket(-1, "", listOf())
-                        else null
+                    is ContactRequestPacket ->
+                        if (this.logined && packet.id == 0)
+                        ContactResponsePacket(
+                            this.server.defaultContact
+                        ) else null
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")
                 }

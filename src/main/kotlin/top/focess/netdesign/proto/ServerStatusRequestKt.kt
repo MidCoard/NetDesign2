@@ -32,24 +32,7 @@ public object ServerStatusRequestKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest = _builder.build()
 
     /**
-     * `int32 packetId = 1;`
-     */
-    public var packetId: kotlin.Int
-      @JvmName("getPacketId")
-      get() = _builder.getPacketId()
-      @JvmName("setPacketId")
-      set(value) {
-        _builder.setPacketId(value)
-      }
-    /**
-     * `int32 packetId = 1;`
-     */
-    public fun clearPacketId() {
-      _builder.clearPacketId()
-    }
-
-    /**
-     * `optional string clientPublicKey = 2;`
+     * `optional string clientPublicKey = 1;`
      */
     public var clientPublicKey: kotlin.String?
       @JvmName("getClientPublicKey")
@@ -59,13 +42,13 @@ public object ServerStatusRequestKt {
         _builder.setClientPublicKey(value)
       }
     /**
-     * `optional string clientPublicKey = 2;`
+     * `optional string clientPublicKey = 1;`
      */
     public fun clearClientPublicKey() {
       _builder.clearClientPublicKey()
     }
     /**
-     * `optional string clientPublicKey = 2;`
+     * `optional string clientPublicKey = 1;`
      * @return Whether the clientPublicKey field is set.
      */
     public fun hasClientPublicKey(): kotlin.Boolean {

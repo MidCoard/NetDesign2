@@ -47,7 +47,7 @@ fun LangFile.LangScope.DefaultView(
     title: String,
     onCloseRequest: () -> Unit = {},
     colors: Colors = DefaultTheme.colors(),
-    children: @Composable () -> Unit
+    children: @Composable ColumnScope.() -> Unit
 ) {
 
     Window(
@@ -62,6 +62,14 @@ fun LangFile.LangScope.DefaultView(
                 Item("menu.status.quit".l, onClick = {
                     onCloseRequest()
                 }, shortcut = KeyShortcut(Key.Q, ctrl = true))
+            }
+            Menu("menu.language.title".l, mnemonic = 'L'){
+                Item("menu.language.chinese".l, onClick = {
+                    langFile = LangFile("langs/zh_CN.yml")
+                })
+                Item("menu.language.english".l, onClick = {
+                    langFile = LangFile("langs/en_US.yml")
+                })
             }
         }
 

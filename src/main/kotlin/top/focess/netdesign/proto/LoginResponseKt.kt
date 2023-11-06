@@ -32,24 +32,7 @@ public object LoginResponseKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.LoginResponse = _builder.build()
 
     /**
-     * `int32 packetId = 1;`
-     */
-    public var packetId: kotlin.Int
-      @JvmName("getPacketId")
-      get() = _builder.getPacketId()
-      @JvmName("setPacketId")
-      set(value) {
-        _builder.setPacketId(value)
-      }
-    /**
-     * `int32 packetId = 1;`
-     */
-    public fun clearPacketId() {
-      _builder.clearPacketId()
-    }
-
-    /**
-     * `bool logined = 2;`
+     * `bool logined = 1;`
      */
     public var logined: kotlin.Boolean
       @JvmName("getLogined")
@@ -59,7 +42,7 @@ public object LoginResponseKt {
         _builder.setLogined(value)
       }
     /**
-     * `bool logined = 2;`
+     * `bool logined = 1;`
      */
     public fun clearLogined() {
       _builder.clearLogined()

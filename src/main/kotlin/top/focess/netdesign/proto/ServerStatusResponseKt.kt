@@ -32,24 +32,7 @@ public object ServerStatusResponseKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse = _builder.build()
 
     /**
-     * `int32 packetId = 1;`
-     */
-    public var packetId: kotlin.Int
-      @JvmName("getPacketId")
-      get() = _builder.getPacketId()
-      @JvmName("setPacketId")
-      set(value) {
-        _builder.setPacketId(value)
-      }
-    /**
-     * `int32 packetId = 1;`
-     */
-    public fun clearPacketId() {
-      _builder.clearPacketId()
-    }
-
-    /**
-     * `bool online = 2;`
+     * `bool online = 1;`
      */
     public var online: kotlin.Boolean
       @JvmName("getOnline")
@@ -59,14 +42,14 @@ public object ServerStatusResponseKt {
         _builder.setOnline(value)
       }
     /**
-     * `bool online = 2;`
+     * `bool online = 1;`
      */
     public fun clearOnline() {
       _builder.clearOnline()
     }
 
     /**
-     * `bool registrable = 3;`
+     * `bool registrable = 2;`
      */
     public var registrable: kotlin.Boolean
       @JvmName("getRegistrable")
@@ -76,14 +59,14 @@ public object ServerStatusResponseKt {
         _builder.setRegistrable(value)
       }
     /**
-     * `bool registrable = 3;`
+     * `bool registrable = 2;`
      */
     public fun clearRegistrable() {
       _builder.clearRegistrable()
     }
 
     /**
-     * `optional string serverPublicKey = 4;`
+     * `optional string serverPublicKey = 3;`
      */
     public var serverPublicKey: kotlin.String?
       @JvmName("getServerPublicKey")
@@ -93,13 +76,13 @@ public object ServerStatusResponseKt {
         _builder.setServerPublicKey(value)
       }
     /**
-     * `optional string serverPublicKey = 4;`
+     * `optional string serverPublicKey = 3;`
      */
     public fun clearServerPublicKey() {
       _builder.clearServerPublicKey()
     }
     /**
-     * `optional string serverPublicKey = 4;`
+     * `optional string serverPublicKey = 3;`
      * @return Whether the serverPublicKey field is set.
      */
     public fun hasServerPublicKey(): kotlin.Boolean {

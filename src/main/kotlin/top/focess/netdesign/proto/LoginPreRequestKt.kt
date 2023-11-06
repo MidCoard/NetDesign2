@@ -32,24 +32,7 @@ public object LoginPreRequestKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.LoginPreRequest = _builder.build()
 
     /**
-     * `int32 packetId = 1;`
-     */
-    public var packetId: kotlin.Int
-      @JvmName("getPacketId")
-      get() = _builder.getPacketId()
-      @JvmName("setPacketId")
-      set(value) {
-        _builder.setPacketId(value)
-      }
-    /**
-     * `int32 packetId = 1;`
-     */
-    public fun clearPacketId() {
-      _builder.clearPacketId()
-    }
-
-    /**
-     * `string username = 2;`
+     * `string username = 1;`
      */
     public var username: kotlin.String
       @JvmName("getUsername")
@@ -59,7 +42,7 @@ public object LoginPreRequestKt {
         _builder.setUsername(value)
       }
     /**
-     * `string username = 2;`
+     * `string username = 1;`
      */
     public fun clearUsername() {
       _builder.clearUsername()

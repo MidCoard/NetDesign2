@@ -10,7 +10,6 @@ data class LoginResponsePacket(val logined: Boolean) : ServerPacket(PACKET_ID) {
     }
 
     override fun toProtoType(): GeneratedMessageV3 = loginResponse {
-        this.packetId = PACKET_ID
         this.logined = this@LoginResponsePacket.logined
     }
 }
@@ -22,7 +21,6 @@ data class LoginRequestPacket(val username: String, val hashPassword: String) : 
     }
 
     override fun toProtoType(): GeneratedMessageV3 = loginRequest {
-        this.packetId = PACKET_ID
         this.username = this@LoginRequestPacket.username
         this.hashPassword = this@LoginRequestPacket.hashPassword
     }

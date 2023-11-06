@@ -101,6 +101,106 @@ public object ContactKt {
     public fun clearType() {
       _builder.clearType()
     }
+
+    /**
+     * An uninstantiable, behaviorless type to represent the field in
+     * generics.
+     */
+    @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
+    public class MembersProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
+    /**
+     * ```
+     * optional, only if type is GROUP
+     * ```
+     *
+     * `repeated .netdesign2.Contact members = 5;`
+     */
+     public val members: com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, MembersProxy>
+      @kotlin.jvm.JvmSynthetic
+      get() = com.google.protobuf.kotlin.DslList(
+        _builder.getMembersList()
+      )
+    /**
+     * ```
+     * optional, only if type is GROUP
+     * ```
+     *
+     * `repeated .netdesign2.Contact members = 5;`
+     * @param value The members to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addMembers")
+    public fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, MembersProxy>.add(value: top.focess.netdesign.proto.PacketOuterClass.Contact) {
+      _builder.addMembers(value)
+    }
+    /**
+     * ```
+     * optional, only if type is GROUP
+     * ```
+     *
+     * `repeated .netdesign2.Contact members = 5;`
+     * @param value The members to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignMembers")
+    @Suppress("NOTHING_TO_INLINE")
+    public inline operator fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, MembersProxy>.plusAssign(value: top.focess.netdesign.proto.PacketOuterClass.Contact) {
+      add(value)
+    }
+    /**
+     * ```
+     * optional, only if type is GROUP
+     * ```
+     *
+     * `repeated .netdesign2.Contact members = 5;`
+     * @param values The members to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addAllMembers")
+    public fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, MembersProxy>.addAll(values: kotlin.collections.Iterable<top.focess.netdesign.proto.PacketOuterClass.Contact>) {
+      _builder.addAllMembers(values)
+    }
+    /**
+     * ```
+     * optional, only if type is GROUP
+     * ```
+     *
+     * `repeated .netdesign2.Contact members = 5;`
+     * @param values The members to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignAllMembers")
+    @Suppress("NOTHING_TO_INLINE")
+    public inline operator fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, MembersProxy>.plusAssign(values: kotlin.collections.Iterable<top.focess.netdesign.proto.PacketOuterClass.Contact>) {
+      addAll(values)
+    }
+    /**
+     * ```
+     * optional, only if type is GROUP
+     * ```
+     *
+     * `repeated .netdesign2.Contact members = 5;`
+     * @param index The index to set the value at.
+     * @param value The members to set.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("setMembers")
+    public operator fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, MembersProxy>.set(index: kotlin.Int, value: top.focess.netdesign.proto.PacketOuterClass.Contact) {
+      _builder.setMembers(index, value)
+    }
+    /**
+     * ```
+     * optional, only if type is GROUP
+     * ```
+     *
+     * `repeated .netdesign2.Contact members = 5;`
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("clearMembers")
+    public fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, MembersProxy>.clear() {
+      _builder.clearMembers()
+    }
+
   }
 }
 @kotlin.jvm.JvmSynthetic

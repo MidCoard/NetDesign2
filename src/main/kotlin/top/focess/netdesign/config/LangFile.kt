@@ -1,6 +1,7 @@
 package top.focess.netdesign.config
 
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.runtime.*
 import top.focess.util.yaml.YamlConfiguration
 import java.io.FileInputStream
 
@@ -27,22 +28,42 @@ class LangFile(filename: String) {
     }
 
     companion object {
-        fun createLandScope(langFile: LangFile, block: LangScope.() -> Unit) {
-            LangScope(langFile).block()
+        @Composable
+        fun createLandScope(_langFile: LangFile, block: @Composable() (LangScope.() -> Unit)) {
+            var langFile by remember { mutableStateOf(_langFile) }
+
+            LangScope(langFile) {
+                langFile = it
+            }.block()
         }
+
     }
 
-    class LangScope(private val langFile: LangFile) {
+    open class LangScope(langFile: LangFile, val setLangFile: (langFile : LangFile) -> Unit) {
+
+        var langFile: LangFile = langFile
+            set(value) = setLangFile(value)
 
         @Composable
         fun String.l(vararg args: Any) : String {
             return String.format(langFile.get(this), *args)
         }
 
-
         val String.l: String
             @Composable
             get() = langFile.get(this)
 
+        @Composable
+        fun ColumnScope.enterColumn(block: @Composable ColumnLangScope.() -> Unit) {
+            ColumnLangScope(this, langFile, setLangFile).block()
+        }
+    }
+
+    class ColumnLangScope(private val columnScope: ColumnScope, langFile: LangFile, setLangFile: (langFile : LangFile) -> Unit) : LangScope(langFile, setLangFile) {
+
+        @Composable
+        fun column(block: @Composable ColumnScope.() -> Unit) {
+            columnScope.block()
+        }
     }
 }

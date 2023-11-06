@@ -1,6 +1,7 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.repeatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -39,43 +40,53 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
         while (true) {
             val packet = server.sendPacket(ContactListRequestPacket())
             if (packet is ContactListResponsePacket) {
-                val friendList = mutableListOf<Contact>()
-                val groupList = mutableListOf<Contact>()
-                val groupMap = mutableMapOf<Int, Group>()
-                for (contact in packet.contacts) {
-                    if (contact.type == PacketOuterClass.Contact.ContactType.FRIEND) {
-                        val contactPacket = server.sendPacket(FriendInfoRequestPacket(contact.id))
-                        if (contactPacket is FriendInfoResponsePacket)
-                            friendList.add(Friend(contact.id, contact.name, contact.online))
-                    } else if (contact.type == PacketOuterClass.Contact.ContactType.GROUP) {
-                        val contactPacket = server.sendPacket(GroupInfoRequestPacket(contact.id))
-                        if (contactPacket is GroupInfoResponsePacket) {
-                            val group = Group(contact.id, contact.name, contact.online, contactPacket.members)
-                            groupList.add(group)
-                            groupMap[contact.id] = group
-                        }
+                val contactMap = packet.contacts.associateBy { it.id }
+                val visitedMap = mutableMapOf<Int, Boolean>()
+                for (contact in packet.contacts)
+                    visitedMap[contact.id] = false
+
+                val toRemove = mutableListOf<Contact>()
+
+                for (contact in contacts) {
+                    if (contact is Friend) {
+                        val target = contactMap[contact.id]
+                        if (target is Friend) {
+                            visitedMap[contact.id] = true
+                            contact.name = target.name
+                            contact.online = target.online
+                        } else toRemove.add(contact)
+                    } else if (contact is Group) {
+                        val target = contactMap[contact.id]
+                        if (target is Group) {
+                            visitedMap[contact.id] = true
+                            contact.name = target.name
+                            contact.online = target.online
+                            val visitedMemberMap = mutableMapOf<Int, Boolean>()
+                            for (member in target.members)
+                                visitedMemberMap[member.id] = false
+                            val toRemoveMember = mutableListOf<Member>()
+                            for (member in contact.members) {
+                                val targetMember = target.members.find { it.id == member.id }
+                                if (targetMember != null) {
+                                    visitedMemberMap[member.id] = true
+                                    member.name = targetMember.name
+                                    member.online = targetMember.online
+                                } else toRemoveMember.add(member)
+                            }
+                            contact.members.removeAll(toRemoveMember)
+                            contact.members.addAll(target.members.filter { !visitedMemberMap[it.id]!! })
+                        } else toRemove.add(contact)
                     }
                 }
 
-                compareAndAddOrRemove(contacts, friendList) {
-                    it is Group
-                }
-
-                for (group in contacts.filterIsInstance<Group>()) {
-                    val target = groupMap[group.id]
-                    if (target != null)
-                        compareAndAddOrRemove(group.members, target.members)
-                }
-
-                compareAndAddOrRemove(contacts, groupList) {
-                    it is Friend
-                }
+                contacts.removeAll(toRemove)
+                contacts.addAll(packet.contacts.filter { !visitedMap[it.id]!! })
 
                 contacts.add(Friend(1, "test", true))
                 contacts.add(Friend(2, "test2", false))
 
             }
-            delay(1000)
+            delay(10000)
         }
     }
 
@@ -167,6 +178,7 @@ fun GroupView(group: Group) {
 private fun <T> compareAndAddOrRemove(list: MutableList<T>, newList: List<T>, except: (T) -> Boolean = { false }) {
     val toAdd = newList.filter { !list.contains(it) }
     val toRemove = list.filter { !newList.contains(it) && !except(it) }
-    list.addAll(toAdd)
     list.removeAll(toRemove)
+
+    list.addAll(toAdd)
 }

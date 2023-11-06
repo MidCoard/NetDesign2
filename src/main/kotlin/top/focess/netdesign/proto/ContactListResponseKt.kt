@@ -32,30 +32,13 @@ public object ContactListResponseKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ContactListResponse = _builder.build()
 
     /**
-     * `int32 packetId = 1;`
-     */
-    public var packetId: kotlin.Int
-      @JvmName("getPacketId")
-      get() = _builder.getPacketId()
-      @JvmName("setPacketId")
-      set(value) {
-        _builder.setPacketId(value)
-      }
-    /**
-     * `int32 packetId = 1;`
-     */
-    public fun clearPacketId() {
-      _builder.clearPacketId()
-    }
-
-    /**
      * An uninstantiable, behaviorless type to represent the field in
      * generics.
      */
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
     public class ContactsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
-     * `repeated .netdesign2.Contact contacts = 2;`
+     * `repeated .netdesign2.Contact contacts = 1;`
      */
      public val contacts: com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>
       @kotlin.jvm.JvmSynthetic
@@ -63,7 +46,7 @@ public object ContactListResponseKt {
         _builder.getContactsList()
       )
     /**
-     * `repeated .netdesign2.Contact contacts = 2;`
+     * `repeated .netdesign2.Contact contacts = 1;`
      * @param value The contacts to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -72,7 +55,7 @@ public object ContactListResponseKt {
       _builder.addContacts(value)
     }
     /**
-     * `repeated .netdesign2.Contact contacts = 2;`
+     * `repeated .netdesign2.Contact contacts = 1;`
      * @param value The contacts to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -82,7 +65,7 @@ public object ContactListResponseKt {
       add(value)
     }
     /**
-     * `repeated .netdesign2.Contact contacts = 2;`
+     * `repeated .netdesign2.Contact contacts = 1;`
      * @param values The contacts to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -91,7 +74,7 @@ public object ContactListResponseKt {
       _builder.addAllContacts(values)
     }
     /**
-     * `repeated .netdesign2.Contact contacts = 2;`
+     * `repeated .netdesign2.Contact contacts = 1;`
      * @param values The contacts to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -101,7 +84,7 @@ public object ContactListResponseKt {
       addAll(values)
     }
     /**
-     * `repeated .netdesign2.Contact contacts = 2;`
+     * `repeated .netdesign2.Contact contacts = 1;`
      * @param index The index to set the value at.
      * @param value The contacts to set.
      */
@@ -111,7 +94,7 @@ public object ContactListResponseKt {
       _builder.setContacts(index, value)
     }
     /**
-     * `repeated .netdesign2.Contact contacts = 2;`
+     * `repeated .netdesign2.Contact contacts = 1;`
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("clearContacts")

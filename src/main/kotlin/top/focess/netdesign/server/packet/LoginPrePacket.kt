@@ -10,7 +10,6 @@ data class LoginPreResponsePacket(val challenge: String) : ServerPacket(PACKET_I
     }
 
     override fun toProtoType(): GeneratedMessageV3 = loginPreResponse {
-        this.packetId = PACKET_ID
         this.challenge = this@LoginPreResponsePacket.challenge
     }
 }
@@ -22,7 +21,6 @@ data class LoginPreRequestPacket(val username: String) : ClientPacket(PACKET_ID)
     }
 
     override fun toProtoType(): GeneratedMessageV3 = loginPreRequest {
-        this.packetId = PACKET_ID
         this.username = this@LoginPreRequestPacket.username
     }
 }
