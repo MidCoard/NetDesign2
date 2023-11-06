@@ -12,14 +12,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import top.focess.netdesign.Database
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.config.LangFile.Companion.createLandScope
-import top.focess.netdesign.server.Contact
-import top.focess.netdesign.server.RemoteServer
-import top.focess.netdesign.server.SingleServer
+import top.focess.netdesign.server.*
+import top.focess.netdesign.sqldelight.message.LocalMessage
+import top.focess.netdesign.sqldelight.message.ServerMessage
 import java.awt.EventQueue
 import java.sql.SQLException
 
@@ -29,12 +30,24 @@ val driver: SqlDriver = JdbcSqliteDriver(
 ).apply {
     try {
         Database.Schema.create(this)
-    } catch (e: SQLException) {}
+    } catch (e: SQLException) {
+    }
 
 }
 
-val database = Database(driver)
+object MessageTypeAdapter : ColumnAdapter<MessageType, String> {
+    override fun decode(databaseValue: String) = MessageType.valueOf(databaseValue)
+    override fun encode(value: MessageType) = value.name
+}
+
+val database = Database(
+    driver,
+    LocalMessage.Adapter(MessageTypeAdapter),
+    ServerMessage.Adapter(MessageTypeAdapter)
+)
 val friendQueries = database.friendQueries
+val localMessageQueries = database.localMessageQueries
+val serverMessageQueries = database.serverMessageQueries
 
 @Composable
 fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified)): WindowState =
@@ -64,8 +77,6 @@ fun main() {
                 server.connect()
         }
 
-        var showDialog by remember { mutableStateOf(true) }
-
         createLandScope(LangFile("langs/zh_CN.yml")) {
 
 
@@ -91,7 +102,7 @@ fun main() {
                     useColumn {
                         currentContact?.let {
                             useColumn {
-                                ChatView(currentContact!!)
+                                ChatView(server, currentContact!!)
                             }
                         }
                     }

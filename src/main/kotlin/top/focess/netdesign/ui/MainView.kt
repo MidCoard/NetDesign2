@@ -25,11 +25,8 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import kotlinx.coroutines.delay
 import top.focess.netdesign.server.*
 import top.focess.netdesign.server.packet.ContactListRequestPacket
@@ -142,7 +139,7 @@ fun MyView(self: Friend) {
             )
             Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
                 Text(text = self.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
-                Text(text = "ID: ${self.id}", style = TextStyle(fontSize = 15.sp))
+                Text(text = "#${self.id}", style = TextStyle(fontSize = 15.sp))
             }
         }
     }

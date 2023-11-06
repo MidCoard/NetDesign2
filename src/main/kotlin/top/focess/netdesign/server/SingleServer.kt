@@ -7,6 +7,7 @@ import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.server.packet.*
 import top.focess.netdesign.ui.friendQueries
+import top.focess.netdesign.ui.serverMessageQueries
 import top.focess.util.RSA
 import java.io.BufferedInputStream
 import java.io.Closeable
@@ -106,6 +107,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             server.ownRSAKey.publicKey
                         )
                     }
+
                     is LoginPreRequestPacket -> {
                         this.username = packet.username
                         this.challenge = genChallenge()
@@ -113,6 +115,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             this.challenge!!
                         )
                     }
+
                     is LoginRequestPacket -> {
                         if (packet.username.length in 6..20) {
                             if (packet.username == this.username) {
@@ -152,12 +155,12 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
                     is ContactListRequestPacket ->
                         if (this.logined)
-                        ContactListResponsePacket(
-                            listOf (
-                                this.server.defaultContact,
-                                self!!
-                            )
-                        ) else null
+                            ContactListResponsePacket(
+                                listOf(
+                                    this.server.defaultContact,
+                                    self!!
+                                )
+                            ) else null
 
                     is ContactRequestPacket ->
                         if (this.logined)
@@ -167,6 +170,56 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                 else -> null
                             }
                         else null
+
+                    is ContactMessageRequestPacket ->
+                        if (this.logined)
+                            ContactMessageResponsePacket(
+                                queryAllMessage(
+                                    packet.id,
+                                    this.self!!.id,
+                                    packet.internalId
+                                )
+                            )
+                        else null
+
+                    is FriendSendMessageRequestPacket ->
+                        if (this.logined) {
+                            if (this.self!!.id == packet.from && 0 == packet.to && packet.content.length < 1000) {
+                                val message = serverMessageQueries.selectNewestBySenderAndReceiver(
+                                    packet.from.toLong(),
+                                    packet.to.toLong()
+                                ).executeAsOneOrNull()
+                                val internalId = if (message == null) 0 else message.internal_id.toInt() + 1
+                                serverMessageQueries.insert(
+                                    packet.from.toLong(),
+                                    packet.to.toLong(),
+                                    packet.content,
+                                    packet.type,
+                                    System.currentTimeMillis() / 1000,
+                                    internalId.toLong()
+                                )
+                                val insertedMessage = serverMessageQueries.selectPrecise(
+                                    packet.from.toLong(),
+                                    packet.to.toLong(),
+                                    internalId.toLong()
+                                ).executeAsOne()
+                                FriendSendMessageResponsePacket(
+                                    Message(
+                                        insertedMessage.id.toInt(),
+                                        packet.from,
+                                        packet.to,
+                                        internalId,
+                                        when (packet.type) {
+                                            MessageType.TEXT -> TextMessageContent(packet.content)
+                                            MessageType.IMAGE -> ImageMessageContent(packet.content)
+                                            MessageType.FILE -> FileMessageContent(packet.content)
+                                        },
+                                        insertedMessage.timestamp.toInt()
+                                    )
+                                )
+                            } else null
+                        }
+                        else  null
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")
                 }
@@ -199,8 +252,40 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
 }
 
-internal fun genChallenge(): String {
+private fun genChallenge(): String {
     val bytes = ByteArray(16)
     SecureRandom().nextBytes(bytes)
     return bytes.joinToString("") { "%02x".format(it) }
+}
+
+private fun queryAllMessage(a: Int, b : Int, internalId: Int): List<Message> {
+    val messages = serverMessageQueries.selectBySenderAndReceiverAndInternalId(a.toLong(),b.toLong(),internalId.toLong()).executeAsList().map{
+        Message(
+            it.id.toInt(),
+            it.sender.toInt(),
+            it.receiver_.toInt(),
+            it.internal_id.toInt(),
+            when (it.type) {
+                MessageType.TEXT -> TextMessageContent(it.data_)
+                MessageType.IMAGE -> ImageMessageContent(it.data_)
+                MessageType.FILE -> FileMessageContent(it.data_)
+            },
+            it.timestamp.toInt()
+        )
+    }.toMutableList()
+    messages.addAll(serverMessageQueries.selectBySenderAndReceiverAndInternalId(b.toLong(),a.toLong(),internalId.toLong()).executeAsList().map{
+        Message(
+            it.id.toInt(),
+            it.sender.toInt(),
+            it.receiver_.toInt(),
+            it.internal_id.toInt(),
+            when (it.type) {
+                MessageType.TEXT -> TextMessageContent(it.data_)
+                MessageType.IMAGE -> ImageMessageContent(it.data_)
+                MessageType.FILE -> FileMessageContent(it.data_)
+            },
+            it.timestamp.toInt()
+        )
+    })
+    return messages
 }

@@ -1,0 +1,25 @@
+import top.focess.netdesign.server.MessageType;
+import top.focess.netdesign.server.MessageStatus;
+
+CREATE TABLE ServerMessage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender INTEGER NOT NULL,
+    receiver INTEGER NOT NULL,
+    data TEXT NOT NULL,
+    type TEXT AS MessageType NOT NULL,
+    timestamp INTEGER NOT NULL,
+    internal_id INTEGER NOT NULL
+);
+
+selectNewestBySenderAndReceiver:
+SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC LIMIT 1;
+
+selectBySenderAndReceiverAndInternalId:
+SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id > ?;
+
+selectPrecise:
+SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id = ?;
+
+insert:
+INSERT INTO ServerMessage (sender, receiver, data, type, timestamp, internal_id) VALUES (?, ?, ?, ?, ?, ?);
+
