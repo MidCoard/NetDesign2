@@ -10,7 +10,7 @@ public inline fun contactMessageResponse(block: top.focess.netdesign.proto.Conta
   top.focess.netdesign.proto.ContactMessageResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.ContactMessageResponse.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 13
+ *packet id = 13 server packet
  * ```
  *
  * Protobuf type `netdesign2.ContactMessageResponse`

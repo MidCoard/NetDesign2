@@ -1,9 +1,8 @@
 package top.focess.netdesign.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import top.focess.netdesign.config.LangFile
@@ -104,46 +105,50 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
         }
     }
 
+    Box {
 
-    column {
+        Image(painterResource("imgs/background.jpg"), null, contentScale = ContentScale.Crop)
 
-        LazyColumn(modifier = Modifier.weight(10f)) {
-            items(messages.sortedBy { it.internalId }) {
-                MessageView(it)
-            }
-        }
+        Column {
 
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            singleLine = true,
-            placeholder = {
-                Text("chat.placeholder".l)
-            },
-            trailingIcon = {
-                if (text.isNotEmpty()) {
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                if (sendRequest)
-                                    return@clickable
-                                sendRequest = true
-                            }
-                            .clip(RoundedCornerShape(5.dp))
-                            .padding(10.dp)
-                            .pointerHoverIcon(PointerIcon.Hand),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Send,
-                            contentDescription = "Send",
-                            tint = MaterialTheme.colors.primary
-                        )
-                        Text("chat.send".l)
-                    }
+            LazyColumn(modifier = Modifier.weight(10f)) {
+                items(messages.sortedBy { it.internalId }) {
+                    MessageView(it)
                 }
             }
-        )
+
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                singleLine = true,
+                placeholder = {
+                    Text("chat.placeholder".l)
+                },
+                trailingIcon = {
+                    if (text.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    if (sendRequest)
+                                        return@clickable
+                                    sendRequest = true
+                                }
+                                .clip(RoundedCornerShape(5.dp))
+                                .padding(10.dp)
+                                .pointerHoverIcon(PointerIcon.Hand),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Send,
+                                contentDescription = "Send",
+                                tint = MaterialTheme.colors.primary
+                            )
+                            Text("chat.send".l)
+                        }
+                    }
+                }
+            )
+        }
     }
 }

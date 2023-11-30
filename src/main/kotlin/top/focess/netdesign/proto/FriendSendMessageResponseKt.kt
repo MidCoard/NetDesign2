@@ -10,7 +10,7 @@ public inline fun friendSendMessageResponse(block: top.focess.netdesign.proto.Fr
   top.focess.netdesign.proto.FriendSendMessageResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 15
+ *packet id = 15 server packet
  * ```
  *
  * Protobuf type `netdesign2.FriendSendMessageResponse`
@@ -32,6 +32,10 @@ public object FriendSendMessageResponseKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse = _builder.build()
 
     /**
+     * ```
+     * fail if message.id == -1
+     * ```
+     *
      * `.netdesign2.Message message = 1;`
      */
     public var message: top.focess.netdesign.proto.PacketOuterClass.Message
@@ -42,12 +46,20 @@ public object FriendSendMessageResponseKt {
         _builder.setMessage(value)
       }
     /**
+     * ```
+     * fail if message.id == -1
+     * ```
+     *
      * `.netdesign2.Message message = 1;`
      */
     public fun clearMessage() {
       _builder.clearMessage()
     }
     /**
+     * ```
+     * fail if message.id == -1
+     * ```
+     *
      * `.netdesign2.Message message = 1;`
      * @return Whether the message field is set.
      */

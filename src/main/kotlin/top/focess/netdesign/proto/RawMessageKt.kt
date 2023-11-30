@@ -62,24 +62,7 @@ public object RawMessageKt {
     }
 
     /**
-     * `string content = 3;`
-     */
-    public var content: kotlin.String
-      @JvmName("getContent")
-      get() = _builder.getContent()
-      @JvmName("setContent")
-      set(value) {
-        _builder.setContent(value)
-      }
-    /**
-     * `string content = 3;`
-     */
-    public fun clearContent() {
-      _builder.clearContent()
-    }
-
-    /**
-     * `.netdesign2.MessageType type = 4;`
+     * `.netdesign2.MessageType type = 3;`
      */
     public var type: top.focess.netdesign.proto.PacketOuterClass.MessageType
       @JvmName("getType")
@@ -96,10 +79,51 @@ public object RawMessageKt {
         _builder.setTypeValue(value)
       }
     /**
-     * `.netdesign2.MessageType type = 4;`
+     * `.netdesign2.MessageType type = 3;`
      */
     public fun clearType() {
       _builder.clearType()
+    }
+
+    /**
+     * `string content = 4;`
+     */
+    public var content: kotlin.String
+      @JvmName("getContent")
+      get() = _builder.getContent()
+      @JvmName("setContent")
+      set(value) {
+        _builder.setContent(value)
+      }
+    /**
+     * `string content = 4;`
+     */
+    public fun clearContent() {
+      _builder.clearContent()
+    }
+
+    /**
+     * `optional string hash = 5;`
+     */
+    public var hash: kotlin.String
+      @JvmName("getHash")
+      get() = _builder.getHash()
+      @JvmName("setHash")
+      set(value) {
+        _builder.setHash(value)
+      }
+    /**
+     * `optional string hash = 5;`
+     */
+    public fun clearHash() {
+      _builder.clearHash()
+    }
+    /**
+     * `optional string hash = 5;`
+     * @return Whether the hash field is set.
+     */
+    public fun hasHash(): kotlin.Boolean {
+      return _builder.hasHash()
     }
   }
 }

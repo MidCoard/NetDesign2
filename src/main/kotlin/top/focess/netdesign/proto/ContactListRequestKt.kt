@@ -10,7 +10,7 @@ public inline fun contactListRequest(block: top.focess.netdesign.proto.ContactLi
   top.focess.netdesign.proto.ContactListRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.ContactListRequest.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 8
+ *packet id = 8 server packet0 return ClientAckResponse
  * ```
  *
  * Protobuf type `netdesign2.ContactListRequest`
@@ -30,6 +30,78 @@ public object ContactListRequestKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ContactListRequest = _builder.build()
+
+    /**
+     * An uninstantiable, behaviorless type to represent the field in
+     * generics.
+     */
+    @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
+    public class ContactsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
+    /**
+     * `repeated .netdesign2.Contact contacts = 1;`
+     */
+     public val contacts: com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>
+      @kotlin.jvm.JvmSynthetic
+      get() = com.google.protobuf.kotlin.DslList(
+        _builder.getContactsList()
+      )
+    /**
+     * `repeated .netdesign2.Contact contacts = 1;`
+     * @param value The contacts to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addContacts")
+    public fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>.add(value: top.focess.netdesign.proto.PacketOuterClass.Contact) {
+      _builder.addContacts(value)
+    }
+    /**
+     * `repeated .netdesign2.Contact contacts = 1;`
+     * @param value The contacts to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignContacts")
+    @Suppress("NOTHING_TO_INLINE")
+    public inline operator fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>.plusAssign(value: top.focess.netdesign.proto.PacketOuterClass.Contact) {
+      add(value)
+    }
+    /**
+     * `repeated .netdesign2.Contact contacts = 1;`
+     * @param values The contacts to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addAllContacts")
+    public fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>.addAll(values: kotlin.collections.Iterable<top.focess.netdesign.proto.PacketOuterClass.Contact>) {
+      _builder.addAllContacts(values)
+    }
+    /**
+     * `repeated .netdesign2.Contact contacts = 1;`
+     * @param values The contacts to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignAllContacts")
+    @Suppress("NOTHING_TO_INLINE")
+    public inline operator fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>.plusAssign(values: kotlin.collections.Iterable<top.focess.netdesign.proto.PacketOuterClass.Contact>) {
+      addAll(values)
+    }
+    /**
+     * `repeated .netdesign2.Contact contacts = 1;`
+     * @param index The index to set the value at.
+     * @param value The contacts to set.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("setContacts")
+    public operator fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>.set(index: kotlin.Int, value: top.focess.netdesign.proto.PacketOuterClass.Contact) {
+      _builder.setContacts(index, value)
+    }
+    /**
+     * `repeated .netdesign2.Contact contacts = 1;`
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("clearContacts")
+    public fun com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>.clear() {
+      _builder.clearContacts()
+    }
+
   }
 }
 @kotlin.jvm.JvmSynthetic

@@ -10,7 +10,7 @@ public inline fun loginPreResponse(block: top.focess.netdesign.proto.LoginPreRes
   top.focess.netdesign.proto.LoginPreResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.LoginPreResponse.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 3
+ *packet id = 3 server packet
  * ```
  *
  * Protobuf type `netdesign2.LoginPreResponse`

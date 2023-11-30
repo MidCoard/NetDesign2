@@ -1,6 +1,7 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -23,6 +25,8 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -96,7 +100,7 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
     val listState = rememberLazyListState()
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(top = 4.dp),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = listState,
     ) {
@@ -122,24 +126,26 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
 @Composable
 fun MyView(self: Friend) {
 
-    SelectionContainer {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Icon(
-                Icons.Default.Person,
-                contentDescription = self.name,
+    Surface {
+        SelectionContainer {
+            Row(
                 modifier = Modifier
-                    .size(125.dp)
-                    .padding(8.dp)
-                    .clip(CircleShape)
-            )
-            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
-                Text(text = self.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
-                Text(text = "#${self.id}", style = TextStyle(fontSize = 15.sp))
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = self.name,
+                    modifier = Modifier
+                        .size(125.dp)
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                )
+                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
+                    Text(text = self.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
+                    Text(text = "#${self.id}", style = TextStyle(fontSize = 15.sp))
+                }
             }
         }
     }

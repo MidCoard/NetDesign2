@@ -273,6 +273,7 @@ private fun queryAllMessage(a: Int, b : Int, internalId: Int): List<Message> {
             it.timestamp.toInt()
         )
     }.toMutableList()
+
     messages.addAll(serverMessageQueries.selectBySenderAndReceiverAndInternalId(b.toLong(),a.toLong(),internalId.toLong()).executeAsList().map{
         Message(
             it.id.toInt(),

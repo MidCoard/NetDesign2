@@ -201,6 +201,30 @@ public object ContactKt {
       _builder.clearMembers()
     }
 
+
+    /**
+     * `optional int32 header = 6;`
+     */
+    public var header: kotlin.Int
+      @JvmName("getHeader")
+      get() = _builder.getHeader()
+      @JvmName("setHeader")
+      set(value) {
+        _builder.setHeader(value)
+      }
+    /**
+     * `optional int32 header = 6;`
+     */
+    public fun clearHeader() {
+      _builder.clearHeader()
+    }
+    /**
+     * `optional int32 header = 6;`
+     * @return Whether the header field is set.
+     */
+    public fun hasHeader(): kotlin.Boolean {
+      return _builder.hasHeader()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

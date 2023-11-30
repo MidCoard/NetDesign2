@@ -10,47 +10,49 @@ message Packet {
   google.protobuf.Any content = 2;
 }
 
-//packet id = 0
+//packet id = 0 client packet
 message ServerStatusRequest {
   optional string clientPublicKey = 1;
 }
 
-//packet id = 1
+//packet id = 1 server packet
 message ServerStatusResponse {
   bool online = 1;
   bool registrable = 2;
   optional string serverPublicKey = 3;
 }
 
-//packet id = 6
+//packet id = 6 client packet
 message ServerStatusUpdateRequest {
 }
 
-//packet id = 7
+//packet id = 7 server packet
 message ServerStatusUpdateResponse {
   bool online = 1;
   bool registrable = 2;
 }
 
-//packet id = 2
+//packet id = 2 client packet
 message LoginPreRequest {
   string username = 1;
 }
 
-//packet id = 3
+//packet id = 3 server packet
 message LoginPreResponse {
   string challenge = 1;
 }
 
-//packet id = 4
+//packet id = 4 client packet
 message LoginRequest{
   string username = 1;
   string hashPassword = 2;
 }
 
-//packet id = 5
+//packet id = 5 server packet
 message LoginResponse {
-  bool logined = 1;
+  string username = 1;
+  bool logined = 2;
+  string token = 3;
 }
 
 message Contact {
@@ -59,6 +61,7 @@ message Contact {
   bool online = 3;
   ContactType type = 4;
   repeated Contact members = 5; // optional, only if type is GROUP
+  optional int32 header = 6;
 
   enum ContactType {
     FRIEND = 0;
@@ -67,29 +70,23 @@ message Contact {
   }
 }
 
-//packet id = 8
+//packet id = 8 server packet0 return ClientAckResponse
 message ContactListRequest {
-}
-
-//packet id = 9
-message ContactListResponse {
   repeated Contact contacts = 1;
 }
 
-//packet id = 10
+//packet id = 9 client packet0
+message ClientAckResponse {
+}
+
+//packet id = 10 server packet0 return ClientAckResponse
 message ContactRequest {
-  int32 id = 1;
-}
-
-//packet id = 11
-message ContactResponse {
   Contact contact = 1;
+  bool delete = 2;
 }
 
-//packet id = 12
-message ContactMessageRequest {
-  int32 id = 1;
-  int32 internalId = 2;
+//packet id = 11 server packet
+message ServerAckResponse {
 }
 
 enum MessageType {
@@ -101,8 +98,9 @@ enum MessageType {
 message RawMessage {
   int32 from = 1;
   int32 to = 2;
-  string content = 3;
-  MessageType type = 4;
+  MessageType type = 3;
+  string content = 4;
+  optional string hash = 5;
 }
 
 message Message {
@@ -112,18 +110,37 @@ message Message {
   int32 internalId = 4;
 }
 
-//packet id = 13
+//packet id = 12 client packet
+message ContactMessageRequest {
+  string token = 1;
+  int32 id = 2;
+  int32 internalId = 3;
+}
+
+//packet id = 13 server packet
 message ContactMessageResponse {
   repeated Message messages = 1;
 }
 
-//packet id = 14
+//packet id = 14 client packet
 message FriendSendMessageRequest {
   RawMessage message = 1;
 }
 
-//packet id = 15
+//packet id = 15 server packet
 message FriendSendMessageResponse {
-  Message message = 1;
+  Message message = 1; // fail if message.id == -1
 }
+
+//packet id = 16 client packet return ServerAckResponse
+message SetupChannelRequest {
+  string token = 1;
+}
+
+//packet id = 17 server packet return ClientAckResponse
+message ChannelHeartRequest {
+}
+
+
+
 

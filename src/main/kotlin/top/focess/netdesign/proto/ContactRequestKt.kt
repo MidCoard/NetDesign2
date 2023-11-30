@@ -10,7 +10,7 @@ public inline fun contactRequest(block: top.focess.netdesign.proto.ContactReques
   top.focess.netdesign.proto.ContactRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.ContactRequest.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 10
+ *packet id = 10 server packet0 return ClientAckResponse
  * ```
  *
  * Protobuf type `netdesign2.ContactRequest`
@@ -32,24 +32,51 @@ public object ContactRequestKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ContactRequest = _builder.build()
 
     /**
-     * `int32 id = 1;`
+     * `.netdesign2.Contact contact = 1;`
      */
-    public var id: kotlin.Int
-      @JvmName("getId")
-      get() = _builder.getId()
-      @JvmName("setId")
+    public var contact: top.focess.netdesign.proto.PacketOuterClass.Contact
+      @JvmName("getContact")
+      get() = _builder.getContact()
+      @JvmName("setContact")
       set(value) {
-        _builder.setId(value)
+        _builder.setContact(value)
       }
     /**
-     * `int32 id = 1;`
+     * `.netdesign2.Contact contact = 1;`
      */
-    public fun clearId() {
-      _builder.clearId()
+    public fun clearContact() {
+      _builder.clearContact()
+    }
+    /**
+     * `.netdesign2.Contact contact = 1;`
+     * @return Whether the contact field is set.
+     */
+    public fun hasContact(): kotlin.Boolean {
+      return _builder.hasContact()
+    }
+
+    /**
+     * `bool delete = 2;`
+     */
+    public var delete: kotlin.Boolean
+      @JvmName("getDelete")
+      get() = _builder.getDelete()
+      @JvmName("setDelete")
+      set(value) {
+        _builder.setDelete(value)
+      }
+    /**
+     * `bool delete = 2;`
+     */
+    public fun clearDelete() {
+      _builder.clearDelete()
     }
   }
 }
 @kotlin.jvm.JvmSynthetic
 public inline fun top.focess.netdesign.proto.PacketOuterClass.ContactRequest.copy(block: `top.focess.netdesign.proto`.ContactRequestKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.ContactRequest =
   `top.focess.netdesign.proto`.ContactRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+
+public val top.focess.netdesign.proto.PacketOuterClass.ContactRequestOrBuilder.contactOrNull: top.focess.netdesign.proto.PacketOuterClass.Contact?
+  get() = if (hasContact()) getContact() else null
 

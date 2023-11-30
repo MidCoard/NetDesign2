@@ -10,7 +10,7 @@ public inline fun contactMessageRequest(block: top.focess.netdesign.proto.Contac
   top.focess.netdesign.proto.ContactMessageRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.ContactMessageRequest.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 12
+ *packet id = 12 client packet
  * ```
  *
  * Protobuf type `netdesign2.ContactMessageRequest`
@@ -32,7 +32,24 @@ public object ContactMessageRequestKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ContactMessageRequest = _builder.build()
 
     /**
-     * `int32 id = 1;`
+     * `string token = 1;`
+     */
+    public var token: kotlin.String
+      @JvmName("getToken")
+      get() = _builder.getToken()
+      @JvmName("setToken")
+      set(value) {
+        _builder.setToken(value)
+      }
+    /**
+     * `string token = 1;`
+     */
+    public fun clearToken() {
+      _builder.clearToken()
+    }
+
+    /**
+     * `int32 id = 2;`
      */
     public var id: kotlin.Int
       @JvmName("getId")
@@ -42,14 +59,14 @@ public object ContactMessageRequestKt {
         _builder.setId(value)
       }
     /**
-     * `int32 id = 1;`
+     * `int32 id = 2;`
      */
     public fun clearId() {
       _builder.clearId()
     }
 
     /**
-     * `int32 internalId = 2;`
+     * `int32 internalId = 3;`
      */
     public var internalId: kotlin.Int
       @JvmName("getInternalId")
@@ -59,7 +76,7 @@ public object ContactMessageRequestKt {
         _builder.setInternalId(value)
       }
     /**
-     * `int32 internalId = 2;`
+     * `int32 internalId = 3;`
      */
     public fun clearInternalId() {
       _builder.clearInternalId()

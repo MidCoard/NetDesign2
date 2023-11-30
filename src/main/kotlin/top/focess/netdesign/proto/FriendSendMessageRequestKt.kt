@@ -10,7 +10,7 @@ public inline fun friendSendMessageRequest(block: top.focess.netdesign.proto.Fri
   top.focess.netdesign.proto.FriendSendMessageRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 14
+ *packet id = 14 client packet
  * ```
  *
  * Protobuf type `netdesign2.FriendSendMessageRequest`

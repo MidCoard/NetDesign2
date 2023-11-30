@@ -10,7 +10,7 @@ public inline fun serverStatusResponse(block: top.focess.netdesign.proto.ServerS
   top.focess.netdesign.proto.ServerStatusResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.ServerStatusResponse.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 1
+ *packet id = 1 server packet
  * ```
  *
  * Protobuf type `netdesign2.ServerStatusResponse`

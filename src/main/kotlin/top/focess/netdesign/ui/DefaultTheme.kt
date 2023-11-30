@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 
 object DefaultTheme {
 
-    val FORCE_LIGHT = true
+    val FORCE_LIGHT = false
 
     val darkColors = darkColors(
         primary = Color(0xFF2196F3),

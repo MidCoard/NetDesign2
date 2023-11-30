@@ -4,20 +4,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.runBlocking
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.server.packet.*
 import top.focess.util.RSA
+import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.Closeable
 import java.io.InputStream
 import java.net.Socket
 
-@OptIn(DelicateCoroutinesApi::class)
 class RemoteServer
 internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) :
     Closeable {
@@ -28,63 +26,118 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
     var online by mutableStateOf(true)
     var registerable by mutableStateOf(false)
-    var lastLoginedUsername: String? = null
     var self: Friend? = null
+    var token: String? = null
+    var username: String? = null
     private var serverPublicKey: String? = null
 
-    private lateinit var socket: Socket
+    private val socket: Socket
+        get() = setupSocket()
+    private var channelSocket: Socket? = null
+    private var channelThread: Thread? = null
+    val channelPackets = mutableListOf<ServerPacket>()
     private val ownRSAKey = RSA.genRSAKeypair()
-    private val mutex = Mutex()
 
-    private suspend fun trySendPacket(packet: ClientPacket): ServerPacket? {
-        mutex.withLock {
-            println("RemoteServer: send ${packet.packetId}")
-            if (this.connected() && packet is ServerStatusRequestPacket)
-            // server is connected, no need to send
-            // if you want to update the server status, send an update packet or reconnect
-                return ServerStatusResponsePacket(online, registerable, serverPublicKey)
-            try {
-                if (packet is LoginRequestPacket)
-                    lastLoginedUsername = packet.username
+    private fun setupSocket(): Socket {
+        val socket = Socket(host, port)
+        socket.soTimeout = 1000
+        socket.tcpNoDelay = true
+        return socket
+    }
+
+    private suspend fun trySendPacket(packet: ClientPacket, socket: Socket): ServerPacket? {
+        println("RemoteServer: pre-send ${packet.packetId}")
+        if (this.connected() && packet is ServerStatusRequestPacket)
+        // server is connected, no need to send
+        // if you want to update the server status, send an update packet or reconnect
+            return ServerStatusResponsePacket(online, registerable, serverPublicKey)
+        try {
+            socket.let {
                 var bytes = packet.toProtoPacket().toByteArray()
                 if (serverPublicKey != null)
                     bytes = RSA.encryptRSA(bytes, serverPublicKey)
-                BufferedOutputStream(socket.getOutputStream()).let {
-                    it.write(bytes)
-                    it.flush()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return null
+                println("RemoteServer: send ${packet.packetId}")
+                it.getOutputStream().write(bytes)
+                it.shutdownOutput()
             }
-
-
-            return socket.getInputStream().let {
-                var bytes = it.readAvailableBytes()
+        } catch (e: Exception) {
+            // trySendPacket method will catch this exception and return null
+            e.printStackTrace()
+            return null
+        }
+        return try {
+            socket.let {
+                var bytes = it.getInputStream().readBytes()
                 if (this.serverPublicKey != null)
                     bytes = RSA.decryptRSA(bytes, this.ownRSAKey.privateKey)
                 val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
                 val packetId = protoPacket.packetId
                 println("RemoteServer: receive $packetId")
+                it.shutdownInput()
+                it.close()
                 Packets.fromProtoPacket(protoPacket) as ServerPacket
             }
-        }
-    }
-
-    suspend fun sendPacket(packet: ClientPacket): ServerPacket? {
-        if (!connected)
-            return null
-        var exception: Exception? = null
-        val serverPacket = try {
-            trySendPacket(packet)
         } catch (e: Exception) {
-            exception = e;
+            // trySendPacket method will catch this exception and return null
             e.printStackTrace()
             null
         }
-        if (serverPacket == null && (exception == null || exception !is IllegalArgumentException))
-            connected = ConnectionStatus.DISCONNECTED
+    }
+
+    suspend fun sendPacket(packet: ClientPacket, socket: Socket = this.socket): ServerPacket? {
+        if (!connected)
+            return null
+        val serverPacket = trySendPacket(packet, socket)
+        if (serverPacket == null)
+            disconnect()
         return serverPacket
+    }
+
+
+    suspend fun setupChannel(username: String, token: String) {
+        if (!connected())
+            return
+        this.channelSocket?.close()
+        this.channelThread?.join()
+        this.channelSocket = this.socket
+        this.channelSocket?.keepAlive = true
+        this.channelThread = Thread {
+            // send channel setup request
+            this.channelSocket?.use {
+                BufferedOutputStream(it.getOutputStream()).use {
+                    it.write(SetupChannelRequestPacket(token).toProtoPacket().toByteArray())
+                    it.flush()
+                }
+
+                try {
+                    val bytes = runBlocking { it.getInputStream().readAvailableBytes() }
+                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                    val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
+                    if (packet !is ServerAckResponse)
+                        throw IllegalArgumentException("Invalid packet")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    it.close()
+                    return@Thread
+                }
+            }
+
+            // start channel
+            while (this.channelSocket?.isClosed?.not() == true) {
+                val bytes = runBlocking { channelSocket?.getInputStream()?.readAvailableBytes() }
+                if (bytes != null) {
+                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                    val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
+                    this.channelPackets.add(packet)
+                }
+            }
+        }
+        val packet = this.sendPacket(SetupChannelRequestPacket(token), this.channelSocket!!)
+        if (packet != null && packet is ServerAckResponse) {
+            this.token = token
+            this.username = username
+        } else this.channelSocket?.close()
+
     }
 
     override fun close() {
@@ -96,18 +149,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         if (this.connected())
             return
         this.connected = ConnectionStatus.CONNECTING
-        try {
-            socket = Socket(host, port)
-            socket.keepAlive = true
-            socket.soTimeout = 1000
-            socket.tcpNoDelay = true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            this.connected = ConnectionStatus.DISCONNECTED
-            return
-        }
-        val packet = this.trySendPacket(ServerStatusRequestPacket(ownRSAKey.publicKey))
-        delay(2000)
+        val packet = this.trySendPacket(ServerStatusRequestPacket(ownRSAKey.publicKey), this.socket)
         if (packet != null && packet is ServerStatusResponsePacket) {
             this.online = packet.online
             this.registerable = packet.registrable
@@ -122,7 +164,6 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         this.online = true
         this.registerable = false
         this.serverPublicKey = null
-        this.socket.close()
     }
 
     suspend fun reconnect() {

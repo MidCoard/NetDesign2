@@ -10,7 +10,7 @@ public inline fun loginResponse(block: top.focess.netdesign.proto.LoginResponseK
   top.focess.netdesign.proto.LoginResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.LoginResponse.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 5
+ *packet id = 5 server packet
  * ```
  *
  * Protobuf type `netdesign2.LoginResponse`
@@ -32,7 +32,24 @@ public object LoginResponseKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.LoginResponse = _builder.build()
 
     /**
-     * `bool logined = 1;`
+     * `string username = 1;`
+     */
+    public var username: kotlin.String
+      @JvmName("getUsername")
+      get() = _builder.getUsername()
+      @JvmName("setUsername")
+      set(value) {
+        _builder.setUsername(value)
+      }
+    /**
+     * `string username = 1;`
+     */
+    public fun clearUsername() {
+      _builder.clearUsername()
+    }
+
+    /**
+     * `bool logined = 2;`
      */
     public var logined: kotlin.Boolean
       @JvmName("getLogined")
@@ -42,10 +59,27 @@ public object LoginResponseKt {
         _builder.setLogined(value)
       }
     /**
-     * `bool logined = 1;`
+     * `bool logined = 2;`
      */
     public fun clearLogined() {
       _builder.clearLogined()
+    }
+
+    /**
+     * `string token = 3;`
+     */
+    public var token: kotlin.String
+      @JvmName("getToken")
+      get() = _builder.getToken()
+      @JvmName("setToken")
+      set(value) {
+        _builder.setToken(value)
+      }
+    /**
+     * `string token = 3;`
+     */
+    public fun clearToken() {
+      _builder.clearToken()
     }
   }
 }

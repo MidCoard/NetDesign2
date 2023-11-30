@@ -10,7 +10,7 @@ public inline fun serverStatusUpdateRequest(block: top.focess.netdesign.proto.Se
   top.focess.netdesign.proto.ServerStatusUpdateRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.ServerStatusUpdateRequest.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 6
+ *packet id = 6 client packet
  * ```
  *
  * Protobuf type `netdesign2.ServerStatusUpdateRequest`
