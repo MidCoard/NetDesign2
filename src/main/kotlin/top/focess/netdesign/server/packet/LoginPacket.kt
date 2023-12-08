@@ -7,12 +7,12 @@ import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.loginRequest
 import top.focess.netdesign.proto.loginResponse
 
-data class LoginResponsePacket(val username: String, val logined: Boolean, val token: String) : ServerPacket(PACKET_ID) {
+data class LoginResponsePacket(val logined: Boolean, val token: String) : ServerPacket(PACKET_ID) {
     companion object : PacketCompanion<LoginResponsePacket>() {
         override val PACKET_ID = 5
         override fun fromProtoType(packet: Any): LoginResponsePacket  {
             val loginResponse: PacketOuterClass.LoginResponse = packet.unpack();
-            return LoginResponsePacket(loginResponse.username, loginResponse.logined, loginResponse.token)
+            return LoginResponsePacket(loginResponse.logined, loginResponse.token)
         }
 
     }

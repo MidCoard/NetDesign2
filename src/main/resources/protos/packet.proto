@@ -50,9 +50,8 @@ message LoginRequest{
 
 //packet id = 5 server packet
 message LoginResponse {
-  string username = 1;
-  bool logined = 2;
-  string token = 3;
+  bool logined = 1;
+  string token = 2;
 }
 
 message Contact {
@@ -119,7 +118,7 @@ message ContactMessageRequest {
 
 //packet id = 13 server packet
 message ContactMessageResponse {
-  repeated Message messages = 1;
+  Message message = 1;
 }
 
 //packet id = 14 client packet
@@ -132,15 +131,16 @@ message FriendSendMessageResponse {
   Message message = 1; // fail if message.id == -1
 }
 
-//packet id = 16 client packet return ServerAckResponse
+//packet id = 16 client packet0 return ServerAckResponse
 message SetupChannelRequest {
   string token = 1;
 }
 
-//packet id = 17 server packet return ClientAckResponse
+//packet id = 17 server packet0 return ClientAckResponse
 message ChannelHeartRequest {
 }
 
-
-
-
+//packet id = 18 server packet0 return ClientAckResponse
+message ContactMessageListRequest {
+  repeated Message messages = 1;
+}

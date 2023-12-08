@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
+import top.focess.netdesign.proto.clientAckResponse
 import top.focess.netdesign.server.packet.*
 import top.focess.util.RSA
 import java.io.BufferedInputStream
@@ -35,7 +36,6 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         get() = setupSocket()
     private var channelSocket: Socket? = null
     private var channelThread: Thread? = null
-    val channelPackets = mutableListOf<ServerPacket>()
     private val ownRSAKey = RSA.genRSAKeypair()
 
     private fun setupSocket(): Socket {
@@ -113,8 +113,8 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                     val bytes = runBlocking { it.getInputStream().readAvailableBytes() }
                     val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
                     val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
-                    if (packet !is ServerAckResponse)
-                        throw IllegalArgumentException("Invalid packet")
+                    if (packet !is ServerAckResponsePacket)
+                        throw IllegalArgumentException("Setup channel failed")
                 } catch (e: Exception) {
                     e.printStackTrace()
                     it.close()
@@ -128,12 +128,19 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                 if (bytes != null) {
                     val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
                     val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
-                    this.channelPackets.add(packet)
+                    println("RemoteServerChannel: receive ${packet.packetId}")
+                    channelSocket?.getOutputStream()?.let {
+                        BufferedOutputStream(it).use {
+                            it.write(ClientAckResponsePacket().toProtoPacket().toByteArray())
+                            it.flush()
+                        }
+                    }
+                    DEFAULT_PACKET_HANDLER.handle(packet)
                 }
             }
         }
         val packet = this.sendPacket(SetupChannelRequestPacket(token), this.channelSocket!!)
-        if (packet != null && packet is ServerAckResponse) {
+        if (packet != null && packet is ServerAckResponsePacket) {
             this.token = token
             this.username = username
         } else this.channelSocket?.close()
@@ -180,6 +187,25 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                 }
             }
         )
+
+        private val DEFAULT_PACKET_HANDLER = object : RemoteServerPacketHandler {
+            override fun handle(packet: ServerPacket) {
+                when (packet) {
+                    is ChannelHeartRequestPacket -> {}
+                    is ContactListRequestPacket -> {
+                        contacts.clear()
+                        contacts.addAll(packet.contacts)
+                    }
+                    is ContactRequestPacket -> {
+                        if (packet.delete)
+                            contacts.removeIf { it.id == packet.contact.id }
+                        else contacts.add(packet.contact)
+                    }
+                    else -> throw IllegalArgumentException("Unknown packet id ${packet.packetId}")
+                }
+            }
+
+        }
     }
 
     enum class ConnectionStatus {
@@ -188,6 +214,12 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         operator fun invoke() = this == CONNECTED
 
         operator fun not() = this == DISCONNECTED
+    }
+
+
+
+    private interface RemoteServerPacketHandler {
+        fun handle(packet: ServerPacket)
     }
 
 }

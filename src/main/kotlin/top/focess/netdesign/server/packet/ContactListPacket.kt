@@ -4,81 +4,21 @@ import com.google.protobuf.Any
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.kotlin.unpack
 import top.focess.netdesign.proto.PacketOuterClass
-import top.focess.netdesign.proto.contact
-import top.focess.netdesign.proto.contactListRequest
 import top.focess.netdesign.proto.contactListResponse
 import top.focess.netdesign.server.Contact
-import top.focess.netdesign.server.Friend
-import top.focess.netdesign.server.Group
-import top.focess.netdesign.server.Member
 
-data class ContactListResponsePacket(val contacts: List<Contact>) : ServerPacket(PACKET_ID) {
-    companion object : PacketCompanion<ContactListResponsePacket>() {
-        override val PACKET_ID = 9
+data class ContactListRequestPacket(val contacts: List<Contact>) : ServerPacket(PACKET_ID) {
+    companion object : PacketCompanion<ContactListRequestPacket>() {
+        override val PACKET_ID = 8
 
-        override fun fromProtoType(packet: Any): ContactListResponsePacket {
-            val contactListResponse: PacketOuterClass.ContactListResponse = packet.unpack()
-            return ContactListResponsePacket(
-                contactListResponse.contactsList.map { contact ->
-                    when (contact.type) {
-                        PacketOuterClass.Contact.ContactType.FRIEND -> Friend(
-                            contact.id,
-                            contact.name,
-                            contact.online
-                        )
-
-                        PacketOuterClass.Contact.ContactType.GROUP -> Group(
-                            contact.id,
-                            contact.name,
-                            contact.online,
-                            contact.membersList.map { member ->
-                                Member(member.id, member.name, member.online)
-                            }.toList()
-                        )
-
-                        else -> throw IllegalArgumentException("Unknown contact type: ${contact.type}")
-                    }
-                }.toList()
-            )
+        override fun fromProtoType(packet: Any): ContactListRequestPacket {
+            val contactListResponse: PacketOuterClass.ContactListRequest = packet.unpack()
+            return ContactListRequestPacket(contactListResponse.contactsList.map { contact -> contact.fromProtoType() }.toList())
         }
 
     }
 
     override fun toProtoType(): GeneratedMessageV3 = contactListResponse {
-        this.contacts.addAll(this@ContactListResponsePacket.contacts.map { contact ->
-            contact {
-                this.id = contact.id
-                this.name = contact.name
-                this.online = contact.online
-                this.type = when (contact) {
-                    is Friend -> PacketOuterClass.Contact.ContactType.FRIEND
-                    is Group -> PacketOuterClass.Contact.ContactType.GROUP
-                    else -> PacketOuterClass.Contact.ContactType.UNRECOGNIZED
-                }
-                if (contact is Group)
-                    this.members.addAll(
-                        contact.members.map {
-                            contact {
-                                this.id = it.id
-                                this.name = it.name
-                                this.online = it.online
-                                this.type = PacketOuterClass.Contact.ContactType.MEMBER
-                            }
-                        }.toList()
-                    )
-            }
-        }.toList())
+        this.contacts.addAll(this@ContactListRequestPacket.contacts.map { contact -> contact.toProtoType() }.toList())
     }
-}
-
-class ContactListRequestPacket : ClientPacket(PACKET_ID) {
-
-    companion object : PacketCompanion<ContactListRequestPacket>() {
-        override val PACKET_ID = 8
-
-        override fun fromProtoType(packet: Any): ContactListRequestPacket = ContactListRequestPacket()
-    }
-
-    override fun toProtoType(): GeneratedMessageV3 = contactListRequest {}
-
 }
