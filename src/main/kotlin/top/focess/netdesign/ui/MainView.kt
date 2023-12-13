@@ -1,7 +1,6 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,77 +24,15 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 import top.focess.netdesign.server.*
-import top.focess.netdesign.server.packet.ContactListRequestPacket
-import top.focess.netdesign.server.packet.ContactListResponsePacket
 
 
 @Composable
 fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            val packet = server.sendPacket(ContactListRequestPacket())
-            if (packet is ContactListResponsePacket) {
-                server.self =
-                    packet.contacts.filterIsInstance<Friend>().find { it.name == server.lastLoginedUsername }!!
-                val filtered = packet.contacts.filter { it.name != server.lastLoginedUsername }
-                val contactMap = filtered.associateBy { it.id }
-                val visitedMap = mutableMapOf<Int, Boolean>()
-                for (contact in filtered)
-                    visitedMap[contact.id] = false
-
-                val toRemove = mutableListOf<Contact>()
-
-                for (contact in contacts) {
-                    if (contact is Friend) {
-                        val target = contactMap[contact.id]
-                        if (target is Friend) {
-                            visitedMap[contact.id] = true
-                            contact.name = target.name
-                            contact.online = target.online
-                        } else toRemove.add(contact)
-                    } else if (contact is Group) {
-                        val target = contactMap[contact.id]
-                        if (target is Group) {
-                            visitedMap[contact.id] = true
-                            contact.name = target.name
-                            contact.online = target.online
-                            val visitedMemberMap = mutableMapOf<Int, Boolean>()
-                            for (member in target.members)
-                                visitedMemberMap[member.id] = false
-                            val toRemoveMember = mutableListOf<Member>()
-                            for (member in contact.members) {
-                                val targetMember = target.members.find { it.id == member.id }
-                                if (targetMember != null) {
-                                    visitedMemberMap[member.id] = true
-                                    member.name = targetMember.name
-                                    member.online = targetMember.online
-                                } else toRemoveMember.add(member)
-                            }
-                            contact.members.removeAll(toRemoveMember)
-                            contact.members.addAll(target.members.filter { !visitedMemberMap[it.id]!! })
-                        } else toRemove.add(contact)
-                    }
-                }
-
-                contacts.removeAll(toRemove)
-                contacts.addAll(filtered.filter { !visitedMap[it.id]!! })
-
-                contacts.add(Friend(1, "WWWWWWWWWWWWWWWWWWWW", true))
-                contacts.add(Friend(2, "test2", false))
-
-            }
-            delay(10000)
-        }
-    }
 
     val listState = rememberLazyListState()
 
@@ -106,6 +43,7 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
     ) {
 
         val contactList = contacts.toList()
+
         item {
             server.self?.let {
                 MyView(server.self!!)
@@ -113,7 +51,7 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
         }
 
         items(contactList) { contact ->
-            if (contact is Friend) {
+            if (contact is Friend && contact.id != server.id) {
                 FriendView(contact, showContact)
             } else if (contact is Group) {
                 GroupView(contact)
@@ -122,7 +60,6 @@ fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MyView(self: Friend) {
 

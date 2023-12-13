@@ -49,7 +49,24 @@ public object LoginResponseKt {
     }
 
     /**
-     * `string token = 2;`
+     * `int32 id = 2;`
+     */
+    public var id: kotlin.Int
+      @JvmName("getId")
+      get() = _builder.getId()
+      @JvmName("setId")
+      set(value) {
+        _builder.setId(value)
+      }
+    /**
+     * `int32 id = 2;`
+     */
+    public fun clearId() {
+      _builder.clearId()
+    }
+
+    /**
+     * `string token = 3;`
      */
     public var token: kotlin.String
       @JvmName("getToken")
@@ -59,7 +76,7 @@ public object LoginResponseKt {
         _builder.setToken(value)
       }
     /**
-     * `string token = 2;`
+     * `string token = 3;`
      */
     public fun clearToken() {
       _builder.clearToken()

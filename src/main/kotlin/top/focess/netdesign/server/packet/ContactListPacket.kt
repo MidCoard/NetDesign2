@@ -4,7 +4,7 @@ import com.google.protobuf.Any
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.kotlin.unpack
 import top.focess.netdesign.proto.PacketOuterClass
-import top.focess.netdesign.proto.contactListResponse
+import top.focess.netdesign.proto.contactListRequest
 import top.focess.netdesign.server.Contact
 
 data class ContactListRequestPacket(val contacts: List<Contact>) : ServerPacket(PACKET_ID) {
@@ -18,7 +18,7 @@ data class ContactListRequestPacket(val contacts: List<Contact>) : ServerPacket(
 
     }
 
-    override fun toProtoType(): GeneratedMessageV3 = contactListResponse {
+    override fun toProtoType(): GeneratedMessageV3 = contactListRequest {
         this.contacts.addAll(this@ContactListRequestPacket.contacts.map { contact -> contact.toProtoType() }.toList())
     }
 }

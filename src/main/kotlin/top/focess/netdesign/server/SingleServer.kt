@@ -1,7 +1,6 @@
 package top.focess.netdesign.server
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.server.packet.*
@@ -9,12 +8,15 @@ import top.focess.netdesign.sqldelight.message.ServerMessage
 import top.focess.netdesign.ui.friendQueries
 import top.focess.netdesign.ui.serverMessageQueries
 import top.focess.netdesign.ui.sha256
+import top.focess.scheduler.FocessScheduler
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.Closeable
 import java.net.ServerSocket
 import java.net.Socket
 import java.security.SecureRandom
+import java.time.Duration
+import java.util.concurrent.ConcurrentLinkedQueue
 
 @OptIn(DelicateCoroutinesApi::class)
 class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
@@ -29,12 +31,33 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
     private var shouldClose = false
 
+    private val scheduler : FocessScheduler = FocessScheduler("SingleServer")
+
+    private val packetQueue = ConcurrentLinkedQueue<Pair<ClientScope, ServerPacket>>()
+
+    // make sure all packets are sent in one thread
+    // in fact, different clients' packets can be sent in different threads
+    // but one client's packets must be sent in one thread
+    private val packetThread = Thread {
+        while (!this.shouldClose) {
+            // give up the cpu
+            runBlocking { delay(100) }
+            packetQueue.poll()?.let {
+                val clientScope = it.first
+                val serverPacket = it.second
+                runBlocking { sendChannelPacket0(clientScope, serverPacket) }
+            }
+        }
+    }
+
     init {
+        // 10 seconds to send a heart packet
+        scheduler.runTimer(Runnable {
+            clientScopeMap.forEach { (_, clientScope) -> sendChannelPacket(clientScope, ChannelHeartRequestPacket()) }
+        }, Duration.ofSeconds(10), Duration.ZERO)
 
         Thread {
-            while (true) {
-                if (this.shouldClose)
-                    break
+            while (!this.shouldClose) {
                 try {
                     val socket = serverSocket.accept()
                     BufferedInputStream(socket.getInputStream()).let {
@@ -42,35 +65,49 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                         val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
                         val packetId = protoPacket.packetId
                         println("SingleServer: receive $packetId")
-                        val packet = Packets.fromProtoPacket(protoPacket) as ClientPacket
-                        if (packet is SetupChannelRequestPacket)
-                            this.setupChannel(socket, packet.token)
+                        val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
+                        if (clientPacket is SetupChannelRequestPacket)
+                            this.setupChannel(socket, clientPacket.token)
                         with(DEFAULT_PACKET_HANDLER) {
                             this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
-                        }
-                    }?.let { packet ->
-                        println("SingleServer: send ${packet.packetId}");
-                        val bytes = packet.toProtoPacket().toByteArray()
+                        }?.to(clientPacket)
+                    }?.let {
+                        val serverPacket = it.first
+                        println("SingleServer: send ${serverPacket.packetId}");
+                        val bytes = serverPacket.toProtoPacket().toByteArray()
                         socket.getOutputStream().let {
                             it.write(bytes)
                             it.flush()
                         }
+                        val clientPacket = it.second
+                        if (clientPacket is SetupChannelRequestPacket)
+                            this.setupChannel(socket, clientPacket.token)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
         }.start()
+
+        packetThread.start()
     }
 
     override fun close() {
         shouldClose = true;
+        packetThread.join()
         serverSocket.close()
     }
 
+
     private fun setupChannel(socket : Socket, token : String) {
+        // re setup channel is accepted because the channel will be closed if some error occurs
         val clientScope = this.clientScopeMap[token] ?: return
         clientScope.channelSocket = socket
+        clientScope.isChannelSetup = true
+        GlobalScope.launch {
+            delay(200)
+            sendChannelPacket(clientScope, ContactListRequestPacket(listOf(defaultContact)))
+        }
     }
 
     companion object {
@@ -104,13 +141,13 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                     if (hashPassword == packet.hashPassword) {
                                         val token = genToken()
                                         this.clientScopeMap[token] = ClientScope(packet.username, token)
-                                        return LoginResponsePacket(true, token)
+                                        return LoginResponsePacket(true, friend.id.toInt(), token)
                                     }
 
                                 }
                             }
                         }
-                        LoginResponsePacket(false, "")
+                        LoginResponsePacket(false, -1,"")
                     }
 
                     is ServerStatusUpdateRequestPacket ->
@@ -170,19 +207,42 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
     private data class ClientScope(val username: String, val token: String, val self: Friend = Friend(0, username, true)) {
         lateinit var channelSocket: Socket
+        var isChannelSetup = false
     }
 
     private interface SingleServerPacketHandler {
         fun SingleServer.handle(packet: ClientPacket): ServerPacket?
     }
 
-    private fun sendChannelPacket(clientScope: ClientScope, packet: ServerPacket) {
-        val socket = clientScope.channelSocket
-        val bytes = packet.toProtoPacket().toByteArray()
-        BufferedOutputStream(socket.getOutputStream()).let {
-            it.write(bytes)
-            it.flush()
+    private suspend fun sendChannelPacket0(clientScope: ClientScope, packet: ServerPacket) {
+        if (!clientScope.isChannelSetup) return
+        if (clientScope.channelSocket.isClosed) {
+            // channel is closed by os
+            clientScope.isChannelSetup = false
+            return
         }
+        clientScope.channelSocket.use {
+            BufferedOutputStream(it.getOutputStream()).let {
+                it.write(packet.toProtoPacket().toByteArray())
+                it.flush()
+            }
+
+            try {
+                val bytes = it.getInputStream().readAvailableBytes()
+                val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
+                if (clientPacket !is ClientAckResponsePacket)
+                    throw IllegalStateException("Client did not ack packet")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                clientScope.isChannelSetup = false
+                clientScope.channelSocket.close()
+            }
+        }
+    }
+
+    private fun sendChannelPacket(clientScope: ClientScope, packet: ServerPacket) {
+        this.packetQueue.add(clientScope to packet)
     }
 
     fun sendChannelPacket(token: String, packet: ServerPacket) { sendChannelPacket(this.clientScopeMap[token] ?: return, packet) }

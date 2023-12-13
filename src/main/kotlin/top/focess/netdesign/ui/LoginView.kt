@@ -57,7 +57,7 @@ fun LangFile.LangScope.LoginView(
                     val loginPacket = server.sendPacket(LoginRequestPacket(username, encryptedPassword))
                     if (loginPacket is LoginResponsePacket && loginPacket.logined) {
                         flag = true
-                        server.setupChannel(username, loginPacket.token)
+                        server.setupChannel(loginPacket.id, username, loginPacket.token)
                         logined()
                     }
                 }

@@ -38,6 +38,10 @@ public object ContactListRequestKt {
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
     public class ContactsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
+     * ```
+     * contacts should contain the user contact itself as a Friend
+     * ```
+     *
      * `repeated .netdesign2.Contact contacts = 1;`
      */
      public val contacts: com.google.protobuf.kotlin.DslList<top.focess.netdesign.proto.PacketOuterClass.Contact, ContactsProxy>
@@ -46,6 +50,10 @@ public object ContactListRequestKt {
         _builder.getContactsList()
       )
     /**
+     * ```
+     * contacts should contain the user contact itself as a Friend
+     * ```
+     *
      * `repeated .netdesign2.Contact contacts = 1;`
      * @param value The contacts to add.
      */
@@ -55,6 +63,10 @@ public object ContactListRequestKt {
       _builder.addContacts(value)
     }
     /**
+     * ```
+     * contacts should contain the user contact itself as a Friend
+     * ```
+     *
      * `repeated .netdesign2.Contact contacts = 1;`
      * @param value The contacts to add.
      */
@@ -65,6 +77,10 @@ public object ContactListRequestKt {
       add(value)
     }
     /**
+     * ```
+     * contacts should contain the user contact itself as a Friend
+     * ```
+     *
      * `repeated .netdesign2.Contact contacts = 1;`
      * @param values The contacts to add.
      */
@@ -74,6 +90,10 @@ public object ContactListRequestKt {
       _builder.addAllContacts(values)
     }
     /**
+     * ```
+     * contacts should contain the user contact itself as a Friend
+     * ```
+     *
      * `repeated .netdesign2.Contact contacts = 1;`
      * @param values The contacts to add.
      */
@@ -84,6 +104,10 @@ public object ContactListRequestKt {
       addAll(values)
     }
     /**
+     * ```
+     * contacts should contain the user contact itself as a Friend
+     * ```
+     *
      * `repeated .netdesign2.Contact contacts = 1;`
      * @param index The index to set the value at.
      * @param value The contacts to set.
@@ -94,6 +118,10 @@ public object ContactListRequestKt {
       _builder.setContacts(index, value)
     }
     /**
+     * ```
+     * contacts should contain the user contact itself as a Friend
+     * ```
+     *
      * `repeated .netdesign2.Contact contacts = 1;`
      */
     @kotlin.jvm.JvmSynthetic

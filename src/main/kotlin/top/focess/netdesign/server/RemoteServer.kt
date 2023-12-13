@@ -4,8 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.clientAckResponse
@@ -28,6 +27,8 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     var online by mutableStateOf(true)
     var registerable by mutableStateOf(false)
     var self: Friend? = null
+
+    var id: Int? = null
     var token: String? = null
     var username: String? = null
 
@@ -88,7 +89,8 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     }
 
 
-    suspend fun setupChannel(username: String, token: String) {
+    @OptIn(DelicateCoroutinesApi::class)
+    suspend fun setupChannel(id: Int, username: String, token: String) {
         if (!connected())
             return
         this.channelSocket?.close()
@@ -109,10 +111,12 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                     val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
                     if (packet !is ServerAckResponsePacket)
                         throw IllegalArgumentException("Setup channel failed")
+                    this.id = id
+                    this.token = token
+                    this.username = username
                 } catch (e: Exception) {
                     e.printStackTrace()
                     it.close()
-                    return@Thread
                 }
             }
 
@@ -129,15 +133,21 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                             it.flush()
                         }
                     }
-                    DEFAULT_PACKET_HANDLER.handle(packet)
+                    with(DEFAULT_PACKET_HANDLER) {
+                        handle(packet)
+                    }
                 }
             }
+
+            // channel closed
+            // need to re setup channel
+            // channel will be closed by network error or actively closed by server if client no response to server or server do not receive client ack response
+            GlobalScope.launch {
+                delay(1000)
+                setupChannel(id, username, token)
+            }
         }
-        val packet = this.sendPacket(SetupChannelRequestPacket(token), this.channelSocket!!)
-        if (packet != null && packet is ServerAckResponsePacket) {
-            this.token = token
-            this.username = username
-        } else this.channelSocket?.close()
+        this.channelThread?.start()
 
     }
 
@@ -181,12 +191,13 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         )
 
         private val DEFAULT_PACKET_HANDLER = object : RemoteServerPacketHandler {
-            override fun handle(packet: ServerPacket) {
+            override fun RemoteServer.handle(packet: ServerPacket) {
                 when (packet) {
                     is ChannelHeartRequestPacket -> {}
                     is ContactListRequestPacket -> {
                         contacts.clear()
                         contacts.addAll(packet.contacts)
+                        this@handle.self = contacts.find { it.id == id } as Friend
                     }
                     is ContactRequestPacket -> {
                         if (packet.delete)
@@ -211,7 +222,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
 
     private interface RemoteServerPacketHandler {
-        fun handle(packet: ServerPacket)
+        fun RemoteServer.handle(packet: ServerPacket)
     }
 
 }

@@ -22,7 +22,6 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
 import top.focess.netdesign.server.packet.ContactMessageRequestPacket
@@ -61,9 +60,11 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
     var sendRequest by remember { mutableStateOf(false) }
 
+    var loading by remember { mutableStateOf(true) }
+
     LaunchedEffect(Unit) {
         val localMessages =
-            localMessageQueries.selectBySenderAndReceiver(contact.id.toLong(), server.self!!.id.toLong(), 50).executeAsList().map {
+            localMessageQueries.selectBySenderAndReceiver(contact.id.toLong(), server.id!!.toLong(), 50).executeAsList().map {
             Message(
                 it.id.toInt(),
                 it.sender.toInt(),
@@ -77,31 +78,34 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                 it.timestamp.toInt()
             )
         }.toList()
-        var currentInternalId = -1
-        for (message in localMessages)
-            if (message.internalId > currentInternalId)
-                currentInternalId = message.internalId
+        var currentInternalId : Int = localMessages.map { it.internalId }.maxOrNull() ?: 0
+
         messages.addAll(localMessages)
+
         while (true) {
-            val current = System.currentTimeMillis()
-            if (sendRequest) {
-                val copyText = text;
-                text = ""
-                val packet = server.sendPacket(FriendSendMessageRequestPacket(server.self!!.id, contact.id, copyText, MessageType.TEXT))
-                if (packet is FriendSendMessageResponsePacket) {
-                    println("Send Message Success")
-                }
-                println(packet)
-                sendRequest = false
-            }
-            delay(500 + current - System.currentTimeMillis())
-            val packet = server.sendPacket(ContactMessageRequestPacket(contact.id, currentInternalId))
+            val packet = server.sendPacket(ContactMessageRequestPacket(server.token!!, contact.id, currentInternalId))
             if (packet is ContactMessageResponsePacket) {
-                for (message in packet.messages)
-                    if (message.internalId > currentInternalId)
-                        currentInternalId = message.internalId
-                messages.addAll(packet.messages)
+                val message = packet.message
+                if (message.id != -1) {
+                    messages.add(message)
+                    currentInternalId++
+                    continue
+                }
             }
+            break
+        }
+
+        loading = false
+    }
+
+    LaunchedEffect(sendRequest) {
+        if (sendRequest) {
+            val copyText = text;
+            text = ""
+            val packet = server.sendPacket(FriendSendMessageRequestPacket(server.token!!, server.id!!, contact.id, copyText, MessageType.TEXT))
+            if (packet is FriendSendMessageResponsePacket)
+                messages.add(packet.message)
+            sendRequest = false
         }
     }
 

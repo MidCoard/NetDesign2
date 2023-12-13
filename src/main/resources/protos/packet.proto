@@ -49,7 +49,8 @@ message LoginRequest{
 //packet id = 5 server packet
 message LoginResponse {
   bool logined = 1;
-  string token = 2;
+  int32 id = 2;
+  string token = 3;
 }
 
 message Contact {
@@ -69,6 +70,7 @@ message Contact {
 
 //packet id = 8 server packet0 return ClientAckResponse
 message ContactListRequest {
+  // contacts should contain the user contact itself as a Friend
   repeated Contact contacts = 1;
 }
 
@@ -132,6 +134,7 @@ message FriendSendMessageRequest {
 
 //packet id = 15 server packet
 message FriendSendMessageResponse {
+  // server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
   Message message = 1; // fail if message.id == -1
 }
 

@@ -4581,12 +4581,18 @@ public final class PacketOuterClass {
     boolean getLogined();
 
     /**
-     * <code>string token = 2;</code>
+     * <code>int32 id = 2;</code>
+     * @return The id.
+     */
+    int getId();
+
+    /**
+     * <code>string token = 3;</code>
      * @return The token.
      */
     java.lang.String getToken();
     /**
-     * <code>string token = 2;</code>
+     * <code>string token = 3;</code>
      * @return The bytes for token.
      */
     com.google.protobuf.ByteString
@@ -4643,11 +4649,22 @@ public final class PacketOuterClass {
       return logined_;
     }
 
-    public static final int TOKEN_FIELD_NUMBER = 2;
+    public static final int ID_FIELD_NUMBER = 2;
+    private int id_ = 0;
+    /**
+     * <code>int32 id = 2;</code>
+     * @return The id.
+     */
+    @java.lang.Override
+    public int getId() {
+      return id_;
+    }
+
+    public static final int TOKEN_FIELD_NUMBER = 3;
     @SuppressWarnings("serial")
     private volatile java.lang.Object token_ = "";
     /**
-     * <code>string token = 2;</code>
+     * <code>string token = 3;</code>
      * @return The token.
      */
     @java.lang.Override
@@ -4664,7 +4681,7 @@ public final class PacketOuterClass {
       }
     }
     /**
-     * <code>string token = 2;</code>
+     * <code>string token = 3;</code>
      * @return The bytes for token.
      */
     @java.lang.Override
@@ -4699,8 +4716,11 @@ public final class PacketOuterClass {
       if (logined_ != false) {
         output.writeBool(1, logined_);
       }
+      if (id_ != 0) {
+        output.writeInt32(2, id_);
+      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(token_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, token_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, token_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4715,8 +4735,12 @@ public final class PacketOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(1, logined_);
       }
+      if (id_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, id_);
+      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(token_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, token_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, token_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4735,6 +4759,8 @@ public final class PacketOuterClass {
 
       if (getLogined()
           != other.getLogined()) return false;
+      if (getId()
+          != other.getId()) return false;
       if (!getToken()
           .equals(other.getToken())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -4751,6 +4777,8 @@ public final class PacketOuterClass {
       hash = (37 * hash) + LOGINED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getLogined());
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + getId();
       hash = (37 * hash) + TOKEN_FIELD_NUMBER;
       hash = (53 * hash) + getToken().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -4889,6 +4917,7 @@ public final class PacketOuterClass {
         super.clear();
         bitField0_ = 0;
         logined_ = false;
+        id_ = 0;
         token_ = "";
         return this;
       }
@@ -4927,6 +4956,9 @@ public final class PacketOuterClass {
           result.logined_ = logined_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.id_ = id_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
           result.token_ = token_;
         }
       }
@@ -4978,9 +5010,12 @@ public final class PacketOuterClass {
         if (other.getLogined() != false) {
           setLogined(other.getLogined());
         }
+        if (other.getId() != 0) {
+          setId(other.getId());
+        }
         if (!other.getToken().isEmpty()) {
           token_ = other.token_;
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -5014,11 +5049,16 @@ public final class PacketOuterClass {
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
-              case 18: {
-                token_ = input.readStringRequireUtf8();
+              case 16: {
+                id_ = input.readInt32();
                 bitField0_ |= 0x00000002;
                 break;
-              } // case 18
+              } // case 16
+              case 26: {
+                token_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5068,9 +5108,41 @@ public final class PacketOuterClass {
         return this;
       }
 
+      private int id_ ;
+      /**
+       * <code>int32 id = 2;</code>
+       * @return The id.
+       */
+      @java.lang.Override
+      public int getId() {
+        return id_;
+      }
+      /**
+       * <code>int32 id = 2;</code>
+       * @param value The id to set.
+       * @return This builder for chaining.
+       */
+      public Builder setId(int value) {
+
+        id_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 id = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        id_ = 0;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object token_ = "";
       /**
-       * <code>string token = 2;</code>
+       * <code>string token = 3;</code>
        * @return The token.
        */
       public java.lang.String getToken() {
@@ -5086,7 +5158,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string token = 2;</code>
+       * <code>string token = 3;</code>
        * @return The bytes for token.
        */
       public com.google.protobuf.ByteString
@@ -5103,7 +5175,7 @@ public final class PacketOuterClass {
         }
       }
       /**
-       * <code>string token = 2;</code>
+       * <code>string token = 3;</code>
        * @param value The token to set.
        * @return This builder for chaining.
        */
@@ -5111,22 +5183,22 @@ public final class PacketOuterClass {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         token_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>string token = 2;</code>
+       * <code>string token = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearToken() {
         token_ = getDefaultInstance().getToken();
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
-       * <code>string token = 2;</code>
+       * <code>string token = 3;</code>
        * @param value The bytes for token to set.
        * @return This builder for chaining.
        */
@@ -5135,7 +5207,7 @@ public final class PacketOuterClass {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         token_ = value;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -6719,24 +6791,44 @@ public final class PacketOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> 
         getContactsList();
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     top.focess.netdesign.proto.PacketOuterClass.Contact getContacts(int index);
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     int getContactsCount();
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
         getContactsOrBuilderList();
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactsOrBuilder(
@@ -6786,6 +6878,10 @@ public final class PacketOuterClass {
     @SuppressWarnings("serial")
     private java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> contacts_;
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
@@ -6793,6 +6889,10 @@ public final class PacketOuterClass {
       return contacts_;
     }
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
@@ -6801,6 +6901,10 @@ public final class PacketOuterClass {
       return contacts_;
     }
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
@@ -6808,6 +6912,10 @@ public final class PacketOuterClass {
       return contacts_.size();
     }
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
@@ -6815,6 +6923,10 @@ public final class PacketOuterClass {
       return contacts_.get(index);
     }
     /**
+     * <pre>
+     * contacts should contain the user contact itself as a Friend
+     * </pre>
+     *
      * <code>repeated .netdesign2.Contact contacts = 1;</code>
      */
     @java.lang.Override
@@ -7214,6 +7326,10 @@ public final class PacketOuterClass {
           top.focess.netdesign.proto.PacketOuterClass.Contact, top.focess.netdesign.proto.PacketOuterClass.Contact.Builder, top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> contactsBuilder_;
 
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact> getContactsList() {
@@ -7224,6 +7340,10 @@ public final class PacketOuterClass {
         }
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public int getContactsCount() {
@@ -7234,6 +7354,10 @@ public final class PacketOuterClass {
         }
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact getContacts(int index) {
@@ -7244,6 +7368,10 @@ public final class PacketOuterClass {
         }
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder setContacts(
@@ -7261,6 +7389,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder setContacts(
@@ -7275,6 +7407,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(top.focess.netdesign.proto.PacketOuterClass.Contact value) {
@@ -7291,6 +7427,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(
@@ -7308,6 +7448,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(
@@ -7322,6 +7466,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addContacts(
@@ -7336,6 +7484,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder addAllContacts(
@@ -7351,6 +7503,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder clearContacts() {
@@ -7364,6 +7520,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public Builder removeContacts(int index) {
@@ -7377,6 +7537,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder getContactsBuilder(
@@ -7384,6 +7548,10 @@ public final class PacketOuterClass {
         return getContactsFieldBuilder().getBuilder(index);
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactsOrBuilder(
@@ -7394,6 +7562,10 @@ public final class PacketOuterClass {
         }
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public java.util.List<? extends top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder> 
@@ -7405,6 +7577,10 @@ public final class PacketOuterClass {
         }
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addContactsBuilder() {
@@ -7412,6 +7588,10 @@ public final class PacketOuterClass {
             top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public top.focess.netdesign.proto.PacketOuterClass.Contact.Builder addContactsBuilder(
@@ -7420,6 +7600,10 @@ public final class PacketOuterClass {
             index, top.focess.netdesign.proto.PacketOuterClass.Contact.getDefaultInstance());
       }
       /**
+       * <pre>
+       * contacts should contain the user contact itself as a Friend
+       * </pre>
+       *
        * <code>repeated .netdesign2.Contact contacts = 1;</code>
        */
       public java.util.List<top.focess.netdesign.proto.PacketOuterClass.Contact.Builder> 
@@ -19567,44 +19751,45 @@ public final class PacketOuterClass {
       "\030\002 \001(\010\"#\n\017LoginPreRequest\022\020\n\010username\030\001 " +
       "\001(\t\"%\n\020LoginPreResponse\022\021\n\tchallenge\030\001 \001" +
       "(\t\"6\n\014LoginRequest\022\020\n\010username\030\001 \001(\t\022\024\n\014" +
-      "hashPassword\030\002 \001(\t\"/\n\rLoginResponse\022\017\n\007l" +
-      "ogined\030\001 \001(\010\022\r\n\005token\030\002 \001(\t\"\332\001\n\007Contact\022" +
-      "\n\n\002id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\016\n\006online\030\003 \001(" +
-      "\010\022-\n\004type\030\004 \001(\0162\037.netdesign2.Contact.Con" +
-      "tactType\022$\n\007members\030\005 \003(\0132\023.netdesign2.C" +
-      "ontact\022\023\n\006header\030\006 \001(\005H\000\210\001\001\"0\n\013ContactTy" +
-      "pe\022\n\n\006FRIEND\020\000\022\t\n\005GROUP\020\001\022\n\n\006MEMBER\020\002B\t\n" +
-      "\007_header\";\n\022ContactListRequest\022%\n\010contac" +
-      "ts\030\001 \003(\0132\023.netdesign2.Contact\"\023\n\021ClientA" +
-      "ckResponse\"F\n\016ContactRequest\022$\n\007contact\030" +
-      "\001 \001(\0132\023.netdesign2.Contact\022\016\n\006delete\030\002 \001" +
-      "(\010\"\023\n\021ServerAckResponse\"%\n\004File\022\014\n\004name\030" +
-      "\001 \001(\t\022\017\n\007content\030\002 \001(\014\"z\n\nRawMessage\022\014\n\004" +
-      "from\030\001 \001(\005\022\n\n\002to\030\002 \001(\005\022%\n\004type\030\003 \001(\0162\027.n" +
-      "etdesign2.MessageType\022\017\n\007content\030\004 \001(\t\022\021" +
-      "\n\004hash\030\005 \001(\tH\000\210\001\001B\007\n\005_hash\"e\n\007Message\022\'\n" +
-      "\007message\030\001 \001(\0132\026.netdesign2.RawMessage\022\n" +
-      "\n\002id\030\002 \001(\005\022\021\n\ttimestamp\030\003 \001(\005\022\022\n\ninterna" +
-      "lId\030\004 \001(\005\"F\n\025ContactMessageRequest\022\r\n\005to" +
-      "ken\030\001 \001(\t\022\n\n\002id\030\002 \001(\005\022\022\n\ninternalId\030\003 \001(" +
-      "\005\">\n\026ContactMessageResponse\022$\n\007message\030\001" +
-      " \001(\0132\023.netdesign2.Message\"R\n\030FriendSendM" +
-      "essageRequest\022\r\n\005token\030\001 \001(\t\022\'\n\007message\030" +
-      "\002 \001(\0132\026.netdesign2.RawMessage\"A\n\031FriendS" +
-      "endMessageResponse\022$\n\007message\030\001 \001(\0132\023.ne" +
-      "tdesign2.Message\"$\n\023SetupChannelRequest\022" +
-      "\r\n\005token\030\001 \001(\t\"\025\n\023ChannelHeartRequest\"B\n" +
-      "\031ContactMessageListRequest\022%\n\010messages\030\001" +
-      " \003(\0132\023.netdesign2.Message\"N\n\021FileUploadR" +
-      "equest\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\036\n\004fil" +
-      "e\030\003 \001(\0132\020.netdesign2.File\"0\n\023FileDownloa" +
-      "dRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\"6\n\024F" +
-      "ileDownloadResponse\022\036\n\004file\030\001 \001(\0132\020.netd" +
-      "esign2.File\"8\n\017RegisterRequest\022\020\n\010userna" +
-      "me\030\001 \001(\t\022\023\n\013rawPassword\030\002 \001(\t\"#\n\020Registe" +
-      "rResponse\022\017\n\007success\030\001 \001(\010*,\n\013MessageTyp" +
-      "e\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FILE\020\002B\036\n\032top." +
-      "focess.netdesign.protoH\003b\006proto3"
+      "hashPassword\030\002 \001(\t\";\n\rLoginResponse\022\017\n\007l" +
+      "ogined\030\001 \001(\010\022\n\n\002id\030\002 \001(\005\022\r\n\005token\030\003 \001(\t\"" +
+      "\332\001\n\007Contact\022\n\n\002id\030\001 \001(\005\022\014\n\004name\030\002 \001(\t\022\016\n" +
+      "\006online\030\003 \001(\010\022-\n\004type\030\004 \001(\0162\037.netdesign2" +
+      ".Contact.ContactType\022$\n\007members\030\005 \003(\0132\023." +
+      "netdesign2.Contact\022\023\n\006header\030\006 \001(\005H\000\210\001\001\"" +
+      "0\n\013ContactType\022\n\n\006FRIEND\020\000\022\t\n\005GROUP\020\001\022\n\n" +
+      "\006MEMBER\020\002B\t\n\007_header\";\n\022ContactListReque" +
+      "st\022%\n\010contacts\030\001 \003(\0132\023.netdesign2.Contac" +
+      "t\"\023\n\021ClientAckResponse\"F\n\016ContactRequest" +
+      "\022$\n\007contact\030\001 \001(\0132\023.netdesign2.Contact\022\016" +
+      "\n\006delete\030\002 \001(\010\"\023\n\021ServerAckResponse\"%\n\004F" +
+      "ile\022\014\n\004name\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\"z\n\nRa" +
+      "wMessage\022\014\n\004from\030\001 \001(\005\022\n\n\002to\030\002 \001(\005\022%\n\004ty" +
+      "pe\030\003 \001(\0162\027.netdesign2.MessageType\022\017\n\007con" +
+      "tent\030\004 \001(\t\022\021\n\004hash\030\005 \001(\tH\000\210\001\001B\007\n\005_hash\"e" +
+      "\n\007Message\022\'\n\007message\030\001 \001(\0132\026.netdesign2." +
+      "RawMessage\022\n\n\002id\030\002 \001(\005\022\021\n\ttimestamp\030\003 \001(" +
+      "\005\022\022\n\ninternalId\030\004 \001(\005\"F\n\025ContactMessageR" +
+      "equest\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030\002 \001(\005\022\022\n\nint" +
+      "ernalId\030\003 \001(\005\">\n\026ContactMessageResponse\022" +
+      "$\n\007message\030\001 \001(\0132\023.netdesign2.Message\"R\n" +
+      "\030FriendSendMessageRequest\022\r\n\005token\030\001 \001(\t" +
+      "\022\'\n\007message\030\002 \001(\0132\026.netdesign2.RawMessag" +
+      "e\"A\n\031FriendSendMessageResponse\022$\n\007messag" +
+      "e\030\001 \001(\0132\023.netdesign2.Message\"$\n\023SetupCha" +
+      "nnelRequest\022\r\n\005token\030\001 \001(\t\"\025\n\023ChannelHea" +
+      "rtRequest\"B\n\031ContactMessageListRequest\022%" +
+      "\n\010messages\030\001 \003(\0132\023.netdesign2.Message\"N\n" +
+      "\021FileUploadRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030" +
+      "\002 \001(\t\022\036\n\004file\030\003 \001(\0132\020.netdesign2.File\"0\n" +
+      "\023FileDownloadRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002i" +
+      "d\030\002 \001(\t\"6\n\024FileDownloadResponse\022\036\n\004file\030" +
+      "\001 \001(\0132\020.netdesign2.File\"8\n\017RegisterReque" +
+      "st\022\020\n\010username\030\001 \001(\t\022\023\n\013rawPassword\030\002 \001(" +
+      "\t\"#\n\020RegisterResponse\022\017\n\007success\030\001 \001(\010*," +
+      "\n\013MessageType\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FI" +
+      "LE\020\002B\036\n\032top.focess.netdesign.protoH\003b\006pr" +
+      "oto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -19664,7 +19849,7 @@ public final class PacketOuterClass {
     internal_static_netdesign2_LoginResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_LoginResponse_descriptor,
-        new java.lang.String[] { "Logined", "Token", });
+        new java.lang.String[] { "Logined", "Id", "Token", });
     internal_static_netdesign2_Contact_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_netdesign2_Contact_fieldAccessorTable = new

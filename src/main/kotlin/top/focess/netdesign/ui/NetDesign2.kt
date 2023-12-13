@@ -69,7 +69,7 @@ fun main() {
 
         var currentContact by remember { mutableStateOf<Contact?>(null) }
 
-        var alwaysOnTop by remember { mutableStateOf(false) }
+        val alwaysOnTop by remember { mutableStateOf(false) }
 
 
         LaunchedEffect(server.host, server.port) {

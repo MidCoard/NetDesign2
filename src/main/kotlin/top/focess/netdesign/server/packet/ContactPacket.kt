@@ -4,7 +4,7 @@ import com.google.protobuf.Any
 import com.google.protobuf.kotlin.unpack
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.contact
-import top.focess.netdesign.proto.contactResponse
+import top.focess.netdesign.proto.contactRequest
 import top.focess.netdesign.server.Contact
 import top.focess.netdesign.server.Friend
 import top.focess.netdesign.server.Group
@@ -19,8 +19,9 @@ data class ContactRequestPacket(val contact: Contact, val delete: Boolean) : Ser
         }
     }
 
-    override fun toProtoType() = contactResponse {
+    override fun toProtoType() = contactRequest {
         this.contact = this@ContactRequestPacket.contact.toProtoType()
+        this.delete = this@ContactRequestPacket.delete
     }
 }
 
