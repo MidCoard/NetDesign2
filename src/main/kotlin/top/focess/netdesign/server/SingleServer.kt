@@ -184,7 +184,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     is FriendSendMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null)
-                            if (clientScope.self.id == packet.from && 0 == packet.to && packet.content.length < 1000) {
+                            if (clientScope.self.id == packet.from && 0 == packet.to && packet.messageContent.data.length < 1000) {
                                 val message = queryNewestMessage(
                                     packet.from.toLong(),
                                     packet.to.toLong()
@@ -193,8 +193,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                 serverMessageQueries.insert(
                                     packet.from.toLong(),
                                     packet.to.toLong(),
-                                    packet.content,
-                                    packet.type,
+                                    packet.messageContent.data,
+                                    packet.messageContent.type,
                                     System.currentTimeMillis() / 1000,
                                     internalId.toLong()
                                 )
