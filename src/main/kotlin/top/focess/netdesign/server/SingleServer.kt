@@ -31,7 +31,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
     private var shouldClose = false
 
-    private val scheduler : FocessScheduler = FocessScheduler("SingleServer")
+    private val scheduler: FocessScheduler = FocessScheduler("SingleServer")
 
     private val packetQueue = ConcurrentLinkedQueue<Pair<ClientScope, ServerPacket>>()
 
@@ -58,35 +58,41 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
         Thread {
             while (!this.shouldClose) {
-                GlobalScope.launch {
-                    try {
-                        val socket = serverSocket.accept()
-                        BufferedInputStream(socket.getInputStream()).let {
-                            withTimeout(3000) {
-                                val bytes = it.readBytes()
-                                val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                                val packetId = protoPacket.packetId
-                                println("SingleServer: receive $packetId")
-                                val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
-                                with(DEFAULT_PACKET_HANDLER) {
-                                    this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
-                                }?.to(clientPacket)
+                try {
+                    val socket = serverSocket.accept()
+
+                    GlobalScope.launch {
+
+                        try {
+                            BufferedInputStream(socket.getInputStream()).let {
+                                withTimeout(3000) {
+                                    val bytes = it.readBytes()
+                                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                                    val packetId = protoPacket.packetId
+                                    println("SingleServer: receive $packetId")
+                                    val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
+                                    with(DEFAULT_PACKET_HANDLER) {
+                                        this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
+                                    }?.to(clientPacket)
+                                }
+                            }?.let {
+                                val serverPacket = it.first
+                                println("SingleServer: send ${serverPacket.packetId}");
+                                val bytes = serverPacket.toProtoPacket().toByteArray()
+                                socket.getOutputStream().let {
+                                    it.write(bytes)
+                                    it.flush()
+                                }
+                                val clientPacket = it.second
+                                if (clientPacket is SetupChannelRequestPacket)
+                                    setupChannel(socket, clientPacket.token)
                             }
-                        }?.let {
-                            val serverPacket = it.first
-                            println("SingleServer: send ${serverPacket.packetId}");
-                            val bytes = serverPacket.toProtoPacket().toByteArray()
-                            socket.getOutputStream().let {
-                                it.write(bytes)
-                                it.flush()
-                            }
-                            val clientPacket = it.second
-                            if (clientPacket is SetupChannelRequestPacket)
-                                setupChannel(socket, clientPacket.token)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }.start()
@@ -101,7 +107,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
     }
 
 
-    private fun setupChannel(socket : Socket, token : String) {
+    private fun setupChannel(socket: Socket, token: String) {
         // re setup channel is accepted because the channel will be closed if some error occurs
         val clientScope = this.clientScopeMap[token] ?: return
         clientScope.channelSocket = socket
@@ -160,7 +166,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                 }
                             }
                         }
-                        LoginResponsePacket(false, -1,"")
+                        LoginResponsePacket(false, -1, "")
                     }
 
                     is ServerStatusUpdateRequestPacket ->
@@ -168,13 +174,14 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             online = false,
                             registrable = true
                         )
+
                     is SetupChannelRequestPacket -> ServerAckResponsePacket()
                     is ContactMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null) {
-                            if (packet.id == 0 ) {
+                            if (packet.id == 0) {
                                 return ContactMessageResponsePacket(
-                                   queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
+                                    queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
                                 )
                             }
                         }
@@ -218,7 +225,11 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
     }
 
 
-    private data class ClientScope(val username: String, val token: String, val self: Friend = Friend(0, username, true)) {
+    private data class ClientScope(
+        val username: String,
+        val token: String,
+        val self: Friend = Friend(0, username, true)
+    ) {
         lateinit var channelSocket: Socket
         var isChannelSetup = false
     }
@@ -261,9 +272,13 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         this.packetQueue.add(clientScope to packet)
     }
 
-    fun sendChannelPacket(token: String, packet: ServerPacket) { sendChannelPacket(this.clientScopeMap[token] ?: return, packet) }
+    fun sendChannelPacket(token: String, packet: ServerPacket) {
+        sendChannelPacket(this.clientScopeMap[token] ?: return, packet)
+    }
 
-    fun sendChannelPacketByUsername(username: String, packet: ServerPacket) { sendChannelPacket(this.clientScopeMap.values.find { it.username == username } ?: return, packet) }
+    fun sendChannelPacketByUsername(username: String, packet: ServerPacket) {
+        sendChannelPacket(this.clientScopeMap.values.find { it.username == username } ?: return, packet)
+    }
 
 
 }
@@ -276,24 +291,26 @@ private fun genChallenge(): String {
 
 private fun genToken() = genChallenge()
 
-private fun queryMessage(a: Int, b : Int, internalId: Int): Message? {
-    serverMessageQueries.selectPrecise(a.toLong(),b.toLong(),internalId.toLong()).executeAsOneOrNull()?.toMessage()?.let {
-        return it
-    }
+private fun queryMessage(a: Int, b: Int, internalId: Int): Message? {
+    serverMessageQueries.selectPrecise(a.toLong(), b.toLong(), internalId.toLong()).executeAsOneOrNull()?.toMessage()
+        ?.let {
+            return it
+        }
 
-    serverMessageQueries.selectPrecise(b.toLong(),a.toLong(),internalId.toLong()).executeAsOneOrNull()?.toMessage()?.let {
-        return it
-    }
+    serverMessageQueries.selectPrecise(b.toLong(), a.toLong(), internalId.toLong()).executeAsOneOrNull()?.toMessage()
+        ?.let {
+            return it
+        }
 
     return null
 }
 
-private fun queryNewestMessage(a: Long, b : Long): Message? {
-    serverMessageQueries.selectNewest(a,b).executeAsOneOrNull()?.toMessage()?.let {
+private fun queryNewestMessage(a: Long, b: Long): Message? {
+    serverMessageQueries.selectNewest(a, b).executeAsOneOrNull()?.toMessage()?.let {
         return it
     }
 
-    serverMessageQueries.selectNewest(b,a).executeAsOneOrNull()?.toMessage()?.let {
+    serverMessageQueries.selectNewest(b, a).executeAsOneOrNull()?.toMessage()?.let {
         return it
     }
 
