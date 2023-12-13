@@ -62,6 +62,10 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
     var loading by remember { mutableStateOf(true) }
 
+    val showDialog = remember { mutableStateOf(false) }
+
+    var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
+
     LaunchedEffect(Unit) {
         val localMessages =
             localMessageQueries.selectBySenderAndReceiver(contact.id.toLong(), server.id!!.toLong(), 50).executeAsList().map {
@@ -102,12 +106,24 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
         if (sendRequest) {
             val copyText = text;
             text = ""
-            val packet = server.sendPacket(FriendSendMessageRequestPacket(server.token!!, server.id!!, contact.id, copyText, MessageType.TEXT))
-            if (packet is FriendSendMessageResponsePacket)
-                messages.add(packet.message)
+            val message = with(contact) {
+                server.sendMessage(RawTextMessageContent(copyText))
+            }
+            if (message != null)
+                messages.add(message)
+            else {
+                dialog = FocessDialog(
+                    "chat.sendFailed".l,
+                    "chat.sendFailedMessage".l,
+                    showDialog
+                )
+                dialog.show()
+            }
             sendRequest = false
         }
     }
+
+    FocessDialogWindow(dialog)
 
     Box {
 

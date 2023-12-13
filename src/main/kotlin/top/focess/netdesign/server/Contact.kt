@@ -1,6 +1,10 @@
 package top.focess.netdesign.server
 
 import androidx.compose.runtime.*
+import top.focess.netdesign.server.packet.FileUploadRequestPacket
+import top.focess.netdesign.server.packet.FileUploadResponsePacket
+import top.focess.netdesign.server.packet.FriendSendMessageRequestPacket
+import top.focess.netdesign.server.packet.FriendSendMessageResponsePacket
 
 abstract class Contact(id: Int, name: String, online: Boolean) {
 
@@ -8,7 +12,7 @@ abstract class Contact(id: Int, name: String, online: Boolean) {
     var name by mutableStateOf(name)
     var online by mutableStateOf(online)
 
-    abstract fun sendMessage(message: Message) : Boolean
+     abstract suspend fun RemoteServer.sendMessage(message: RawMessageContent) : Message?
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,8 +31,25 @@ abstract class Contact(id: Int, name: String, online: Boolean) {
 }
 
 class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
-    override fun sendMessage(message: Message): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun RemoteServer.sendMessage(message: RawMessageContent): Message? {
+        val packet = this.sendPacket(FriendSendMessageRequestPacket(this.token!!, this.id!!, id!!, message.toMessageContent()))
+        if (packet is FriendSendMessageResponsePacket) {
+            if (packet.message.id == -1)
+                return null
+            // special case: if message type is file or image
+            if (message is ARawFileMessageContent) {
+                val fileId = packet.message.content.data
+                val filePacket = this.sendPacket(FileUploadRequestPacket(this.token!!, fileId, message.file))
+                // todo handle file upload case
+                if (filePacket is FileUploadResponsePacket && filePacket.success) {
+                    // success case
+                } else {
+                    // fail case
+                }
+            }
+            return packet.message
+        }
+        return null
     }
 
     override fun toString(): String {
@@ -38,8 +59,11 @@ class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online)
 }
 
 class Member(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
-    override fun sendMessage(message: Message) =
-        getContact(this.id)?.sendMessage(message) ?: false
+    override suspend fun RemoteServer.sendMessage(message: RawMessageContent) : Message? {
+        return with(getContact(id!!)) {
+            sendMessage(message) // todo problem?
+        }
+    }
 
     override fun toString(): String {
         return "Member(id=$id, name='$name', online=$online)"
@@ -51,7 +75,7 @@ class Group(id: Int, name: String, online: Boolean, members: List<Member>) : Con
 
     val members = members.toMutableStateList()
 
-    override fun sendMessage(message: Message): Boolean {
+    override suspend fun RemoteServer.sendMessage(message: RawMessageContent): Message? {
         TODO("Not yet implemented")
     }
 
@@ -62,4 +86,4 @@ class Group(id: Int, name: String, online: Boolean, members: List<Member>) : Con
 
 val contacts = mutableStateListOf<Contact>()
 
-fun getContact(id: Int) = contacts.find { it.id == id }
+fun getContact(id: Int) : Contact? = contacts.find { it.id == id }

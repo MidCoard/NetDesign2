@@ -152,11 +152,16 @@ message ContactMessageListRequest {
   repeated Message messages = 1;
 }
 
-//packet id = 19 client packet return ServerAckResponse
+//packet id = 19 client packet
 message FileUploadRequest {
   string token = 1;
   string id = 2;
   File file = 3;
+}
+
+//packet id = 24 server packet
+message FileUploadResponse {
+  bool success = 1;
 }
 
 //packet id = 20 client packet

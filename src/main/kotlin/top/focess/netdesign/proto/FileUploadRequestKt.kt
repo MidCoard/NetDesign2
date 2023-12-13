@@ -10,7 +10,7 @@ public inline fun fileUploadRequest(block: top.focess.netdesign.proto.FileUpload
   top.focess.netdesign.proto.FileUploadRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.FileUploadRequest.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 19 client packet return ServerAckResponse
+ *packet id = 19 client packet
  * ```
  *
  * Protobuf type `netdesign2.FileUploadRequest`

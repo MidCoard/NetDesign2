@@ -33,7 +33,7 @@ public object FriendSendMessageResponseKt {
 
     /**
      * ```
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * ```
      *
      * `.netdesign2.Message message = 1;`
@@ -47,7 +47,7 @@ public object FriendSendMessageResponseKt {
       }
     /**
      * ```
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * ```
      *
      * `.netdesign2.Message message = 1;`
@@ -57,7 +57,7 @@ public object FriendSendMessageResponseKt {
     }
     /**
      * ```
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * ```
      *
      * `.netdesign2.Message message = 1;`

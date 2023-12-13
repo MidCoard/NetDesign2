@@ -42,5 +42,7 @@ register:
 chat:
   placeholder: "输入消息"
   send: "发送"
+  sendFailed: "发送失败"
+  sendFailedMessage: "由于网络原因，消息发送失败。"
 dialog:
   ok: "确定"

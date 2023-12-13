@@ -4,8 +4,7 @@ import com.google.protobuf.Any
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.kotlin.unpack
 import top.focess.netdesign.proto.*
-import top.focess.netdesign.server.Message
-import top.focess.netdesign.server.MessageType
+import top.focess.netdesign.server.*
 
 data class FriendSendMessageResponsePacket(val message: Message) : ServerPacket(PACKET_ID)  {
 
@@ -53,7 +52,7 @@ data class FriendSendMessageResponsePacket(val message: Message) : ServerPacket(
     }
 }
 
-data class FriendSendMessageRequestPacket(val token: String, val from: Int, val to: Int, val content: String, val type : MessageType) : ClientPacket(PACKET_ID) {
+data class FriendSendMessageRequestPacket(val token: String, val from: Int, val to: Int, val messageContent: MessageContent) : ClientPacket(PACKET_ID) {
 
     companion object : PacketCompanion<FriendSendMessageRequestPacket>() {
         override val PACKET_ID = 14
@@ -65,11 +64,10 @@ data class FriendSendMessageRequestPacket(val token: String, val from: Int, val 
                 friendSendMessageRequest.token,
                 message.from,
                 message.to,
-                message.content,
                 when(message.type) {
-                    PacketOuterClass.MessageType.TEXT -> MessageType.TEXT
-                    PacketOuterClass.MessageType.IMAGE -> MessageType.IMAGE
-                    PacketOuterClass.MessageType.FILE -> MessageType.FILE
+                    PacketOuterClass.MessageType.TEXT -> TextMessageContent(message.content)
+                    PacketOuterClass.MessageType.IMAGE -> ImageMessageContent(message.content)
+                    PacketOuterClass.MessageType.FILE -> FileMessageContent(message.content)
                     else -> throw IllegalArgumentException("Unknown message type")
                 }
             )
@@ -82,8 +80,8 @@ data class FriendSendMessageRequestPacket(val token: String, val from: Int, val 
         this.message = rawMessage {
             this.from = this@FriendSendMessageRequestPacket.from
             this.to = this@FriendSendMessageRequestPacket.to
-            this.content = this@FriendSendMessageRequestPacket.content
-            this.type = when(this@FriendSendMessageRequestPacket.type) {
+            this.content = this@FriendSendMessageRequestPacket.messageContent.data
+            this.type = when(this@FriendSendMessageRequestPacket.messageContent.type) {
                 MessageType.TEXT -> PacketOuterClass.MessageType.TEXT
                 MessageType.IMAGE -> PacketOuterClass.MessageType.IMAGE
                 MessageType.FILE -> PacketOuterClass.MessageType.FILE

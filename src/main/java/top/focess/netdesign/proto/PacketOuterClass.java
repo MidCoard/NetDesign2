@@ -13720,7 +13720,7 @@ public final class PacketOuterClass {
 
     /**
      * <pre>
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * </pre>
      *
      * <code>.netdesign2.Message message = 1;</code>
@@ -13729,7 +13729,7 @@ public final class PacketOuterClass {
     boolean hasMessage();
     /**
      * <pre>
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * </pre>
      *
      * <code>.netdesign2.Message message = 1;</code>
@@ -13738,7 +13738,7 @@ public final class PacketOuterClass {
     top.focess.netdesign.proto.PacketOuterClass.Message getMessage();
     /**
      * <pre>
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * </pre>
      *
      * <code>.netdesign2.Message message = 1;</code>
@@ -13789,7 +13789,7 @@ public final class PacketOuterClass {
     private top.focess.netdesign.proto.PacketOuterClass.Message message_;
     /**
      * <pre>
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * </pre>
      *
      * <code>.netdesign2.Message message = 1;</code>
@@ -13801,7 +13801,7 @@ public final class PacketOuterClass {
     }
     /**
      * <pre>
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * </pre>
      *
      * <code>.netdesign2.Message message = 1;</code>
@@ -13813,7 +13813,7 @@ public final class PacketOuterClass {
     }
     /**
      * <pre>
-     * fail if message.id == -1
+     * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
      * </pre>
      *
      * <code>.netdesign2.Message message = 1;</code>
@@ -14179,7 +14179,7 @@ public final class PacketOuterClass {
           top.focess.netdesign.proto.PacketOuterClass.Message, top.focess.netdesign.proto.PacketOuterClass.Message.Builder, top.focess.netdesign.proto.PacketOuterClass.MessageOrBuilder> messageBuilder_;
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14190,7 +14190,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14205,7 +14205,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14225,7 +14225,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14243,7 +14243,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14268,7 +14268,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14285,7 +14285,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14297,7 +14297,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -14312,7 +14312,7 @@ public final class PacketOuterClass {
       }
       /**
        * <pre>
-       * fail if message.id == -1
+       * server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
        * </pre>
        *
        * <code>.netdesign2.Message message = 1;</code>
@@ -16194,7 +16194,7 @@ public final class PacketOuterClass {
   }
   /**
    * <pre>
-   *packet id = 19 client packet return ServerAckResponse
+   *packet id = 19 client packet
    * </pre>
    *
    * Protobuf type {@code netdesign2.FileUploadRequest}
@@ -16522,7 +16522,7 @@ public final class PacketOuterClass {
     }
     /**
      * <pre>
-     *packet id = 19 client packet return ServerAckResponse
+     *packet id = 19 client packet
      * </pre>
      *
      * Protobuf type {@code netdesign2.FileUploadRequest}
@@ -17060,6 +17060,491 @@ public final class PacketOuterClass {
 
     @java.lang.Override
     public top.focess.netdesign.proto.PacketOuterClass.FileUploadRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface FileUploadResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:netdesign2.FileUploadResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bool success = 1;</code>
+     * @return The success.
+     */
+    boolean getSuccess();
+  }
+  /**
+   * <pre>
+   *packet id = 24 server packet
+   * </pre>
+   *
+   * Protobuf type {@code netdesign2.FileUploadResponse}
+   */
+  public static final class FileUploadResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:netdesign2.FileUploadResponse)
+      FileUploadResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use FileUploadResponse.newBuilder() to construct.
+    private FileUploadResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private FileUploadResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new FileUploadResponse();
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FileUploadResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FileUploadResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse.class, top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse.Builder.class);
+    }
+
+    public static final int SUCCESS_FIELD_NUMBER = 1;
+    private boolean success_ = false;
+    /**
+     * <code>bool success = 1;</code>
+     * @return The success.
+     */
+    @java.lang.Override
+    public boolean getSuccess() {
+      return success_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (success_ != false) {
+        output.writeBool(1, success_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (success_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, success_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse)) {
+        return super.equals(obj);
+      }
+      top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse other = (top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse) obj;
+
+      if (getSuccess()
+          != other.getSuccess()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SUCCESS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getSuccess());
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     *packet id = 24 server packet
+     * </pre>
+     *
+     * Protobuf type {@code netdesign2.FileUploadResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:netdesign2.FileUploadResponse)
+        top.focess.netdesign.proto.PacketOuterClass.FileUploadResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FileUploadResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FileUploadResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse.class, top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse.Builder.class);
+      }
+
+      // Construct using top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        success_ = false;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return top.focess.netdesign.proto.PacketOuterClass.internal_static_netdesign2_FileUploadResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse getDefaultInstanceForType() {
+        return top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse build() {
+        top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse buildPartial() {
+        top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse result = new top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.success_ = success_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse) {
+          return mergeFrom((top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse other) {
+        if (other == top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse.getDefaultInstance()) return this;
+        if (other.getSuccess() != false) {
+          setSuccess(other.getSuccess());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                success_ = input.readBool();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private boolean success_ ;
+      /**
+       * <code>bool success = 1;</code>
+       * @return The success.
+       */
+      @java.lang.Override
+      public boolean getSuccess() {
+        return success_;
+      }
+      /**
+       * <code>bool success = 1;</code>
+       * @param value The success to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSuccess(boolean value) {
+
+        success_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool success = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSuccess() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        success_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:netdesign2.FileUploadResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:netdesign2.FileUploadResponse)
+    private static final top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse();
+    }
+
+    public static top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<FileUploadResponse>
+        PARSER = new com.google.protobuf.AbstractParser<FileUploadResponse>() {
+      @java.lang.Override
+      public FileUploadResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<FileUploadResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<FileUploadResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -19712,6 +20197,11 @@ public final class PacketOuterClass {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_netdesign2_FileUploadRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_netdesign2_FileUploadResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_netdesign2_FileUploadResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_netdesign2_FileDownloadRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -19781,15 +20271,16 @@ public final class PacketOuterClass {
       "rtRequest\"B\n\031ContactMessageListRequest\022%" +
       "\n\010messages\030\001 \003(\0132\023.netdesign2.Message\"N\n" +
       "\021FileUploadRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030" +
-      "\002 \001(\t\022\036\n\004file\030\003 \001(\0132\020.netdesign2.File\"0\n" +
-      "\023FileDownloadRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002i" +
-      "d\030\002 \001(\t\"6\n\024FileDownloadResponse\022\036\n\004file\030" +
-      "\001 \001(\0132\020.netdesign2.File\"8\n\017RegisterReque" +
-      "st\022\020\n\010username\030\001 \001(\t\022\023\n\013rawPassword\030\002 \001(" +
-      "\t\"#\n\020RegisterResponse\022\017\n\007success\030\001 \001(\010*," +
-      "\n\013MessageType\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FI" +
-      "LE\020\002B\036\n\032top.focess.netdesign.protoH\003b\006pr" +
-      "oto3"
+      "\002 \001(\t\022\036\n\004file\030\003 \001(\0132\020.netdesign2.File\"%\n" +
+      "\022FileUploadResponse\022\017\n\007success\030\001 \001(\010\"0\n\023" +
+      "FileDownloadRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002id" +
+      "\030\002 \001(\t\"6\n\024FileDownloadResponse\022\036\n\004file\030\001" +
+      " \001(\0132\020.netdesign2.File\"8\n\017RegisterReques" +
+      "t\022\020\n\010username\030\001 \001(\t\022\023\n\013rawPassword\030\002 \001(\t" +
+      "\"#\n\020RegisterResponse\022\017\n\007success\030\001 \001(\010*,\n" +
+      "\013MessageType\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FIL" +
+      "E\020\002B\036\n\032top.focess.netdesign.protoH\003b\006pro" +
+      "to3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -19946,26 +20437,32 @@ public final class PacketOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_FileUploadRequest_descriptor,
         new java.lang.String[] { "Token", "Id", "File", });
-    internal_static_netdesign2_FileDownloadRequest_descriptor =
+    internal_static_netdesign2_FileUploadResponse_descriptor =
       getDescriptor().getMessageTypes().get(25);
+    internal_static_netdesign2_FileUploadResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_netdesign2_FileUploadResponse_descriptor,
+        new java.lang.String[] { "Success", });
+    internal_static_netdesign2_FileDownloadRequest_descriptor =
+      getDescriptor().getMessageTypes().get(26);
     internal_static_netdesign2_FileDownloadRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_FileDownloadRequest_descriptor,
         new java.lang.String[] { "Token", "Id", });
     internal_static_netdesign2_FileDownloadResponse_descriptor =
-      getDescriptor().getMessageTypes().get(26);
+      getDescriptor().getMessageTypes().get(27);
     internal_static_netdesign2_FileDownloadResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_FileDownloadResponse_descriptor,
         new java.lang.String[] { "File", });
     internal_static_netdesign2_RegisterRequest_descriptor =
-      getDescriptor().getMessageTypes().get(27);
+      getDescriptor().getMessageTypes().get(28);
     internal_static_netdesign2_RegisterRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_RegisterRequest_descriptor,
         new java.lang.String[] { "Username", "RawPassword", });
     internal_static_netdesign2_RegisterResponse_descriptor =
-      getDescriptor().getMessageTypes().get(28);
+      getDescriptor().getMessageTypes().get(29);
     internal_static_netdesign2_RegisterResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_RegisterResponse_descriptor,

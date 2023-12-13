@@ -42,5 +42,7 @@ register:
 chat:
   placeholder: "Input message"
   send: "Send"
+  sendFailed: "Send Failed"
+  sendFailedMessage: "Send failed due to network error."
 dialog:
   ok: "OK"
