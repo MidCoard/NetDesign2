@@ -31,6 +31,14 @@ settings:
   save: "保存"
 register:
   title: "NetDesign2-注册"
+  username: "用户名"
+  password: "密码"
+  confirmPassword: "确认密码"
+  register: "注册"
+  registerFailed: "注册失败"
+  registerFailedMessage: "用户名或者密码不合法。"
+  registerSuccess: "注册成功"
+  registerSuccessMessage: "注册成功。"
 chat:
   placeholder: "输入消息"
   send: "发送"

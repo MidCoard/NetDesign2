@@ -58,33 +58,35 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
         Thread {
             while (!this.shouldClose) {
-                try {
-                    val socket = serverSocket.accept()
-                    BufferedInputStream(socket.getInputStream()).let {
-                        val bytes = runBlocking { it.readAvailableBytes() }
-                        val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                        val packetId = protoPacket.packetId
-                        println("SingleServer: receive $packetId")
-                        val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
-                        if (clientPacket is SetupChannelRequestPacket)
-                            this.setupChannel(socket, clientPacket.token)
-                        with(DEFAULT_PACKET_HANDLER) {
-                            this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
-                        }?.to(clientPacket)
-                    }?.let {
-                        val serverPacket = it.first
-                        println("SingleServer: send ${serverPacket.packetId}");
-                        val bytes = serverPacket.toProtoPacket().toByteArray()
-                        socket.getOutputStream().let {
-                            it.write(bytes)
-                            it.flush()
+                GlobalScope.launch {
+                    try {
+                        val socket = serverSocket.accept()
+                        BufferedInputStream(socket.getInputStream()).let {
+                            withTimeout(3000) {
+                                val bytes = it.readBytes()
+                                val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                                val packetId = protoPacket.packetId
+                                println("SingleServer: receive $packetId")
+                                val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
+                                with(DEFAULT_PACKET_HANDLER) {
+                                    this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
+                                }?.to(clientPacket)
+                            }
+                        }?.let {
+                            val serverPacket = it.first
+                            println("SingleServer: send ${serverPacket.packetId}");
+                            val bytes = serverPacket.toProtoPacket().toByteArray()
+                            socket.getOutputStream().let {
+                                it.write(bytes)
+                                it.flush()
+                            }
+                            val clientPacket = it.second
+                            if (clientPacket is SetupChannelRequestPacket)
+                                setupChannel(socket, clientPacket.token)
                         }
-                        val clientPacket = it.second
-                        if (clientPacket is SetupChannelRequestPacket)
-                            this.setupChannel(socket, clientPacket.token)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         }.start()
@@ -121,6 +123,17 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             online = false,
                             registrable = true
                         )
+                    }
+
+                    is RegisterRequestPacket -> {
+                        if (packet.username.length in 6..20) {
+                            val friend = friendQueries.selectByName(packet.username).executeAsOneOrNull()
+                            if (friend == null) {
+                                friendQueries.insert(packet.username, packet.rawPassword.sha256())
+                                RegisterResponsePacket(true)
+                            }
+                        }
+                        RegisterResponsePacket(false)
                     }
 
                     is LoginPreRequestPacket -> {
@@ -228,11 +241,14 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
             }
 
             try {
-                val bytes = it.getInputStream().readAvailableBytes()
-                val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
-                if (clientPacket !is ClientAckResponsePacket)
-                    throw IllegalStateException("Client did not ack packet")
+                // call and wait for 3000ms
+                withTimeout(3000) {
+                    val bytes = it.getInputStream().readAvailableBytes()
+                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                    val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
+                    if (clientPacket !is ClientAckResponsePacket)
+                        throw IllegalStateException("Client did not ack packet")
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 clientScope.isChannelSetup = false

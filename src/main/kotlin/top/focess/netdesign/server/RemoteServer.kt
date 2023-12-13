@@ -39,7 +39,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
     private fun setupSocket(): Socket {
         val socket = Socket(host, port)
-        socket.soTimeout = 1000
+        socket.soTimeout = 3000
         socket.tcpNoDelay = true
         return socket
     }
@@ -64,13 +64,16 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         }
         return try {
             socket.let {
-                val bytes = it.getInputStream().readBytes()
-                val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                val packetId = protoPacket.packetId
-                println("RemoteServer: receive $packetId")
-                it.shutdownInput()
-                it.close()
-                Packets.fromProtoPacket(protoPacket) as ServerPacket
+                // call and wait for 3000ms
+                withTimeout(3000) {
+                    val bytes = it.getInputStream().readAvailableBytes()
+                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                    val packetId = protoPacket.packetId
+                    println("RemoteServer: receive $packetId")
+                    it.shutdownInput()
+                    it.close()
+                    Packets.fromProtoPacket(protoPacket) as ServerPacket
+                }
             }
         } catch (e: Exception) {
             // trySendPacket method will catch this exception and return null

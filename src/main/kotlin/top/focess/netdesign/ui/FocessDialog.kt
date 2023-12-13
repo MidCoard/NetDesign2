@@ -21,7 +21,7 @@ import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import top.focess.netdesign.config.LangFile
 
-class FocessDialog(val title: String = "", val message: String = "", val show: MutableState<Boolean>) {
+class FocessDialog(val title: String = "", val message: String = "", internal val show: MutableState<Boolean>) {
     fun show() {
         show.value = true
     }
@@ -36,7 +36,7 @@ fun LangFile.LangScope.FocessDialogWindow(focessDialog: FocessDialog) {
         onCloseRequest = { focessDialog.show.value = false },
         state = state,
         visible = focessDialog.show.value,
-        title = focessDialog.title.l,
+        title = focessDialog.title,
         undecorated = true,
         transparent = true,
     ) {
@@ -89,7 +89,7 @@ fun LangFile.LangScope.FocessDialogWindow(focessDialog: FocessDialog) {
                                 Modifier.fillMaxWidth().height(50.dp).padding(horizontal = 32.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = focessDialog.message.l)
+                                Text(text = focessDialog.message)
                             }
 
                             Row(Modifier.fillMaxWidth().height(55.dp), horizontalArrangement = Arrangement.Center) {

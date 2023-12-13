@@ -149,8 +149,13 @@ fun main() {
 
 
             if (showRegister) {
-                SurfaceView(onCloseRequest = { showRegister = false }, title = "register.title".l) {
-                    RegisterView()
+                SurfaceView(
+                    onCloseRequest = { showRegister = false },
+                    state = rememberCenterWindowState(DpSize(600.dp, Dp.Unspecified)),
+                    title = "register.title".l) {
+                    RegisterView(server) {
+                        showRegister = false
+                    }
                 }
             }
 

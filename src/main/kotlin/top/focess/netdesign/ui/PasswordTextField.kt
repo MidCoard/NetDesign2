@@ -24,7 +24,7 @@ fun PasswordTextField(
         modifier = modifier.onKeyEvent {
             if (it.key == Key.Enter)
                 onEnterKey()
-            true
+            it.key == Key.Enter
         },
         label = label,
         singleLine = singleLine,

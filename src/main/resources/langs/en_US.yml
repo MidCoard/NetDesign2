@@ -31,6 +31,14 @@ settings:
   save: "Save"
 register:
   title: "NetDesign2-Register"
+  username: "Username"
+  password: "Password"
+  confirmPassword: "Confirm Password"
+  register: "Register"
+  registerFailed: "Register Failed"
+  registerFailedMessage: "Username or password is invalid."
+  registerSuccess: "Register Success"
+  registerSuccessMessage: "Register success."
 chat:
   placeholder: "Input message"
   send: "Send"

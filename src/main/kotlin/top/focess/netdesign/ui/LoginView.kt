@@ -19,6 +19,8 @@ import top.focess.netdesign.server.packet.LoginRequestPacket
 import top.focess.netdesign.server.packet.LoginResponsePacket
 import java.security.MessageDigest
 
+fun canLogin(username: String, password: String) =
+    username.length in 6..20 && password.length in 6..20
 
 @Composable
 fun LangFile.LangScope.LoginView(
@@ -49,7 +51,7 @@ fun LangFile.LangScope.LoginView(
     LaunchedEffect(loginRequest) {
         if (loginRequest) {
             var flag = false
-            if (username.length in 6..20 && password.length in 6..20) {
+            if (canLogin(username, password)) {
                 val packet = server.sendPacket(LoginPreRequestPacket(username))
                 if (packet is LoginPreResponsePacket) {
                     val rawPassword = password.sha256() + packet.challenge
@@ -63,7 +65,7 @@ fun LangFile.LangScope.LoginView(
                 }
             }
             if (!flag) {
-                dialog = FocessDialog("login.loginFailed", "login.loginFailedMessage", showDialog)
+                dialog = FocessDialog("login.loginFailed".l, "login.loginFailedMessage".l, showDialog)
                 dialog.show()
             }
             loginRequest = false
@@ -103,7 +105,7 @@ fun LangFile.LangScope.LoginView(
                 loginRequest = true
                       },
             modifier = Modifier.padding(16.dp),
-            enabled = server.connected() && !loginRequest
+            enabled = server.connected() && !loginRequest && canLogin(username, password) && !showDialog.value
         ) {
             Text("login.login".l)
             Spacer(Modifier.width(5.dp))

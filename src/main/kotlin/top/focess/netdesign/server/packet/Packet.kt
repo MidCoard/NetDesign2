@@ -34,6 +34,8 @@ object Packets {
         registerPacket(ContactMessageResponsePacket)
         registerPacket(FriendSendMessageRequestPacket)
         registerPacket(FriendSendMessageResponsePacket)
+        registerPacket(SetupChannelRequestPacket)
+        registerPacket(RegisterRequestPacket)
     }
 
     fun fromProtoPacket(packet: PacketOuterClass.Packet) = packets[packet.packetId]?.fromProtoType(packet.content)
