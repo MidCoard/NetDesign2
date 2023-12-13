@@ -64,30 +64,6 @@ public object ServerStatusResponseKt {
     public fun clearRegistrable() {
       _builder.clearRegistrable()
     }
-
-    /**
-     * `optional string serverPublicKey = 3;`
-     */
-    public var serverPublicKey: kotlin.String?
-      @JvmName("getServerPublicKey")
-      get() = _builder.getServerPublicKey()
-      @JvmName("setServerPublicKey")
-      set(value) {
-        _builder.setServerPublicKey(value)
-      }
-    /**
-     * `optional string serverPublicKey = 3;`
-     */
-    public fun clearServerPublicKey() {
-      _builder.clearServerPublicKey()
-    }
-    /**
-     * `optional string serverPublicKey = 3;`
-     * @return Whether the serverPublicKey field is set.
-     */
-    public fun hasServerPublicKey(): kotlin.Boolean {
-      return _builder.hasServerPublicKey()
-    }
   }
 }
 @kotlin.jvm.JvmSynthetic

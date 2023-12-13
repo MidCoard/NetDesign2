@@ -1,15 +1,16 @@
 package top.focess.netdesign.server
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.server.packet.*
+import top.focess.netdesign.sqldelight.message.ServerMessage
 import top.focess.netdesign.ui.friendQueries
 import top.focess.netdesign.ui.serverMessageQueries
-import top.focess.util.RSA
+import top.focess.netdesign.ui.sha256
 import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.io.Closeable
 import java.net.ServerSocket
 import java.net.Socket
@@ -18,54 +19,17 @@ import java.security.SecureRandom
 @OptIn(DelicateCoroutinesApi::class)
 class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
 
+    private val clientScopeMap = mutableMapOf<String, ClientScope>()
+
+    private val challengeMap = mutableMapOf<String, String>()
+
     private val defaultContact = Friend(0, name, true)
 
     private val serverSocket = ServerSocket(port)
 
     private var shouldClose = false
 
-    private val ownRSAKey = RSA.genRSAKeypair()
-
     init {
-        suspend fun handle(socket: Socket) {
-            createClientScope(this) {
-                if (shouldClose) {
-                    break0()
-                    return@createClientScope
-                }
-                try {
-                    BufferedInputStream(socket.getInputStream()).let {
-                        var bytes = it.readAvailableBytes()
-                        if (this.clientPublicKey != null)
-                            bytes = RSA.decryptRSA(bytes, ownRSAKey.privateKey)
-                        val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                        val packetId = protoPacket.packetId
-                        println("SingleServer: receive $packetId");
-                        DEFAULT_PACKET_HANDLER.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    if (e !is IllegalArgumentException)
-                        break0()
-                    null
-                }?.let { packet ->
-                    try {
-                        println("SingleServer: send ${packet.packetId}");
-                        var bytes = packet.toProtoPacket().toByteArray()
-                        if (packet !is ServerStatusResponsePacket && this.clientPublicKey != null)
-                            bytes = RSA.encryptRSA(bytes, this.clientPublicKey)
-                        socket.getOutputStream().let {
-                            it.write(bytes)
-                            it.flush()
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        break0()
-                    }
-                }
-
-            }
-        }
 
         Thread {
             while (true) {
@@ -73,11 +37,27 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     break
                 try {
                     val socket = serverSocket.accept()
-                    GlobalScope.launch {
-                        handle(socket)
+                    BufferedInputStream(socket.getInputStream()).let {
+                        val bytes = runBlocking { it.readAvailableBytes() }
+                        val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                        val packetId = protoPacket.packetId
+                        println("SingleServer: receive $packetId")
+                        val packet = Packets.fromProtoPacket(protoPacket) as ClientPacket
+                        if (packet is SetupChannelRequestPacket)
+                            this.setupChannel(socket, packet.token)
+                        with(DEFAULT_PACKET_HANDLER) {
+                            this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
+                        }
+                    }?.let { packet ->
+                        println("SingleServer: send ${packet.packetId}");
+                        val bytes = packet.toProtoPacket().toByteArray()
+                        socket.getOutputStream().let {
+                            it.write(bytes)
+                            it.flush()
+                        }
                     }
                 } catch (e: Exception) {
-                    break
+                    e.printStackTrace()
                 }
             }
         }.start()
@@ -88,108 +68,78 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         serverSocket.close()
     }
 
+    private fun setupChannel(socket : Socket, token : String) {
+        val clientScope = this.clientScopeMap[token] ?: return
+        clientScope.channelSocket = socket
+    }
+
     companion object {
-        private suspend fun createClientScope(server: SingleServer, block: suspend ClientScope.() -> Unit) {
-            val clientScope = ClientScope(server)
-            while (!clientScope.shouldClose)
-                clientScope.block()
-        }
 
         private val DEFAULT_PACKET_HANDLER = object : SingleServerPacketHandler {
 
-            override fun ClientScope.handle(packet: ClientPacket): ServerPacket? =
-                when (packet) {
+            override fun SingleServer.handle(packet: ClientPacket): ServerPacket? {
+                return when (packet) {
                     is ServerStatusRequestPacket -> {
-                        this.clientPublicKey = packet.clientPublicKey
                         ServerStatusResponsePacket(
                             online = false,
-                            registrable = false,
-                            server.ownRSAKey.publicKey
+                            registrable = true
                         )
                     }
 
                     is LoginPreRequestPacket -> {
-                        this.username = packet.username
-                        this.challenge = genChallenge()
+                        val challenge = genChallenge()
+                        this.challengeMap[packet.username] = challenge
                         LoginPreResponsePacket(
-                            this.challenge!!
+                            challenge
                         )
                     }
 
                     is LoginRequestPacket -> {
                         if (packet.username.length in 6..20) {
-                            if (packet.username == this.username) {
+                            val challenge = challengeMap[packet.username]
+                            if (challenge != null) {
                                 val friend = friendQueries.selectByName(packet.username).executeAsOneOrNull()
-                                val hashPassword = if (friend == null) {
-                                    val password = packet.hashPassword.substring(
-                                        0,
-                                        packet.hashPassword.length - this.challenge!!.length
-                                    )
-                                    friendQueries.insert(packet.username, password)
-                                    packet.hashPassword
-                                } else if (friend.id.toInt() != 0)
-                                    friend.password + this.challenge!!
-                                else
-                                    null
-                                this.logined = hashPassword == packet.hashPassword
-                                if (logined) {
-                                    if (friend != null)
-                                        this.self = Friend(friend.id.toInt(), friend.name, true)
-                                    else {
-                                        val f = friendQueries.selectByName(packet.username).executeAsOne()
-                                        this.self = Friend(f.id.toInt(), f.name, true)
+                                if (friend != null) {
+                                    val hashPassword = (friend.password + challenge).sha256()
+                                    if (hashPassword == packet.hashPassword) {
+                                        val token = genToken()
+                                        this.clientScopeMap[token] = ClientScope(packet.username, token)
+                                        return LoginResponsePacket(true, token)
                                     }
+
                                 }
                             }
-                        } else
-                            this.logined = false
-                        this.username = null
-                        LoginResponsePacket(this.logined)
+                        }
+                        LoginResponsePacket(false, "")
                     }
 
                     is ServerStatusUpdateRequestPacket ->
                         ServerStatusUpdateResponsePacket(
                             online = false,
-                            registrable = false
+                            registrable = true
                         )
-
-                    is ContactListRequestPacket ->
-                        if (this.logined)
-                            ContactListResponsePacket(
-                                listOf(
-                                    this.server.defaultContact,
-                                    self!!
+                    is SetupChannelRequestPacket -> ServerAckResponsePacket()
+                    is ContactMessageRequestPacket -> {
+                        val clientScope = this.clientScopeMap[packet.token]
+                        if (clientScope != null) {
+                            if (packet.id == 0 ) {
+                                return ContactMessageResponsePacket(
+                                   queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
                                 )
-                            ) else null
-
-                    is ContactRequestPacket ->
-                        if (this.logined)
-                            when (packet.id) {
-                                0 -> ContactResponsePacket(this.server.defaultContact)
-                                self!!.id -> ContactResponsePacket(self!!)
-                                else -> null
                             }
-                        else null
+                        }
+                        null
+                    }
 
-                    is ContactMessageRequestPacket ->
-                        if (this.logined)
-                            ContactMessageResponsePacket(
-                                queryAllMessage(
-                                    packet.id,
-                                    this.self!!.id,
-                                    packet.internalId
-                                )
-                            )
-                        else null
-
-                    is FriendSendMessageRequestPacket ->
-                        if (this.logined) {
-                            if (this.self!!.id == packet.from && 0 == packet.to && packet.content.length < 1000) {
-                                val message = serverMessageQueries.selectNewestBySenderAndReceiver(
+                    is FriendSendMessageRequestPacket -> {
+                        val clientScope = this.clientScopeMap[packet.token]
+                        if (clientScope != null)
+                            if (clientScope.self.id == packet.from && 0 == packet.to && packet.content.length < 1000) {
+                                val message = queryNewestMessage(
                                     packet.from.toLong(),
                                     packet.to.toLong()
-                                ).executeAsOneOrNull()
-                                val internalId = if (message == null) 0 else message.internal_id.toInt() + 1
+                                )
+                                val internalId = if (message == null) 0 else message.internalId + 1
                                 serverMessageQueries.insert(
                                     packet.from.toLong(),
                                     packet.to.toLong(),
@@ -202,52 +152,42 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                     packet.from.toLong(),
                                     packet.to.toLong(),
                                     internalId.toLong()
-                                ).executeAsOne()
-                                FriendSendMessageResponsePacket(
-                                    Message(
-                                        insertedMessage.id.toInt(),
-                                        packet.from,
-                                        packet.to,
-                                        internalId,
-                                        when (packet.type) {
-                                            MessageType.TEXT -> TextMessageContent(packet.content)
-                                            MessageType.IMAGE -> ImageMessageContent(packet.content)
-                                            MessageType.FILE -> FileMessageContent(packet.content)
-                                        },
-                                        insertedMessage.timestamp.toInt()
-                                    )
+                                ).executeAsOne().toMessage()
+                                return FriendSendMessageResponsePacket(
+                                    insertedMessage
                                 )
-                            } else null
-                        }
-                        else  null
+                            }
+                        null
+                    }
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")
                 }
 
+            }
         }
     }
 
 
-    private class ClientScope(val server: SingleServer) {
-
-        var clientPublicKey: String? = null
-
-        var username: String? = null
-        var challenge: String? = null
-
-        var logined = false
-        var shouldClose = false
-        var self: Contact? = null
-        fun SingleServerPacketHandler.handle(packet: ClientPacket): ServerPacket? = this@ClientScope.handle(packet)
-
-        fun break0() {
-            shouldClose = true
-        }
+    private data class ClientScope(val username: String, val token: String, val self: Friend = Friend(0, username, true)) {
+        lateinit var channelSocket: Socket
     }
 
     private interface SingleServerPacketHandler {
-        fun ClientScope.handle(packet: ClientPacket): ServerPacket?
+        fun SingleServer.handle(packet: ClientPacket): ServerPacket?
     }
+
+    private fun sendChannelPacket(clientScope: ClientScope, packet: ServerPacket) {
+        val socket = clientScope.channelSocket
+        val bytes = packet.toProtoPacket().toByteArray()
+        BufferedOutputStream(socket.getOutputStream()).let {
+            it.write(bytes)
+            it.flush()
+        }
+    }
+
+    fun sendChannelPacket(token: String, packet: ServerPacket) { sendChannelPacket(this.clientScopeMap[token] ?: return, packet) }
+
+    fun sendChannelPacketByUsername(username: String, packet: ServerPacket) { sendChannelPacket(this.clientScopeMap.values.find { it.username == username } ?: return, packet) }
 
 
 }
@@ -258,35 +198,42 @@ private fun genChallenge(): String {
     return bytes.joinToString("") { "%02x".format(it) }
 }
 
-private fun queryAllMessage(a: Int, b : Int, internalId: Int): List<Message> {
-    val messages = serverMessageQueries.selectBySenderAndReceiverAndInternalId(a.toLong(),b.toLong(),internalId.toLong()).executeAsList().map{
-        Message(
-            it.id.toInt(),
-            it.sender.toInt(),
-            it.receiver_.toInt(),
-            it.internal_id.toInt(),
-            when (it.type) {
-                MessageType.TEXT -> TextMessageContent(it.data_)
-                MessageType.IMAGE -> ImageMessageContent(it.data_)
-                MessageType.FILE -> FileMessageContent(it.data_)
-            },
-            it.timestamp.toInt()
-        )
-    }.toMutableList()
+private fun genToken() = genChallenge()
 
-    messages.addAll(serverMessageQueries.selectBySenderAndReceiverAndInternalId(b.toLong(),a.toLong(),internalId.toLong()).executeAsList().map{
-        Message(
-            it.id.toInt(),
-            it.sender.toInt(),
-            it.receiver_.toInt(),
-            it.internal_id.toInt(),
-            when (it.type) {
-                MessageType.TEXT -> TextMessageContent(it.data_)
-                MessageType.IMAGE -> ImageMessageContent(it.data_)
-                MessageType.FILE -> FileMessageContent(it.data_)
-            },
-            it.timestamp.toInt()
-        )
-    })
-    return messages
+private fun queryMessage(a: Int, b : Int, internalId: Int): Message? {
+    serverMessageQueries.selectPrecise(a.toLong(),b.toLong(),internalId.toLong()).executeAsOneOrNull()?.toMessage()?.let {
+        return it
+    }
+
+    serverMessageQueries.selectPrecise(b.toLong(),a.toLong(),internalId.toLong()).executeAsOneOrNull()?.toMessage()?.let {
+        return it
+    }
+
+    return null
 }
+
+private fun queryNewestMessage(a: Long, b : Long): Message? {
+    serverMessageQueries.selectNewest(a,b).executeAsOneOrNull()?.toMessage()?.let {
+        return it
+    }
+
+    serverMessageQueries.selectNewest(b,a).executeAsOneOrNull()?.toMessage()?.let {
+        return it
+    }
+
+    return null
+}
+
+internal fun ServerMessage.toMessage() = Message(
+    id.toInt(),
+    sender.toInt(),
+    receiver_.toInt(),
+    internal_id.toInt(),
+    when (type) {
+        MessageType.TEXT -> TextMessageContent(data_)
+        MessageType.IMAGE -> ImageMessageContent(data_)
+        MessageType.FILE -> FileMessageContent(data_)
+    },
+    timestamp.toInt()
+)
+

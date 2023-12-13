@@ -30,13 +30,11 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     var self: Friend? = null
     var token: String? = null
     var username: String? = null
-    private var serverPublicKey: String? = null
 
     private val socket: Socket
         get() = setupSocket()
     private var channelSocket: Socket? = null
     private var channelThread: Thread? = null
-    private val ownRSAKey = RSA.genRSAKeypair()
 
     private fun setupSocket(): Socket {
         val socket = Socket(host, port)
@@ -50,12 +48,10 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         if (this.connected() && packet is ServerStatusRequestPacket)
         // server is connected, no need to send
         // if you want to update the server status, send an update packet or reconnect
-            return ServerStatusResponsePacket(online, registerable, serverPublicKey)
+            return ServerStatusResponsePacket(online, registerable)
         try {
             socket.let {
-                var bytes = packet.toProtoPacket().toByteArray()
-                if (serverPublicKey != null)
-                    bytes = RSA.encryptRSA(bytes, serverPublicKey)
+                val bytes = packet.toProtoPacket().toByteArray()
                 println("RemoteServer: send ${packet.packetId}")
                 it.getOutputStream().write(bytes)
                 it.shutdownOutput()
@@ -67,9 +63,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         }
         return try {
             socket.let {
-                var bytes = it.getInputStream().readBytes()
-                if (this.serverPublicKey != null)
-                    bytes = RSA.decryptRSA(bytes, this.ownRSAKey.privateKey)
+                val bytes = it.getInputStream().readBytes()
                 val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
                 val packetId = protoPacket.packetId
                 println("RemoteServer: receive $packetId")
@@ -156,11 +150,10 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         if (this.connected())
             return
         this.connected = ConnectionStatus.CONNECTING
-        val packet = this.trySendPacket(ServerStatusRequestPacket(ownRSAKey.publicKey), this.socket)
+        val packet = this.trySendPacket(ServerStatusRequestPacket(), this.socket)
         if (packet != null && packet is ServerStatusResponsePacket) {
             this.online = packet.online
             this.registerable = packet.registrable
-            this.serverPublicKey = packet.serverPublicKey
             this.connected = ConnectionStatus.CONNECTED
         } else
             this.connected = ConnectionStatus.DISCONNECTED
@@ -170,7 +163,6 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         this.connected = ConnectionStatus.DISCONNECTED
         this.online = true
         this.registerable = false
-        this.serverPublicKey = null
     }
 
     suspend fun reconnect() {

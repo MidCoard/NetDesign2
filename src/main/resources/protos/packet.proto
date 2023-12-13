@@ -12,14 +12,12 @@ message Packet {
 
 //packet id = 0 client packet
 message ServerStatusRequest {
-  optional string clientPublicKey = 1;
 }
 
 //packet id = 1 server packet
 message ServerStatusResponse {
   bool online = 1;
   bool registrable = 2;
-  optional string serverPublicKey = 3;
 }
 
 //packet id = 6 client packet
@@ -84,8 +82,13 @@ message ContactRequest {
   bool delete = 2;
 }
 
-//packet id = 11 server packet
+//packet id = 11 server packet, packet0
 message ServerAckResponse {
+}
+
+message File {
+  string name = 1;
+  bytes content = 2;
 }
 
 enum MessageType {
@@ -123,7 +126,8 @@ message ContactMessageResponse {
 
 //packet id = 14 client packet
 message FriendSendMessageRequest {
-  RawMessage message = 1;
+  string token = 1;
+  RawMessage message = 2;
 }
 
 //packet id = 15 server packet
@@ -143,4 +147,33 @@ message ChannelHeartRequest {
 //packet id = 18 server packet0 return ClientAckResponse
 message ContactMessageListRequest {
   repeated Message messages = 1;
+}
+
+//packet id = 19 client packet return ServerAckResponse
+message FileUploadRequest {
+  string token = 1;
+  string id = 2;
+  File file = 3;
+}
+
+//packet id = 20 client packet
+message FileDownloadRequest {
+  string token = 1;
+  string id = 2;
+}
+
+//packet id = 21 server packet
+message FileDownloadResponse {
+  File file = 1;
+}
+
+//packet id = 22 client packet
+message RegisterRequest {
+  string username = 1;
+  string rawPassword = 2;
+}
+
+//packet id = 23 server packet
+message RegisterResponse {
+  bool success = 1;
 }

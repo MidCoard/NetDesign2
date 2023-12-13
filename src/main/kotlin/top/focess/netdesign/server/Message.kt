@@ -1,5 +1,7 @@
 package top.focess.netdesign.server
 
+val EMPTY_MESSAGE = Message(-1, -1, -1, -1, TextMessageContent(""), -1)
+
 data class Message(val id: Int, val from: Int, val to: Int, val internalId: Int, val content: MessageContent, val timestamp: Int)
 
 enum class MessageType {

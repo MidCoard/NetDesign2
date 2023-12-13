@@ -19,6 +19,7 @@ data class LoginResponsePacket(val logined: Boolean, val token: String) : Server
 
     override fun toProtoType(): GeneratedMessageV3 = loginResponse {
         this.logined = this@LoginResponsePacket.logined
+        this.token = this@LoginResponsePacket.token
     }
 }
 

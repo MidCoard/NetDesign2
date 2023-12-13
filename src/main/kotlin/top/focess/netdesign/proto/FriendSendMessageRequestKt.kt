@@ -32,7 +32,24 @@ public object FriendSendMessageRequestKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest = _builder.build()
 
     /**
-     * `.netdesign2.RawMessage message = 1;`
+     * `string token = 1;`
+     */
+    public var token: kotlin.String
+      @JvmName("getToken")
+      get() = _builder.getToken()
+      @JvmName("setToken")
+      set(value) {
+        _builder.setToken(value)
+      }
+    /**
+     * `string token = 1;`
+     */
+    public fun clearToken() {
+      _builder.clearToken()
+    }
+
+    /**
+     * `.netdesign2.RawMessage message = 2;`
      */
     public var message: top.focess.netdesign.proto.PacketOuterClass.RawMessage
       @JvmName("getMessage")
@@ -42,13 +59,13 @@ public object FriendSendMessageRequestKt {
         _builder.setMessage(value)
       }
     /**
-     * `.netdesign2.RawMessage message = 1;`
+     * `.netdesign2.RawMessage message = 2;`
      */
     public fun clearMessage() {
       _builder.clearMessage()
     }
     /**
-     * `.netdesign2.RawMessage message = 1;`
+     * `.netdesign2.RawMessage message = 2;`
      * @return Whether the message field is set.
      */
     public fun hasMessage(): kotlin.Boolean {

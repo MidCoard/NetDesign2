@@ -30,30 +30,6 @@ public object ServerStatusRequestKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.ServerStatusRequest = _builder.build()
-
-    /**
-     * `optional string clientPublicKey = 1;`
-     */
-    public var clientPublicKey: kotlin.String?
-      @JvmName("getClientPublicKey")
-      get() = _builder.getClientPublicKey()
-      @JvmName("setClientPublicKey")
-      set(value) {
-        _builder.setClientPublicKey(value)
-      }
-    /**
-     * `optional string clientPublicKey = 1;`
-     */
-    public fun clearClientPublicKey() {
-      _builder.clearClientPublicKey()
-    }
-    /**
-     * `optional string clientPublicKey = 1;`
-     * @return Whether the clientPublicKey field is set.
-     */
-    public fun hasClientPublicKey(): kotlin.Boolean {
-      return _builder.hasClientPublicKey()
-    }
   }
 }
 @kotlin.jvm.JvmSynthetic

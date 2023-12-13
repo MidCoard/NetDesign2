@@ -10,7 +10,7 @@ public inline fun serverAckResponse(block: top.focess.netdesign.proto.ServerAckR
   top.focess.netdesign.proto.ServerAckResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.ServerAckResponse.newBuilder()).apply { block() }._build()
 /**
  * ```
- *packet id = 11 server packet
+ *packet id = 11 server packet, packet0
  * ```
  *
  * Protobuf type `netdesign2.ServerAckResponse`

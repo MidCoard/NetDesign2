@@ -57,7 +57,7 @@ fun LangFile.LangScope.LoginView(
                     val loginPacket = server.sendPacket(LoginRequestPacket(username, encryptedPassword))
                     if (loginPacket is LoginResponsePacket && loginPacket.logined) {
                         flag = true
-                        server.setupChannel(loginPacket.username, loginPacket.token)
+                        server.setupChannel(username, loginPacket.token)
                         logined()
                     }
                 }
@@ -153,4 +153,4 @@ private fun hashString(input: String, algorithm: String): String {
         .fold("") { str, it -> str + "%02x".format(it) }
 }
 
-private fun String.sha256(): String = hashString(this, "SHA-256")
+internal fun String.sha256(): String = hashString(this, "SHA-256")

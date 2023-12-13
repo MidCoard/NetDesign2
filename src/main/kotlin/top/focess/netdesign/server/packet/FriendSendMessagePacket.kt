@@ -53,7 +53,7 @@ data class FriendSendMessageResponsePacket(val message: Message) : ServerPacket(
     }
 }
 
-data class FriendSendMessageRequestPacket(val from: Int, val to: Int, val content: String, val type : MessageType) : ClientPacket(PACKET_ID) {
+data class FriendSendMessageRequestPacket(val token: String, val from: Int, val to: Int, val content: String, val type : MessageType) : ClientPacket(PACKET_ID) {
 
     companion object : PacketCompanion<FriendSendMessageRequestPacket>() {
         override val PACKET_ID = 14
@@ -62,6 +62,7 @@ data class FriendSendMessageRequestPacket(val from: Int, val to: Int, val conten
             val friendSendMessageRequest: PacketOuterClass.FriendSendMessageRequest = packet.unpack()
             val message = friendSendMessageRequest.message
             return FriendSendMessageRequestPacket(
+                friendSendMessageRequest.token,
                 message.from,
                 message.to,
                 message.content,
@@ -77,6 +78,7 @@ data class FriendSendMessageRequestPacket(val from: Int, val to: Int, val conten
     }
 
     override fun toProtoType() = friendSendMessageRequest {
+        this.token = this@FriendSendMessageRequestPacket.token
         this.message = rawMessage {
             this.from = this@FriendSendMessageRequestPacket.from
             this.to = this@FriendSendMessageRequestPacket.to

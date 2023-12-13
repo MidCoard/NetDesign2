@@ -1,5 +1,4 @@
 import top.focess.netdesign.server.MessageType;
-import top.focess.netdesign.server.MessageStatus;
 
 CREATE TABLE ServerMessage (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -11,11 +10,11 @@ CREATE TABLE ServerMessage (
     internal_id INTEGER NOT NULL
 );
 
-selectNewestBySenderAndReceiver:
+selectNewest:
 SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC LIMIT 1;
 
-selectBySenderAndReceiverAndInternalId:
-SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id > ?;
+selectAfterInternalId:
+SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id > ? LIMIT 1;
 
 selectPrecise:
 SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id = ?;
