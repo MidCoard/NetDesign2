@@ -84,6 +84,4 @@ class Group(id: Int, name: String, online: Boolean, members: List<Member>) : Con
     }
 }
 
-val contacts = mutableStateListOf<Contact>()
-
 fun getContact(id: Int) : Contact? = contacts.find { it.id == id }

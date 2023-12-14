@@ -78,6 +78,8 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         } catch (e: Exception) {
             // trySendPacket method will catch this exception and return null
             e.printStackTrace()
+            if (e is TimeoutCancellationException)
+                println("RemoteServer: receive timeout")
             null
         }
     }
@@ -93,61 +95,81 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
 
     @OptIn(DelicateCoroutinesApi::class)
-    suspend fun setupChannel(id: Int, username: String, token: String) {
+    suspend fun setupChannel(id: Int, username: String, token: String, count: Int = 0) {
+        if (count > 3)
+            throw IllegalArgumentException("Setup channel failed")
         if (!connected())
             return
+        println("RemoteServerChannel: start setup channel")
         this.channelSocket?.close()
         this.channelThread?.join()
+        println("RemoteServerChannel: channel closed and thread joined")
         this.channelSocket = this.socket
         this.channelSocket?.keepAlive = true
         this.channelThread = Thread {
             // send channel setup request
-            this.channelSocket?.use {
-                BufferedOutputStream(it.getOutputStream()).use {
+            println("RemoteServerChannel: send setup channel request")
+            this.channelSocket?.let {
+                BufferedOutputStream(it.getOutputStream()).let {
                     it.write(SetupChannelRequestPacket(token).toProtoPacket().toByteArray())
                     it.flush()
                 }
 
-                try {
-                    val bytes = runBlocking { it.getInputStream().readAvailableBytes() }
-                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                    val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
-                    if (packet !is ServerAckResponsePacket)
-                        throw IllegalArgumentException("Setup channel failed")
-                    this.id = id
-                    this.token = token
-                    this.username = username
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    it.close()
+                runBlocking {
+                    try {
+                        withTimeout(3000) {
+                            val bytes = it.getInputStream().readAvailableBytes()
+                            val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                            val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
+                            if (packet !is ServerAckResponsePacket)
+                                throw IllegalArgumentException("Setup channel failed")
+                            this@RemoteServer.id = id
+                            this@RemoteServer.token = token
+                            this@RemoteServer.username = username
+                            logined = true
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        it.close()
+                    }
                 }
             }
 
-            // start channel
-            while (this.channelSocket?.isClosed?.not() == true) {
-                val bytes = runBlocking { channelSocket?.getInputStream()?.readAvailableBytes() }
-                if (bytes != null) {
-                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                    val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
-                    println("RemoteServerChannel: receive ${packet.packetId}")
-                    channelSocket?.getOutputStream()?.let {
-                        BufferedOutputStream(it).use {
-                            it.write(ClientAckResponsePacket().toProtoPacket().toByteArray())
-                            it.flush()
+            println("RemoteServerChannel: setup channel status: ${this.channelSocket?.isClosed}")
+
+            try {
+                // start channel
+                while (this.channelSocket?.isClosed?.not() == true) {
+                    val bytes = runBlocking { channelSocket?.getInputStream()?.readAvailableBytes() }
+                    if (bytes != null) {
+                        val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
+                        val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
+                        println("RemoteServerChannel: receive ${packet.packetId}")
+                        channelSocket?.getOutputStream()?.let {
+                            BufferedOutputStream(it).use {
+                                it.write(ClientAckResponsePacket().toProtoPacket().toByteArray())
+                                it.flush()
+                            }
+                        }
+                        with(DEFAULT_PACKET_HANDLER) {
+                            handle(packet)
                         }
                     }
-                    with(DEFAULT_PACKET_HANDLER) {
-                        handle(packet)
-                    }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
 
+            println("RemoteServerChannel: channel closed")
+
             // channel closed
-            // need to re setup channel
+            // need to re setup channel.
             // channel will be closed by network error or actively closed by server if client no response to server or server do not receive client ack response
             GlobalScope.launch {
-                delay(1000)
-                setupChannel(id, username, token)
+                println("RemoteServerChannel: before reconnect")
+                delay(3000)
+                println("RemoteServerChannel: reconnect")
+                setupChannel(id, username, token, count + 1)
             }
         }
         this.channelThread?.start()
@@ -184,14 +206,6 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     }
 
     companion object {
-        fun Saver() = listSaver(
-            save = { listOf(it.host, it.port) },
-            restore = {
-                RemoteServer(it[0] as String, it[1] as Int).apply {
-                    this.connected = ConnectionStatus.DISCONNECTED
-                }
-            }
-        )
 
         private val DEFAULT_PACKET_HANDLER = object : RemoteServerPacketHandler {
             override fun RemoteServer.handle(packet: ServerPacket) {

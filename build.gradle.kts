@@ -20,7 +20,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
 
     implementation("top.focess:focess-util:1.1.17")
-    implementation("top.focess:focess-scheduler:1.2.0")
+    implementation("top.focess:focess-scheduler:1.2.1")
     implementation("com.google.protobuf:protobuf-java:3.25.0")
     implementation("com.google.protobuf:protobuf-kotlin:3.25.0")
     implementation("app.cash.sqldelight:sqlite-driver:2.0.0")

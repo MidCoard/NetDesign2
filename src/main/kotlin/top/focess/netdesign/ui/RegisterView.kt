@@ -34,6 +34,7 @@ fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit
             var flag = false
             if (canRegister(username, password, confirmPassword)) {
                 val packet = server.sendPacket(RegisterRequestPacket(username, password))
+                println(packet)
                 if (packet is RegisterResponsePacket && packet.success) {
                     flag = true
                 }
@@ -48,8 +49,8 @@ fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit
         }
     }
 
-    LaunchedEffect(showDialog) {
-        if (!showDialog.value && dialog.title == "register.registerFailed".l)
+    LaunchedEffect(showDialog.value) {
+        if (!showDialog.value && dialog.title == "register.registerSuccess".l)
             registered()
     }
 

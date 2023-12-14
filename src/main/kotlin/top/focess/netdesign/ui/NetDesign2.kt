@@ -56,13 +56,8 @@ fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecifi
 @Preview
 fun main() {
 
-    SingleServer("Local")
-
     application(exitProcessOnExit = true) {
 
-        val server = rememberSaveable(saver = RemoteServer.Saver()) { RemoteServer() }
-
-        var logined by remember { mutableStateOf(false) }
         var showSettings by remember { mutableStateOf(false) }
         var showRegister by remember { mutableStateOf(false) }
         var showTray by remember { mutableStateOf(false) }
@@ -116,8 +111,6 @@ fun main() {
                     title = "login.title".l
                 ) {
                     LoginView(server, {
-                        logined = true
-                    }, {
                         showSettings = true
                     }, {
                         showRegister = true

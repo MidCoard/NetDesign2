@@ -25,7 +25,6 @@ fun canLogin(username: String, password: String) =
 @Composable
 fun LangFile.LangScope.LoginView(
     server: RemoteServer,
-    logined: () -> Unit = {},
     showSettings: () -> Unit = {},
     showRegister: () -> Unit = {}
 ) {
@@ -60,7 +59,6 @@ fun LangFile.LangScope.LoginView(
                     if (loginPacket is LoginResponsePacket && loginPacket.logined) {
                         flag = true
                         server.setupChannel(loginPacket.id, username, loginPacket.token)
-                        logined()
                     }
                 }
             }

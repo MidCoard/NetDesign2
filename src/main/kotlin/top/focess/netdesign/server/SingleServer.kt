@@ -45,7 +45,9 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
             packetQueue.poll()?.let {
                 val clientScope = it.first
                 val serverPacket = it.second
-                runBlocking { sendChannelPacket0(clientScope, serverPacket) }
+                runBlocking {
+                    sendChannelPacket0(clientScope, serverPacket)
+                }
             }
         }
     }
@@ -54,7 +56,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         // 10 seconds to send a heart packet
         scheduler.runTimer(Runnable {
             clientScopeMap.forEach { (_, clientScope) -> sendChannelPacket(clientScope, ChannelHeartRequestPacket()) }
-        }, Duration.ofSeconds(10), Duration.ZERO)
+        }, Duration.ZERO, Duration.ofSeconds(10))
 
         Thread {
             while (!this.shouldClose) {
@@ -66,7 +68,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                         try {
                             BufferedInputStream(socket.getInputStream()).let {
                                 withTimeout(3000) {
-                                    val bytes = it.readBytes()
+                                    val bytes = it.readAvailableBytes()
                                     val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
                                     val packetId = protoPacket.packetId
                                     println("SingleServer: receive $packetId")
@@ -78,9 +80,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             }?.let {
                                 val serverPacket = it.first
                                 println("SingleServer: send ${serverPacket.packetId}");
-                                val bytes = serverPacket.toProtoPacket().toByteArray()
-                                socket.getOutputStream().let {
-                                    it.write(bytes)
+                                BufferedOutputStream(socket.getOutputStream()).let {
+                                    it.write(serverPacket.toProtoPacket().toByteArray())
                                     it.flush()
                                 }
                                 val clientPacket = it.second
@@ -89,6 +90,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
+                            if (e is TimeoutCancellationException)
+                                println("SingleServer: receive timeout")
                         }
                     }
                 } catch (e: Exception) {
@@ -136,7 +139,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             val friend = friendQueries.selectByName(packet.username).executeAsOneOrNull()
                             if (friend == null) {
                                 friendQueries.insert(packet.username, packet.rawPassword.sha256())
-                                RegisterResponsePacket(true)
+                                return RegisterResponsePacket(true)
                             }
                         }
                         RegisterResponsePacket(false)
@@ -175,7 +178,14 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             registrable = true
                         )
 
-                    is SetupChannelRequestPacket -> ServerAckResponsePacket()
+                    is SetupChannelRequestPacket -> {
+                        val clientScope = this.clientScopeMap[packet.token]
+                        if (clientScope != null)
+                            if (!clientScope.isChannelSetup)
+                                return ServerAckResponsePacket()
+                        // if the channel is already setup, return null to reject the request
+                        null
+                    }
                     is ContactMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null) {
@@ -245,7 +255,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
             clientScope.isChannelSetup = false
             return
         }
-        clientScope.channelSocket.use {
+        clientScope.channelSocket.let {
             BufferedOutputStream(it.getOutputStream()).let {
                 it.write(packet.toProtoPacket().toByteArray())
                 it.flush()
@@ -262,6 +272,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                if (e is TimeoutCancellationException)
+                    println("Channel: receive timeout")
                 clientScope.isChannelSetup = false
                 clientScope.channelSocket.close()
             }
