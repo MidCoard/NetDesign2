@@ -206,7 +206,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                     packet.from.toLong(),
                                     packet.to.toLong()
                                 )
-                                val internalId = if (message == null) 0 else message.internalId + 1
+                                val internalId = if (message == null) 1 else message.internalId + 1
                                 serverMessageQueries.insert(
                                     packet.from.toLong(),
                                     packet.to.toLong(),
@@ -256,6 +256,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
             clientScope.isChannelSetup = false
             return
         }
+        println("SingleServerChannel: client ${clientScope.id} send ${packet.packetId}")
         clientScope.channelSocket.let {
             BufferedOutputStream(it.getOutputStream()).let {
                 it.write(packet.toProtoPacket().toByteArray())

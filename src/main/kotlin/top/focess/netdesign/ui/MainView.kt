@@ -95,6 +95,8 @@ fun FriendView(friend: Friend, showContact: (Contact) -> Unit) {
     var isHovered by remember { mutableStateOf(false) }
     val backgroundColor by animateColorAsState(if (isHovered) Color.LightGray else DefaultTheme.colors().background)
 
+    
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

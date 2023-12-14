@@ -17,6 +17,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
@@ -28,34 +31,71 @@ import top.focess.netdesign.server.packet.ContactMessageRequestPacket
 import top.focess.netdesign.server.packet.ContactMessageResponsePacket
 import top.focess.netdesign.server.packet.FriendSendMessageRequestPacket
 import top.focess.netdesign.server.packet.FriendSendMessageResponsePacket
+import top.focess.netdesign.sqldelight.message.LocalMessage
 
 @Composable
-fun LangFile.LangScope.MessageView(message: Message) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .clip(RoundedCornerShape(5.dp))
-            .pointerHoverIcon(PointerIcon.Hand),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = Icons.Default.Person,
-            contentDescription = "Avatar",
-            tint = MaterialTheme.colors.primary
-        )
-        Text(
-            text = message.content.toString(),
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(start = 10.dp)
-        )
+fun LangFile.LangScope.MessageContentView(messageContent: MessageContent) {
+    when (messageContent.type) {
+        MessageType.TEXT -> {
+            Text(
+                text = messageContent.data,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(end = 10.dp)
+            )
+        }
+
+        MessageType.FILE -> {
+
+        }
+
+        MessageType.IMAGE -> {
+
+        }
     }
+}
+
+@Composable
+fun LangFile.LangScope.MessageView(message: Message, renderLeft: Boolean) {
+    if (renderLeft)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .clip(RoundedCornerShape(5.dp))
+                .pointerHoverIcon(PointerIcon.Hand),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Avatar",
+                tint = MaterialTheme.colors.primary
+            )
+            MessageContentView(message.content)
+        }
+    else
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .clip(RoundedCornerShape(5.dp))
+                .pointerHoverIcon(PointerIcon.Hand),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            MessageContentView(message.content)
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Avatar",
+                tint = MaterialTheme.colors.primary
+            )
+        }
 }
 
 @Composable
 fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
-    val messages = mutableStateListOf<Message>()
+    val messages = remember { mutableStateListOf<Message>() }
+
     var text by remember { mutableStateOf("") }
 
     var sendRequest by remember { mutableStateOf(false) }
@@ -67,32 +107,36 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
     var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
 
     LaunchedEffect(Unit) {
-        val localMessages =
-            localMessageQueries.selectBySenderAndReceiver(contact.id.toLong(), server.id!!.toLong(), 50).executeAsList().map {
-            Message(
-                it.id.toInt(),
-                it.sender.toInt(),
-                it.receiver_.toInt(),
-                it.internal_id.toInt(),
-                when (it.type) {
-                    MessageType.TEXT -> TextMessageContent(it.data_)
-                    MessageType.IMAGE -> ImageMessageContent(it.data_)
-                    MessageType.FILE -> FileMessageContent(it.data_)
-                },
-                it.timestamp.toInt()
-            )
-        }.toList()
-        var currentInternalId : Int = localMessages.map { it.internalId }.maxOrNull() ?: 0
+        val localMessages = localMessageQueries.selectBySenderAndReceiverLatest(contact.id.toLong(), server.id!!.toLong(), 50).executeAsList().map { it.toMessage() }.toList()
 
         messages.addAll(localMessages)
 
+        val currentInternalId : Int = localMessages.maxOfOrNull { it.internalId } ?: 0
+
+        println("currentInternalId: $currentInternalId")
+
+        val missingInternalIds = (1..currentInternalId).toSet().subtract(localMessages.map { it.internalId }.toSet())
+        println("missing messages count: ${missingInternalIds.size}")
+
+        for (missingInternalId in missingInternalIds) {
+            val packet = server.sendPacket(ContactMessageRequestPacket(server.token!!, contact.id, missingInternalId))
+            if (packet is ContactMessageResponsePacket) {
+                val message = packet.message
+                if (message.id != -1)
+                    messages.add(message)
+            }
+        }
+
+        // find possible messages from currentInternalId
+        var current = currentInternalId + 1;
+
         while (true) {
-            val packet = server.sendPacket(ContactMessageRequestPacket(server.token!!, contact.id, currentInternalId))
+            val packet = server.sendPacket(ContactMessageRequestPacket(server.token!!, contact.id, current))
             if (packet is ContactMessageResponsePacket) {
                 val message = packet.message
                 if (message.id != -1) {
                     messages.add(message)
-                    currentInternalId++
+                    current++
                     continue
                 }
             }
@@ -109,9 +153,18 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
             val message = with(contact) {
                 server.sendMessage(RawTextMessageContent(copyText))
             }
-            if (message != null)
+            if (message != null) {
+                localMessageQueries.insert(
+                    message.id.toLong(),
+                    message.from.toLong(),
+                    message.to.toLong(),
+                    message.content.data,
+                    message.content.type,
+                    message.timestamp.toLong(),
+                    message.internalId.toLong(),
+                )
                 messages.add(message)
-            else {
+            } else {
                 dialog = FocessDialog(
                     "chat.sendFailed".l,
                     "chat.sendFailedMessage".l,
@@ -133,14 +186,19 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
             LazyColumn(modifier = Modifier.weight(10f)) {
                 items(messages.sortedBy { it.internalId }) {
-                    MessageView(it)
+                    MessageView(it, it.from == contact.id)
                 }
             }
 
             TextField(
                 value = text,
                 onValueChange = { text = it },
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier.fillMaxWidth().weight(1f).onKeyEvent {
+                    if (it.key == Key.Enter) {
+                        sendRequest = true
+                    }
+                    it.key == Key.Enter
+                },
                 singleLine = true,
                 placeholder = {
                     Text("chat.placeholder".l)
@@ -172,3 +230,16 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
         }
     }
 }
+
+internal fun LocalMessage.toMessage() : Message = Message(
+    this.id.toInt(),
+    this.sender.toInt(),
+    this.receiver_.toInt(),
+    this.internal_id.toInt(),
+    when (this.type) {
+        MessageType.TEXT -> TextMessageContent(this.data_)
+        MessageType.IMAGE -> ImageMessageContent(this.data_)
+        MessageType.FILE -> FileMessageContent(this.data_)
+    },
+    this.timestamp.toInt()
+)

@@ -6,10 +6,8 @@ import top.focess.netdesign.server.packet.FileUploadResponsePacket
 import top.focess.netdesign.server.packet.FriendSendMessageRequestPacket
 import top.focess.netdesign.server.packet.FriendSendMessageResponsePacket
 
-abstract class Contact(id: Int, name: String, online: Boolean) {
+abstract class Contact(val id: Int,val name: String, online: Boolean) {
 
-    val id by mutableStateOf(id)
-    var name by mutableStateOf(name)
     var online by mutableStateOf(online)
 
      abstract suspend fun RemoteServer.sendMessage(message: RawMessageContent) : Message?
@@ -32,7 +30,7 @@ abstract class Contact(id: Int, name: String, online: Boolean) {
 
 class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
     override suspend fun RemoteServer.sendMessage(message: RawMessageContent): Message? {
-        val packet = this.sendPacket(FriendSendMessageRequestPacket(this.token!!, this.id!!, id!!, message.toMessageContent()))
+        val packet = this.sendPacket(FriendSendMessageRequestPacket(this.token!!, this.id!!, this@Friend.id, message.toMessageContent()))
         if (packet is FriendSendMessageResponsePacket) {
             if (packet.message.id == -1)
                 return null
