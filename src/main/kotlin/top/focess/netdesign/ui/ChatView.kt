@@ -95,19 +95,14 @@ fun LangFile.LangScope.MessageView(message: Message, renderLeft: Boolean) {
 fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
     val messages = remember { mutableStateListOf<Message>() }
-
     var text by remember { mutableStateOf("") }
-
     var sendRequest by remember { mutableStateOf(false) }
-
     var loading by remember { mutableStateOf(true) }
-
     val showDialog = remember { mutableStateOf(false) }
-
     var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
 
     LaunchedEffect(Unit) {
-        val localMessages = localMessageQueries.selectBySenderAndReceiverLatest(contact.id.toLong(), server.id!!.toLong(), 50).executeAsList().map { it.toMessage() }.toList()
+        val localMessages = queryLatestLocalMessages(contact.id.toLong(), server.id!!.toLong())
 
         messages.addAll(localMessages)
 

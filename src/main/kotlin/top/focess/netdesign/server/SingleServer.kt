@@ -1,6 +1,8 @@
 package top.focess.netdesign.server
 
 import kotlinx.coroutines.*
+import top.focess.netdesign.ai.ChatGPTAccessor
+import top.focess.netdesign.ai.ChatGPTModel
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.server.packet.*
@@ -19,7 +21,7 @@ import java.time.Duration
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @OptIn(DelicateCoroutinesApi::class)
-class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Closeable {
+class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PORT, chatgptKey: String?) : Closeable {
 
     private val clientScopeMap = mutableMapOf<String, ClientScope>()
 
@@ -34,6 +36,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
     private val scheduler: FocessScheduler = FocessScheduler("SingleServer")
 
     private val packetQueue = ConcurrentLinkedQueue<Pair<ClientScope, ServerPacket>>()
+
+    private val chatGPTAccessor = chatgptKey?.let { ChatGPTAccessor(it, ChatGPTModel.GPT4_TURBO) }
 
     // make sure all packets are sent in one thread
     // in fact, different clients' packets can be sent in different threads
@@ -117,8 +121,14 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         clientScope.isChannelSetup = true
         GlobalScope.launch {
             delay(200)
-            sendChannelPacket(clientScope, ContactListRequestPacket(listOf(defaultContact, clientScope.self)))
+            sendChannelPacket(clientScope, ContactListRequestPacket(contactList(clientScope)))
         }
+    }
+
+    private fun contactList(clientScope: ClientScope): List<Friend> {
+        if (chatGPTAccessor != null)
+            return listOf(defaultContact, clientScope.self, Friend(chatGPTAccessor.id, "ChatGPT", true));
+        return listOf(defaultContact, clientScope.self)
     }
 
     companion object {
@@ -201,29 +211,27 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     is FriendSendMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null)
-                            if (clientScope.self.id == packet.from && 0 == packet.to && packet.messageContent.data.length < 1000) {
-                                val message = queryNewestMessage(
-                                    packet.from.toLong(),
-                                    packet.to.toLong()
-                                )
-                                val internalId = if (message == null) 1 else message.internalId + 1
-                                serverMessageQueries.insert(
-                                    packet.from.toLong(),
-                                    packet.to.toLong(),
-                                    packet.messageContent.data,
-                                    packet.messageContent.type,
-                                    System.currentTimeMillis() / 1000,
-                                    internalId.toLong()
-                                )
-                                val insertedMessage = serverMessageQueries.selectPrecise(
-                                    packet.from.toLong(),
-                                    packet.to.toLong(),
-                                    internalId.toLong()
-                                ).executeAsOne().toMessage()
-                                return FriendSendMessageResponsePacket(
-                                    insertedMessage
-                                )
-                            }
+                            if (clientScope.self.id == packet.from && packet.messageContent.data.length < 1000)
+                                if (packet.to == 0 || (chatGPTAccessor != null && chatGPTAccessor.id == packet.to)) {
+                                    val insertedMessage = insertMessage(
+                                        packet.from,
+                                        packet.to,
+                                        packet.messageContent.data,
+                                        packet.messageContent.type)
+
+                                    // todo with special type
+
+                                    chatGPTAccessor?.let {
+                                        if (chatGPTAccessor.id == packet.to) {
+                                            with(chatGPTAccessor) {
+                                                sendMessage(clientScope.id, packet.messageContent)
+                                            }
+                                        }
+                                    }
+                                    return FriendSendMessageResponsePacket(
+                                        insertedMessage
+                                    )
+                                }
                         null
                     }
 
@@ -275,7 +283,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
             } catch (e: Exception) {
                 e.printStackTrace()
                 if (e is TimeoutCancellationException)
-                    println("Channel: receive timeout")
+                    println("SingleServerChannel: receive timeout")
                 clientScope.isChannelSetup = false
                 clientScope.channelSocket.close()
             }
@@ -290,8 +298,9 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         sendChannelPacket(this.clientScopeMap[token] ?: return, packet)
     }
 
-    fun sendChannelPacketByUsername(username: String, packet: ServerPacket) {
-        sendChannelPacket(this.clientScopeMap.values.find { it.username == username } ?: return, packet)
+    fun sendChannelPacket(id: Int, packet: ServerPacket) {
+        // todo special case for id = 0
+        sendChannelPacket(this.clientScopeMap.values.find { it.id == id } ?: return, packet)
     }
 
 
@@ -320,15 +329,14 @@ private fun queryMessage(a: Int, b: Int, internalId: Int): Message? {
 }
 
 private fun queryNewestMessage(a: Long, b: Long): Message? {
-    serverMessageQueries.selectNewest(a, b).executeAsOneOrNull()?.toMessage()?.let {
-        return it
-    }
+    val message = serverMessageQueries.selectNewest(a, b).executeAsOneOrNull()?.toMessage()
 
-    serverMessageQueries.selectNewest(b, a).executeAsOneOrNull()?.toMessage()?.let {
-        return it
-    }
+    val message2 = serverMessageQueries.selectNewest(b, a).executeAsOneOrNull()?.toMessage()
 
-    return null
+    if (message != null && message2 != null)
+        return if (message.internalId > message2.internalId) message else message2
+
+    return message ?: message2
 }
 
 internal fun ServerMessage.toMessage() = Message(
@@ -344,3 +352,29 @@ internal fun ServerMessage.toMessage() = Message(
     timestamp.toInt()
 )
 
+
+val LOCK = Any()
+
+internal fun insertMessage(from : Int, to :Int, data: String, type: MessageType ) : Message {
+    // use a lock to avoid concurrent insert
+    synchronized(LOCK) {
+        val message = queryNewestMessage(
+            from.toLong(),
+            to.toLong()
+        )
+        val internalId = if (message == null) 1 else message.internalId + 1
+        serverMessageQueries.insert(
+            from.toLong(),
+            to.toLong(),
+            data,
+            type,
+            System.currentTimeMillis() / 1000,
+            internalId.toLong()
+        )
+        return serverMessageQueries.selectPrecise(
+            from.toLong(),
+            to.toLong(),
+            internalId.toLong()
+        ).executeAsOne().toMessage()
+    }
+}

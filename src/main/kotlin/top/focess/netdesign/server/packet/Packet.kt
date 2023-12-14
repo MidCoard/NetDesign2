@@ -41,6 +41,7 @@ object Packets {
         registerPacket(ServerAckResponsePacket)
         registerPacket(ClientAckResponsePacket)
         registerPacket(ChannelHeartRequestPacket)
+        registerPacket(ContactMessageListRequestPacket)
     }
 
     fun fromProtoPacket(packet: PacketOuterClass.Packet) = packets[packet.packetId]?.fromProtoType(packet.content)

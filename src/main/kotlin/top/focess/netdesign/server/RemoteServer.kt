@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.clientAckResponse
+import top.focess.netdesign.server.GlobalState.contacts
 import top.focess.netdesign.server.packet.*
 import top.focess.util.RSA
 import java.io.BufferedInputStream
@@ -200,6 +201,9 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         this.online = true
         this.registerable = false
         this.logined = false
+        this.channelSocket?.close()
+        this.channelThread?.join()
+        this.channelSocket = null
     }
 
     suspend fun reconnect() {

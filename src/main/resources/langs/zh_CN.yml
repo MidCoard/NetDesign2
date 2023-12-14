@@ -44,5 +44,7 @@ chat:
   send: "发送"
   sendFailed: "发送失败"
   sendFailedMessage: "由于网络原因，消息发送失败。"
+  fileMessage: "[文件消息]"
+  imageMessage: "[图片消息]"
 dialog:
   ok: "确定"

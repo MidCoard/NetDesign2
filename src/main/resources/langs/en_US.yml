@@ -44,5 +44,7 @@ chat:
   send: "Send"
   sendFailed: "Send Failed"
   sendFailedMessage: "Send failed due to network error."
+  fileMessage: "[File Message]"
+  imageMessage: "[Image Message]"
 dialog:
   ok: "OK"

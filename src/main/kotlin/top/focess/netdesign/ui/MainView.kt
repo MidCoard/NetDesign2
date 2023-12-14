@@ -28,11 +28,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
+import top.focess.netdesign.server.GlobalState.contacts
+import top.focess.netdesign.server.GlobalState.server
 
 
 @Composable
-fun MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
+fun LangFile.LangScope.MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
 
     val listState = rememberLazyListState()
 
@@ -90,12 +94,18 @@ fun MyView(self: Friend) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FriendView(friend: Friend, showContact: (Contact) -> Unit) {
+fun LangFile.LangScope.FriendView(friend: Friend, showContact: (Contact) -> Unit) {
 
     var isHovered by remember { mutableStateOf(false) }
     val backgroundColor by animateColorAsState(if (isHovered) Color.LightGray else DefaultTheme.colors().background)
+    var lastMessage : Message? by remember { mutableStateOf(null) }
 
-    
+    LaunchedEffect(Unit) {
+        while (true) {
+            lastMessage = queryNewestLocalMessage(friend.id.toLong(), server.id!!.toLong())
+            delay(1000)
+        }
+    }
 
     Row(
         modifier = Modifier
@@ -122,7 +132,7 @@ fun FriendView(friend: Friend, showContact: (Contact) -> Unit) {
             horizontalAlignment = Alignment.End
         ) {
             Text(text = friend.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
-            Text(text = "last message", style = TextStyle(fontSize = 14.sp))
+            Text(text = lastMessageView(lastMessage), style = TextStyle(fontSize = 14.sp))
         }
 
     }
@@ -132,4 +142,39 @@ fun FriendView(friend: Friend, showContact: (Contact) -> Unit) {
 @Composable
 fun GroupView(group: Group) {
     Text(group.name)
+}
+
+private fun LangFile.LangScope.lastMessageView(message: Message?) : String {
+    return message?.let {
+        when (it.content.type) {
+            MessageType.TEXT -> {
+                it.content.data
+            }
+
+            MessageType.IMAGE -> {
+                "chat.imageMessage".l
+            }
+
+            MessageType.FILE -> {
+                "chat.fileMessage".l
+            }
+        }
+    } ?: ""
+}
+
+internal fun queryLatestLocalMessages(a: Long, b: Long): List<Message> {
+    val messages = localMessageQueries.selectBySenderAndReceiverLatest(a, b).executeAsList().map { it.toMessage() }.toMutableList();
+    messages
+        .addAll(localMessageQueries.selectBySenderAndReceiverLatest(a, b).executeAsList().map { it.toMessage() }.toList())
+    return messages
+}
+
+private fun queryNewestLocalMessage(a: Long, b: Long): Message? {
+    val message = localMessageQueries.selectBySenderAndReceiverNewest(a, b).executeAsOneOrNull()?.toMessage()
+    val message2 = localMessageQueries.selectBySenderAndReceiverNewest(b, a).executeAsOneOrNull()?.toMessage()
+
+    if (message != null && message2 != null)
+        return if (message.internalId > message2.internalId) message else message2
+
+    return message ?: message2
 }

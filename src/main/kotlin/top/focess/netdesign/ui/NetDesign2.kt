@@ -19,10 +19,17 @@ import top.focess.netdesign.Database
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.config.LangFile.Companion.createLandScope
 import top.focess.netdesign.server.*
+import top.focess.netdesign.server.GlobalState.server
+import top.focess.netdesign.server.GlobalState.singleServer
 import top.focess.netdesign.sqldelight.message.LocalMessage
 import top.focess.netdesign.sqldelight.message.ServerMessage
+import top.focess.util.option.OptionParserClassifier
+import top.focess.util.option.Options
+import top.focess.util.option.type.IntegerOptionType
+import top.focess.util.option.type.OptionType
 import java.awt.EventQueue
 import java.sql.SQLException
+import java.util.*
 
 
 val driver: SqlDriver = JdbcSqliteDriver(
@@ -54,7 +61,21 @@ fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecifi
     rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
 
 @Preview
-fun main() {
+fun main(args: Array<String>) {
+
+    val options = Options.parse(args,
+        OptionParserClassifier("local", OptionType.DEFAULT_OPTION_TYPE, IntegerOptionType.INTEGER_OPTION_TYPE),
+    )
+
+    val localOption = options["local"]
+    if (localOption != null) {
+        val name = localOption[OptionType.DEFAULT_OPTION_TYPE]
+        val port = localOption[IntegerOptionType.INTEGER_OPTION_TYPE]
+        singleServer = SingleServer(name, port, System.getenv("OPENAI_API_KEY"))
+
+        // todo take over the RemoteServer
+    }
+
 
     application(exitProcessOnExit = true) {
 
@@ -70,6 +91,11 @@ fun main() {
         LaunchedEffect(server.host, server.port) {
             if (!server.connected)
                 server.connect()
+        }
+
+        LaunchedEffect(server.logined) {
+            if (!server.logined)
+                currentContact = null
         }
 
         createLandScope(LangFile("langs/zh_CN.yml")) {

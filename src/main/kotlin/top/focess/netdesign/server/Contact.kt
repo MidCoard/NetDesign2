@@ -1,6 +1,7 @@
 package top.focess.netdesign.server
 
 import androidx.compose.runtime.*
+import top.focess.netdesign.server.GlobalState.contacts
 import top.focess.netdesign.server.packet.FileUploadRequestPacket
 import top.focess.netdesign.server.packet.FileUploadResponsePacket
 import top.focess.netdesign.server.packet.FriendSendMessageRequestPacket

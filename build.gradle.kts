@@ -41,6 +41,13 @@ compose.desktop {
     application {
         mainClass = "top.focess.netdesign.ui.NetDesign2Kt"
 
+
+        val serverPort = project.findProperty("server.port") as String?
+
+        if (serverPort != null)
+            args("--local", "Local", serverPort)
+
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "NetDesign2"

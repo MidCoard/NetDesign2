@@ -13,12 +13,12 @@ data class ContactListRequestPacket(val contacts: List<Contact>) : ServerPacket(
 
         override fun fromProtoType(packet: Any): ContactListRequestPacket {
             val contactListResponse: PacketOuterClass.ContactListRequest = packet.unpack()
-            return ContactListRequestPacket(contactListResponse.contactsList.map { contact -> contact.fromProtoType() }.toList())
+            return ContactListRequestPacket(contactListResponse.contactsList.map { contact -> contact.fromProtoType() })
         }
 
     }
 
     override fun toProtoType(): GeneratedMessageV3 = contactListRequest {
-        this.contacts.addAll(this@ContactListRequestPacket.contacts.map { contact -> contact.toProtoType() }.toList())
+        this.contacts.addAll(this@ContactListRequestPacket.contacts.map { contact -> contact.toProtoType() })
     }
 }

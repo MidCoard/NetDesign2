@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-
-val server = RemoteServer()
-val singleServer = SingleServer("Local")
-val contacts = mutableStateListOf<Contact>()
+object GlobalState {
+    val server = RemoteServer()
+    lateinit var singleServer: SingleServer
+    val contacts = mutableStateListOf<Contact>()
+}
