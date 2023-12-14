@@ -117,7 +117,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         clientScope.isChannelSetup = true
         GlobalScope.launch {
             delay(200)
-            sendChannelPacket(clientScope, ContactListRequestPacket(listOf(defaultContact)))
+            sendChannelPacket(clientScope, ContactListRequestPacket(listOf(defaultContact, clientScope.self)))
         }
     }
 
@@ -162,7 +162,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                     val hashPassword = (friend.password + challenge).sha256()
                                     if (hashPassword == packet.hashPassword) {
                                         val token = genToken()
-                                        this.clientScopeMap[token] = ClientScope(packet.username, token)
+                                        this.clientScopeMap[token] = ClientScope(packet.username, token, friend.id.toInt())
                                         return LoginResponsePacket(true, friend.id.toInt(), token)
                                     }
 
@@ -238,7 +238,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
     private data class ClientScope(
         val username: String,
         val token: String,
-        val self: Friend = Friend(0, username, true)
+        val id: Int,
+        val self: Friend = Friend(id, username, true)
     ) {
         lateinit var channelSocket: Socket
         var isChannelSetup = false

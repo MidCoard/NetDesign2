@@ -23,6 +23,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     var host by mutableStateOf(host)
     var port by mutableStateOf(port)
     var connected by mutableStateOf(ConnectionStatus.DISCONNECTED)
+    var logined by mutableStateOf(false)
 
     var online by mutableStateOf(true)
     var registerable by mutableStateOf(false)
@@ -96,19 +97,18 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun setupChannel(id: Int, username: String, token: String, count: Int = 0) {
-        if (count > 3)
+        if (count > 3) {
+            disconnect()
             throw IllegalArgumentException("Setup channel failed")
+        }
         if (!connected())
             return
-        println("RemoteServerChannel: start setup channel")
         this.channelSocket?.close()
         this.channelThread?.join()
-        println("RemoteServerChannel: channel closed and thread joined")
         this.channelSocket = this.socket
         this.channelSocket?.keepAlive = true
         this.channelThread = Thread {
             // send channel setup request
-            println("RemoteServerChannel: send setup channel request")
             this.channelSocket?.let {
                 BufferedOutputStream(it.getOutputStream()).let {
                     it.write(SetupChannelRequestPacket(token).toProtoPacket().toByteArray())
@@ -135,8 +135,6 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                 }
             }
 
-            println("RemoteServerChannel: setup channel status: ${this.channelSocket?.isClosed}")
-
             try {
                 // start channel
                 while (this.channelSocket?.isClosed?.not() == true) {
@@ -146,7 +144,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                         val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
                         println("RemoteServerChannel: receive ${packet.packetId}")
                         channelSocket?.getOutputStream()?.let {
-                            BufferedOutputStream(it).use {
+                            BufferedOutputStream(it).let {
                                 it.write(ClientAckResponsePacket().toProtoPacket().toByteArray())
                                 it.flush()
                             }
@@ -161,14 +159,11 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             }
 
             println("RemoteServerChannel: channel closed")
-
             // channel closed
             // need to re setup channel.
             // channel will be closed by network error or actively closed by server if client no response to server or server do not receive client ack response
             GlobalScope.launch {
-                println("RemoteServerChannel: before reconnect")
                 delay(3000)
-                println("RemoteServerChannel: reconnect")
                 setupChannel(id, username, token, count + 1)
             }
         }
@@ -185,24 +180,39 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         if (this.connected())
             return
         this.connected = ConnectionStatus.CONNECTING
-        val packet = this.trySendPacket(ServerStatusRequestPacket(), this.socket)
-        if (packet != null && packet is ServerStatusResponsePacket) {
-            this.online = packet.online
-            this.registerable = packet.registrable
-            this.connected = ConnectionStatus.CONNECTED
-        } else
+        try {
+            val packet = this.trySendPacket(ServerStatusRequestPacket(), this.socket)
+            if (packet != null && packet is ServerStatusResponsePacket) {
+                this.online = packet.online
+                this.registerable = packet.registrable
+                this.connected = ConnectionStatus.CONNECTED
+            } else
+                this.connected = ConnectionStatus.DISCONNECTED
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // this exception is caused by this.socket's getter
             this.connected = ConnectionStatus.DISCONNECTED
+        }
     }
 
     fun disconnect() {
         this.connected = ConnectionStatus.DISCONNECTED
         this.online = true
         this.registerable = false
+        this.logined = false
     }
 
     suspend fun reconnect() {
-        this.disconnect()
-        this.connect()
+        if (this.connected()) {
+            val packet = this.sendPacket(ServerStatusUpdateRequestPacket(), this.socket)
+            if (packet is ServerStatusUpdateResponsePacket) {
+                this.online = packet.online
+                this.registerable = packet.registrable
+            } else disconnect()
+        } else {
+            this.disconnect()
+            this.connect()
+        }
     }
 
     companion object {

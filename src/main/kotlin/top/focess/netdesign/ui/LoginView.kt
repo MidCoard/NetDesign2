@@ -120,7 +120,7 @@ fun LangFile.LangScope.LoginView(
         Button(
             onClick = { reconnect = true },
             modifier = Modifier.padding(16.dp),
-            enabled = !reconnect && !server.connected
+            enabled = !reconnect
         ) {
             Icon(Icons.Default.Refresh, "login.reconnect".l)
         }

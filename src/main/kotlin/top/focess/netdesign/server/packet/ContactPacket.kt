@@ -28,6 +28,7 @@ data class ContactRequestPacket(val contact: Contact, val delete: Boolean) : Ser
 internal fun Contact.toProtoType() = contact {
     this.id = this@toProtoType.id;
     this.name = this@toProtoType.name
+    this.online = this@toProtoType.online
     this.type = when (this@toProtoType) {
         is Friend -> PacketOuterClass.Contact.ContactType.FRIEND
         is Group -> PacketOuterClass.Contact.ContactType.GROUP
@@ -40,6 +41,7 @@ internal fun Contact.toProtoType() = contact {
                 contact {
                     this.id = it.id
                     this.name = it.name
+                    this.online = it.online
                     this.type = PacketOuterClass.Contact.ContactType.MEMBER
                 }
             }.toList()

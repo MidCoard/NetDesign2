@@ -104,7 +104,7 @@ fun main() {
                 }
             }
 
-            if (!logined)
+            if (!server.logined)
                 DefaultView(
                     onCloseRequest = ::exitApplication,
                     state = rememberCenterWindowState(DpSize(600.dp, Dp.Unspecified)),

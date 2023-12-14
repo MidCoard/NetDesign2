@@ -9,4 +9,3 @@ import androidx.compose.runtime.setValue
 val server = RemoteServer()
 val singleServer = SingleServer("Local")
 val contacts = mutableStateListOf<Contact>()
-var logined by mutableStateOf(false)
