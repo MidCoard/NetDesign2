@@ -40,9 +40,8 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
                                     "Content-Type" to "application/json"
                                 ), NetworkHandler.JSON
                             )
-                            if (response.isError) {
-
-                            }
+                            if (response.isError)
+                                println("ChatGPT Error: ${response.code}")
                             val choices: JSONList = response.asJSON.getList("choices")
                             val choice: JSONObject = choices.getJSON(0)
                             val message: JSONObject = choice.getJSON("message")
@@ -57,9 +56,6 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        if (e is HttpResponseException) {
-                            e.
-                        }
                         handler.removeLastMessage()
                     }
                 }
