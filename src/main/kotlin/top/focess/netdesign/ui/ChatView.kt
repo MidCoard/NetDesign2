@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -32,6 +33,7 @@ import top.focess.netdesign.server.packet.ContactMessageResponsePacket
 import top.focess.netdesign.server.packet.FriendSendMessageRequestPacket
 import top.focess.netdesign.server.packet.FriendSendMessageResponsePacket
 import top.focess.netdesign.sqldelight.message.LocalMessage
+import kotlin.math.max
 
 @Composable
 fun LangFile.LangScope.MessageContentView(messageContent: MessageContent) {
@@ -96,30 +98,9 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
     var text by remember { mutableStateOf("") }
     var sendRequest by remember { mutableStateOf(false) }
-    var loading by remember { mutableStateOf(true) }
+    val listState = rememberLazyListState()
     val showDialog = remember { mutableStateOf(false) }
     var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
-
-    LaunchedEffect(Unit) {
-        val localMessages = queryLatestLocalMessages(contact.id.toLong(), server.id!!.toLong())
-
-        contact.messages.addAll(localMessages)
-
-        val currentInternalId : Int = contact.internalId
-
-        val missingInternalIds = (1..currentInternalId).toSet().subtract(localMessages.map { it.internalId }.toSet())
-
-        for (missingInternalId in missingInternalIds) {
-            val packet = server.sendPacket(ContactMessageRequestPacket(server.token!!, contact.id, missingInternalId))
-            if (packet is ContactMessageResponsePacket) {
-                val message = packet.message
-                if (message.id != -1)
-                    contact.messages.add(message)
-            }
-        }
-
-        loading = false
-    }
 
     LaunchedEffect(sendRequest) {
         if (sendRequest) {
@@ -151,6 +132,11 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
         }
     }
 
+    LaunchedEffect(contact.messages.size) {
+        if (contact.messages.isNotEmpty())
+            listState.animateScrollToItem(contact.messages.size - 1)
+    }
+
     FocessDialogWindow(dialog)
 
     Box {
@@ -159,7 +145,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
         Column {
 
-            LazyColumn(modifier = Modifier.weight(10f)) {
+            LazyColumn(state = listState, modifier = Modifier.weight(10f)) {
                 items(contact.messages.sortedBy { it.internalId }) {
                     MessageView(it, it.from == contact.id)
                 }

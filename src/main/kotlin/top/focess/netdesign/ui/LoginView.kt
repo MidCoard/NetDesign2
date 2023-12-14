@@ -103,7 +103,7 @@ fun LangFile.LangScope.LoginView(
                 loginRequest = true
                       },
             modifier = Modifier.padding(16.dp),
-            enabled = server.connected() && !loginRequest && canLogin(username, password) && !showDialog.value
+            enabled = server.connected() && !loginRequest && canLogin(username, password) && !showDialog.value && server.channelSocket == null
         ) {
             Text("login.login".l)
             Spacer(Modifier.width(5.dp))

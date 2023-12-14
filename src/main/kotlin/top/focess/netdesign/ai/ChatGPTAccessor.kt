@@ -6,6 +6,7 @@ import top.focess.netdesign.server.packet.ContactMessageListRequestPacket
 import top.focess.scheduler.ThreadPoolScheduler
 import top.focess.util.json.JSONList
 import top.focess.util.json.JSONObject
+import top.focess.util.network.HttpResponseException
 import top.focess.util.network.NetworkHandler
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -18,15 +19,16 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
 
     val id = -1
 
-    fun SingleServer.sendMessage(id: Int, messageContent: MessageContent) {
+    fun SingleServer.sendMessage(id: Int, name: String, messageContent: MessageContent) {
         if (messageContent.type != model.messageType) {
             val message = insertMessage(this@ChatGPTAccessor.id, id, "Message type not match.", MessageType.TEXT)
             sendChannelPacket(id, ContactMessageListRequestPacket(message))
         } else {
-            val handler = messageHandlers.getOrPut(id) { ChatGPTMessageHandler() }
+            val handler = messageHandlers.getOrPut(id) { ChatGPTMessageHandler( name ) }
             scheduler.run {
                 synchronized(handler) {
                     handler.addUserMessage(messageContent)
+
                     try {
                         if (model.messageType == MessageType.TEXT) {
                             val response = networkHandler.post(
@@ -38,6 +40,9 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
                                     "Content-Type" to "application/json"
                                 ), NetworkHandler.JSON
                             )
+                            if (response.isError) {
+
+                            }
                             val choices: JSONList = response.asJSON.getList("choices")
                             val choice: JSONObject = choices.getJSON(0)
                             val message: JSONObject = choice.getJSON("message")
@@ -52,6 +57,9 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
+                        if (e is HttpResponseException) {
+                            e.
+                        }
                         handler.removeLastMessage()
                     }
                 }
@@ -61,11 +69,18 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
     }
 }
 
-private class ChatGPTMessageHandler {
+private class ChatGPTMessageHandler(val name: String) {
 
     private val messages : MutableList<ChatGPTMessage> = mutableListOf()
     init {
-        messages.add(ChatGPTMessage(ChatGPTRole.SYSTEM, TextMessageContent("You are chatting online with your friend.")))
+        init()
+    }
+
+    fun init() {
+        messages.add(ChatGPTMessage(ChatGPTRole.SYSTEM, TextMessageContent("You are chatting online with your friend named ${name}." +
+                "You should behave yourself as a real friend and don't do anything that may hurt your friend." +
+                "Do not behave like a robot, or you will be blocked." +
+                "Before you start chatting, please name yourself.")))
     }
     fun addUserMessage(messageContent: MessageContent) {
         messages.add(ChatGPTMessage(ChatGPTRole.USER, messageContent))
@@ -73,8 +88,10 @@ private class ChatGPTMessageHandler {
 
     fun addMessage(messageContent: MessageContent) {
         messages.add(ChatGPTMessage(ChatGPTRole.ASSISTANT, messageContent))
-        if (messages.size > 50)
+        if (messages.size == 50) {
             messages.clear()
+            init()
+        }
     }
 
     fun asRawChatGPTMessages(): List<Map<String, String>> {

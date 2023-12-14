@@ -44,7 +44,7 @@ internal fun Contact.toProtoType() = contact {
                     this.online = it.online
                     this.type = PacketOuterClass.Contact.ContactType.MEMBER
                 }
-            }.toList()
+            }
         )
 }
 
@@ -61,7 +61,7 @@ internal fun PacketOuterClass.Contact.fromProtoType() = when (this.type) {
         this.online,
         this.membersList.map { member ->
             Member(member.id, member.name, member.online)
-        }.toList()
+        }
     )
     else -> throw IllegalArgumentException("Unknown contact type: ${this.type}")
 }

@@ -237,7 +237,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                     chatGPTAccessor?.let {
                                         if (chatGPTAccessor.id == packet.to) {
                                             with(chatGPTAccessor) {
-                                                sendMessage(clientScope.id, packet.messageContent)
+                                                sendMessage(clientScope.id, clientScope.username, packet.messageContent)
                                             }
                                         }
                                     }

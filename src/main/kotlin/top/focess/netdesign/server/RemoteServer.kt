@@ -10,12 +10,15 @@ import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.clientAckResponse
 import top.focess.netdesign.server.GlobalState.contacts
 import top.focess.netdesign.server.packet.*
+import top.focess.netdesign.ui.localMessageQueries
+import top.focess.netdesign.ui.queryLatestLocalMessages
 import top.focess.util.RSA
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.Closeable
 import java.io.InputStream
 import java.net.Socket
+import kotlin.math.max
 
 class RemoteServer
 internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) :
@@ -35,7 +38,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
     private val socket: Socket
         get() = setupSocket()
-    private var channelSocket: Socket? = null
+    var channelSocket: Socket? = null
     private var channelThread: Thread? = null
 
     private fun setupSocket(): Socket {
@@ -101,8 +104,12 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             disconnect()
             throw IllegalArgumentException("Setup channel failed")
         }
-        if (!connected())
+        if (!connected()) {
+            this.channelSocket?.close()
+            this.channelThread?.join()
+            this.channelSocket = null
             return
+        }
         this.channelSocket?.close()
         this.channelThread?.join()
         this.channelSocket = this.socket
@@ -171,8 +178,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     }
 
     override fun close() {
-        this.connected = ConnectionStatus.DISCONNECTED
-        this.socket.close()
+        this.disconnect()
     }
 
     suspend fun connect() {
@@ -219,6 +225,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
     companion object {
 
+        @OptIn(DelicateCoroutinesApi::class)
         private val DEFAULT_PACKET_HANDLER = object : RemoteServerPacketHandler {
             override fun RemoteServer.handle(packet: ServerPacket) {
                 when (packet) {
@@ -229,11 +236,33 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                         for (i in 0 until packet.contacts.size) {
                             val contact = packet.contacts[i]
                             val internalId = packet.internalIds[i]
-                            contact.internalId = internalId
+                            val localMessages = queryLatestLocalMessages(contact.id.toLong(), id!!.toLong())
+                            contact.messages.addAll(localMessages)
+                            val missingInternalIds = (max(1, internalId - 10)..internalId).toSet().subtract(localMessages.map { it.internalId }.toSet())
+                            for (missingInternalId in missingInternalIds)
+                                GlobalScope.launch {
+                                    val contactMessageRequestPacket =
+                                        sendPacket(ContactMessageRequestPacket(token!!, contact.id, missingInternalId))
+                                    if (contactMessageRequestPacket is ContactMessageResponsePacket) {
+                                        val message = contactMessageRequestPacket.message
+                                        if (message.id != -1) {
+                                            localMessageQueries.insert(
+                                                message.id.toLong(),
+                                                message.from.toLong(),
+                                                message.to.toLong(),
+                                                message.content.data,
+                                                message.content.type,
+                                                message.timestamp.toLong(),
+                                                message.internalId.toLong(),
+                                            )
+                                            contact.messages.add(message)
+                                        }
+                                    }
+                                }
                             contacts.add(contact)
                         }
 
-                        this@handle.self = contacts.find { it.id == id } as Friend
+                        this@handle.self = getContact(id!!) as Friend
                     }
                     is ContactRequestPacket -> {
                         if (packet.delete)
@@ -243,6 +272,15 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                     is ContactMessageListRequestPacket -> {
                         packet.messages.forEach {
                             val contact = getContact(it.from)
+                            localMessageQueries.insert(
+                                it.id.toLong(),
+                                it.from.toLong(),
+                                it.to.toLong(),
+                                it.content.data,
+                                it.content.type,
+                                it.timestamp.toLong(),
+                                it.internalId.toLong(),
+                            )
                             contact?.messages?.add(it)
                         }
                     }

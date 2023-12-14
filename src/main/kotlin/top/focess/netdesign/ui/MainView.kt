@@ -46,15 +46,13 @@ fun LangFile.LangScope.MainView(server: RemoteServer, showContact: (Contact) -> 
         state = listState,
     ) {
 
-        val contactList = contacts.toList()
-
         item {
             server.self?.let {
                 MyView(server.self!!)
             }
         }
 
-        items(contactList) { contact ->
+        items(contacts) { contact ->
             if (contact is Friend && contact.id != server.id) {
                 FriendView(contact, showContact)
             } else if (contact is Group) {
@@ -100,11 +98,8 @@ fun LangFile.LangScope.FriendView(friend: Friend, showContact: (Contact) -> Unit
     val backgroundColor by animateColorAsState(if (isHovered) Color.LightGray else DefaultTheme.colors().background)
     var lastMessage : Message? by remember { mutableStateOf(null) }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            lastMessage = queryNewestLocalMessage(friend.id.toLong(), server.id!!.toLong())
-            delay(1000)
-        }
+    LaunchedEffect(friend.messages.size) {
+        lastMessage = friend.messages.maxByOrNull { it.internalId }
     }
 
     Row(
@@ -148,7 +143,7 @@ private fun LangFile.LangScope.lastMessageView(message: Message?) : String {
     return message?.let {
         when (it.content.type) {
             MessageType.TEXT -> {
-                it.content.data
+                it.content.data.maxLength(20)
             }
 
             MessageType.IMAGE -> {
@@ -163,9 +158,9 @@ private fun LangFile.LangScope.lastMessageView(message: Message?) : String {
 }
 
 internal fun queryLatestLocalMessages(a: Long, b: Long): List<Message> {
-    val messages = localMessageQueries.selectBySenderAndReceiverLatest(a, b).executeAsList().map { it.toMessage() }.toMutableList();
+    val messages = localMessageQueries.selectBySenderAndReceiverLatest(a, b).executeAsList().map { it.toMessage() }.toMutableList()
     messages
-        .addAll(localMessageQueries.selectBySenderAndReceiverLatest(a, b).executeAsList().map { it.toMessage() }.toList())
+        .addAll(localMessageQueries.selectBySenderAndReceiverLatest(b, a).executeAsList().map { it.toMessage() })
     return messages
 }
 
@@ -178,3 +173,5 @@ private fun queryNewestLocalMessage(a: Long, b: Long): Message? {
 
     return message ?: message2
 }
+
+internal fun String.maxLength(maxLength: Int) = if (this.length > maxLength) this.substring(0, maxLength) + "..." else this
