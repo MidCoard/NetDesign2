@@ -24,11 +24,10 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     var host by mutableStateOf(host)
     var port by mutableStateOf(port)
     var connected by mutableStateOf(ConnectionStatus.DISCONNECTED)
-    var logined by mutableStateOf(false)
 
     var online by mutableStateOf(true)
     var registerable by mutableStateOf(false)
-    var self: Friend? = null
+    var self: Friend? by mutableStateOf(null)
 
     var id: Int? = null
     var token: String? = null
@@ -127,7 +126,6 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                             this@RemoteServer.id = id
                             this@RemoteServer.token = token
                             this@RemoteServer.username = username
-                            logined = true
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -200,7 +198,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         this.connected = ConnectionStatus.DISCONNECTED
         this.online = true
         this.registerable = false
-        this.logined = false
+        this.self = null
         this.channelSocket?.close()
         this.channelThread?.join()
         this.channelSocket = null
@@ -227,13 +225,26 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                     is ChannelHeartRequestPacket -> {}
                     is ContactListRequestPacket -> {
                         contacts.clear()
-                        contacts.addAll(packet.contacts)
+
+                        for (i in 0 until packet.contacts.size) {
+                            val contact = packet.contacts[i]
+                            val internalId = packet.internalIds[i]
+                            contact.internalId = internalId
+                            contacts.add(contact)
+                        }
+
                         this@handle.self = contacts.find { it.id == id } as Friend
                     }
                     is ContactRequestPacket -> {
                         if (packet.delete)
                             contacts.removeIf { it.id == packet.contact.id }
                         else contacts.add(packet.contact)
+                    }
+                    is ContactMessageListRequestPacket -> {
+                        packet.messages.forEach {
+                            val contact = getContact(it.from)
+                            contact?.messages?.add(it)
+                        }
                     }
                     else -> throw IllegalArgumentException("Unknown packet id ${packet.packetId}")
                 }

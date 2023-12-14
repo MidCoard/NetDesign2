@@ -6833,6 +6833,23 @@ public final class PacketOuterClass {
      */
     top.focess.netdesign.proto.PacketOuterClass.ContactOrBuilder getContactsOrBuilder(
         int index);
+
+    /**
+     * <code>repeated int32 internalIds = 2;</code>
+     * @return A list containing the internalIds.
+     */
+    java.util.List<java.lang.Integer> getInternalIdsList();
+    /**
+     * <code>repeated int32 internalIds = 2;</code>
+     * @return The count of internalIds.
+     */
+    int getInternalIdsCount();
+    /**
+     * <code>repeated int32 internalIds = 2;</code>
+     * @param index The index of the element to return.
+     * @return The internalIds at the given index.
+     */
+    int getInternalIds(int index);
   }
   /**
    * <pre>
@@ -6852,6 +6869,7 @@ public final class PacketOuterClass {
     }
     private ContactListRequest() {
       contacts_ = java.util.Collections.emptyList();
+      internalIds_ = emptyIntList();
     }
 
     @java.lang.Override
@@ -6935,6 +6953,36 @@ public final class PacketOuterClass {
       return contacts_.get(index);
     }
 
+    public static final int INTERNALIDS_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.Internal.IntList internalIds_ =
+        emptyIntList();
+    /**
+     * <code>repeated int32 internalIds = 2;</code>
+     * @return A list containing the internalIds.
+     */
+    @java.lang.Override
+    public java.util.List<java.lang.Integer>
+        getInternalIdsList() {
+      return internalIds_;
+    }
+    /**
+     * <code>repeated int32 internalIds = 2;</code>
+     * @return The count of internalIds.
+     */
+    public int getInternalIdsCount() {
+      return internalIds_.size();
+    }
+    /**
+     * <code>repeated int32 internalIds = 2;</code>
+     * @param index The index of the element to return.
+     * @return The internalIds at the given index.
+     */
+    public int getInternalIds(int index) {
+      return internalIds_.getInt(index);
+    }
+    private int internalIdsMemoizedSerializedSize = -1;
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -6949,8 +6997,16 @@ public final class PacketOuterClass {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      getSerializedSize();
       for (int i = 0; i < contacts_.size(); i++) {
         output.writeMessage(1, contacts_.get(i));
+      }
+      if (getInternalIdsList().size() > 0) {
+        output.writeUInt32NoTag(18);
+        output.writeUInt32NoTag(internalIdsMemoizedSerializedSize);
+      }
+      for (int i = 0; i < internalIds_.size(); i++) {
+        output.writeInt32NoTag(internalIds_.getInt(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -6964,6 +7020,20 @@ public final class PacketOuterClass {
       for (int i = 0; i < contacts_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, contacts_.get(i));
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < internalIds_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(internalIds_.getInt(i));
+        }
+        size += dataSize;
+        if (!getInternalIdsList().isEmpty()) {
+          size += 1;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        internalIdsMemoizedSerializedSize = dataSize;
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -6982,6 +7052,8 @@ public final class PacketOuterClass {
 
       if (!getContactsList()
           .equals(other.getContactsList())) return false;
+      if (!getInternalIdsList()
+          .equals(other.getInternalIdsList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -6996,6 +7068,10 @@ public final class PacketOuterClass {
       if (getContactsCount() > 0) {
         hash = (37 * hash) + CONTACTS_FIELD_NUMBER;
         hash = (53 * hash) + getContactsList().hashCode();
+      }
+      if (getInternalIdsCount() > 0) {
+        hash = (37 * hash) + INTERNALIDS_FIELD_NUMBER;
+        hash = (53 * hash) + getInternalIdsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -7139,6 +7215,7 @@ public final class PacketOuterClass {
           contactsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
+        internalIds_ = emptyIntList();
         return this;
       }
 
@@ -7185,6 +7262,10 @@ public final class PacketOuterClass {
 
       private void buildPartial0(top.focess.netdesign.proto.PacketOuterClass.ContactListRequest result) {
         int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          internalIds_.makeImmutable();
+          result.internalIds_ = internalIds_;
+        }
       }
 
       @java.lang.Override
@@ -7257,6 +7338,17 @@ public final class PacketOuterClass {
             }
           }
         }
+        if (!other.internalIds_.isEmpty()) {
+          if (internalIds_.isEmpty()) {
+            internalIds_ = other.internalIds_;
+            internalIds_.makeImmutable();
+            bitField0_ |= 0x00000002;
+          } else {
+            ensureInternalIdsIsMutable();
+            internalIds_.addAll(other.internalIds_);
+          }
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -7296,6 +7388,22 @@ public final class PacketOuterClass {
                 }
                 break;
               } // case 10
+              case 16: {
+                int v = input.readInt32();
+                ensureInternalIdsIsMutable();
+                internalIds_.addInt(v);
+                break;
+              } // case 16
+              case 18: {
+                int length = input.readRawVarint32();
+                int limit = input.pushLimit(length);
+                ensureInternalIdsIsMutable();
+                while (input.getBytesUntilLimit() > 0) {
+                  internalIds_.addInt(input.readInt32());
+                }
+                input.popLimit(limit);
+                break;
+              } // case 18
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -7623,6 +7731,90 @@ public final class PacketOuterClass {
           contacts_ = null;
         }
         return contactsBuilder_;
+      }
+
+      private com.google.protobuf.Internal.IntList internalIds_ = emptyIntList();
+      private void ensureInternalIdsIsMutable() {
+        if (!internalIds_.isModifiable()) {
+          internalIds_ = makeMutableCopy(internalIds_);
+        }
+        bitField0_ |= 0x00000002;
+      }
+      /**
+       * <code>repeated int32 internalIds = 2;</code>
+       * @return A list containing the internalIds.
+       */
+      public java.util.List<java.lang.Integer>
+          getInternalIdsList() {
+        internalIds_.makeImmutable();
+        return internalIds_;
+      }
+      /**
+       * <code>repeated int32 internalIds = 2;</code>
+       * @return The count of internalIds.
+       */
+      public int getInternalIdsCount() {
+        return internalIds_.size();
+      }
+      /**
+       * <code>repeated int32 internalIds = 2;</code>
+       * @param index The index of the element to return.
+       * @return The internalIds at the given index.
+       */
+      public int getInternalIds(int index) {
+        return internalIds_.getInt(index);
+      }
+      /**
+       * <code>repeated int32 internalIds = 2;</code>
+       * @param index The index to set the value at.
+       * @param value The internalIds to set.
+       * @return This builder for chaining.
+       */
+      public Builder setInternalIds(
+          int index, int value) {
+
+        ensureInternalIdsIsMutable();
+        internalIds_.setInt(index, value);
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 internalIds = 2;</code>
+       * @param value The internalIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addInternalIds(int value) {
+
+        ensureInternalIdsIsMutable();
+        internalIds_.addInt(value);
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 internalIds = 2;</code>
+       * @param values The internalIds to add.
+       * @return This builder for chaining.
+       */
+      public Builder addAllInternalIds(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureInternalIdsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, internalIds_);
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 internalIds = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearInternalIds() {
+        internalIds_ = emptyIntList();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -10814,6 +11006,10 @@ public final class PacketOuterClass {
     top.focess.netdesign.proto.PacketOuterClass.RawMessageOrBuilder getMessageOrBuilder();
 
     /**
+     * <pre>
+     * start from 0 or 1
+     * </pre>
+     *
      * <code>int32 id = 2;</code>
      * @return The id.
      */
@@ -10826,6 +11022,10 @@ public final class PacketOuterClass {
     int getTimestamp();
 
     /**
+     * <pre>
+     * start from 1
+     * </pre>
+     *
      * <code>int32 internalId = 4;</code>
      * @return The internalId.
      */
@@ -10896,6 +11096,10 @@ public final class PacketOuterClass {
     public static final int ID_FIELD_NUMBER = 2;
     private int id_ = 0;
     /**
+     * <pre>
+     * start from 0 or 1
+     * </pre>
+     *
      * <code>int32 id = 2;</code>
      * @return The id.
      */
@@ -10918,6 +11122,10 @@ public final class PacketOuterClass {
     public static final int INTERNALID_FIELD_NUMBER = 4;
     private int internalId_ = 0;
     /**
+     * <pre>
+     * start from 1
+     * </pre>
+     *
      * <code>int32 internalId = 4;</code>
      * @return The internalId.
      */
@@ -11465,6 +11673,10 @@ public final class PacketOuterClass {
 
       private int id_ ;
       /**
+       * <pre>
+       * start from 0 or 1
+       * </pre>
+       *
        * <code>int32 id = 2;</code>
        * @return The id.
        */
@@ -11473,6 +11685,10 @@ public final class PacketOuterClass {
         return id_;
       }
       /**
+       * <pre>
+       * start from 0 or 1
+       * </pre>
+       *
        * <code>int32 id = 2;</code>
        * @param value The id to set.
        * @return This builder for chaining.
@@ -11485,6 +11701,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * start from 0 or 1
+       * </pre>
+       *
        * <code>int32 id = 2;</code>
        * @return This builder for chaining.
        */
@@ -11529,6 +11749,10 @@ public final class PacketOuterClass {
 
       private int internalId_ ;
       /**
+       * <pre>
+       * start from 1
+       * </pre>
+       *
        * <code>int32 internalId = 4;</code>
        * @return The internalId.
        */
@@ -11537,6 +11761,10 @@ public final class PacketOuterClass {
         return internalId_;
       }
       /**
+       * <pre>
+       * start from 1
+       * </pre>
+       *
        * <code>int32 internalId = 4;</code>
        * @param value The internalId to set.
        * @return This builder for chaining.
@@ -11549,6 +11777,10 @@ public final class PacketOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * start from 1
+       * </pre>
+       *
        * <code>int32 internalId = 4;</code>
        * @return This builder for chaining.
        */
@@ -20248,39 +20480,39 @@ public final class PacketOuterClass {
       ".Contact.ContactType\022$\n\007members\030\005 \003(\0132\023." +
       "netdesign2.Contact\022\023\n\006header\030\006 \001(\005H\000\210\001\001\"" +
       "0\n\013ContactType\022\n\n\006FRIEND\020\000\022\t\n\005GROUP\020\001\022\n\n" +
-      "\006MEMBER\020\002B\t\n\007_header\";\n\022ContactListReque" +
+      "\006MEMBER\020\002B\t\n\007_header\"P\n\022ContactListReque" +
       "st\022%\n\010contacts\030\001 \003(\0132\023.netdesign2.Contac" +
-      "t\"\023\n\021ClientAckResponse\"F\n\016ContactRequest" +
-      "\022$\n\007contact\030\001 \001(\0132\023.netdesign2.Contact\022\016" +
-      "\n\006delete\030\002 \001(\010\"\023\n\021ServerAckResponse\"%\n\004F" +
-      "ile\022\014\n\004name\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\"z\n\nRa" +
-      "wMessage\022\014\n\004from\030\001 \001(\005\022\n\n\002to\030\002 \001(\005\022%\n\004ty" +
-      "pe\030\003 \001(\0162\027.netdesign2.MessageType\022\017\n\007con" +
-      "tent\030\004 \001(\t\022\021\n\004hash\030\005 \001(\tH\000\210\001\001B\007\n\005_hash\"e" +
-      "\n\007Message\022\'\n\007message\030\001 \001(\0132\026.netdesign2." +
-      "RawMessage\022\n\n\002id\030\002 \001(\005\022\021\n\ttimestamp\030\003 \001(" +
-      "\005\022\022\n\ninternalId\030\004 \001(\005\"F\n\025ContactMessageR" +
-      "equest\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030\002 \001(\005\022\022\n\nint" +
-      "ernalId\030\003 \001(\005\">\n\026ContactMessageResponse\022" +
-      "$\n\007message\030\001 \001(\0132\023.netdesign2.Message\"R\n" +
-      "\030FriendSendMessageRequest\022\r\n\005token\030\001 \001(\t" +
-      "\022\'\n\007message\030\002 \001(\0132\026.netdesign2.RawMessag" +
-      "e\"A\n\031FriendSendMessageResponse\022$\n\007messag" +
-      "e\030\001 \001(\0132\023.netdesign2.Message\"$\n\023SetupCha" +
-      "nnelRequest\022\r\n\005token\030\001 \001(\t\"\025\n\023ChannelHea" +
-      "rtRequest\"B\n\031ContactMessageListRequest\022%" +
-      "\n\010messages\030\001 \003(\0132\023.netdesign2.Message\"N\n" +
-      "\021FileUploadRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030" +
-      "\002 \001(\t\022\036\n\004file\030\003 \001(\0132\020.netdesign2.File\"%\n" +
-      "\022FileUploadResponse\022\017\n\007success\030\001 \001(\010\"0\n\023" +
-      "FileDownloadRequest\022\r\n\005token\030\001 \001(\t\022\n\n\002id" +
-      "\030\002 \001(\t\"6\n\024FileDownloadResponse\022\036\n\004file\030\001" +
-      " \001(\0132\020.netdesign2.File\"8\n\017RegisterReques" +
-      "t\022\020\n\010username\030\001 \001(\t\022\023\n\013rawPassword\030\002 \001(\t" +
-      "\"#\n\020RegisterResponse\022\017\n\007success\030\001 \001(\010*,\n" +
-      "\013MessageType\022\010\n\004TEXT\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FIL" +
-      "E\020\002B\036\n\032top.focess.netdesign.protoH\003b\006pro" +
-      "to3"
+      "t\022\023\n\013internalIds\030\002 \003(\005\"\023\n\021ClientAckRespo" +
+      "nse\"F\n\016ContactRequest\022$\n\007contact\030\001 \001(\0132\023" +
+      ".netdesign2.Contact\022\016\n\006delete\030\002 \001(\010\"\023\n\021S" +
+      "erverAckResponse\"%\n\004File\022\014\n\004name\030\001 \001(\t\022\017" +
+      "\n\007content\030\002 \001(\014\"z\n\nRawMessage\022\014\n\004from\030\001 " +
+      "\001(\005\022\n\n\002to\030\002 \001(\005\022%\n\004type\030\003 \001(\0162\027.netdesig" +
+      "n2.MessageType\022\017\n\007content\030\004 \001(\t\022\021\n\004hash\030" +
+      "\005 \001(\tH\000\210\001\001B\007\n\005_hash\"e\n\007Message\022\'\n\007messag" +
+      "e\030\001 \001(\0132\026.netdesign2.RawMessage\022\n\n\002id\030\002 " +
+      "\001(\005\022\021\n\ttimestamp\030\003 \001(\005\022\022\n\ninternalId\030\004 \001" +
+      "(\005\"F\n\025ContactMessageRequest\022\r\n\005token\030\001 \001" +
+      "(\t\022\n\n\002id\030\002 \001(\005\022\022\n\ninternalId\030\003 \001(\005\">\n\026Co" +
+      "ntactMessageResponse\022$\n\007message\030\001 \001(\0132\023." +
+      "netdesign2.Message\"R\n\030FriendSendMessageR" +
+      "equest\022\r\n\005token\030\001 \001(\t\022\'\n\007message\030\002 \001(\0132\026" +
+      ".netdesign2.RawMessage\"A\n\031FriendSendMess" +
+      "ageResponse\022$\n\007message\030\001 \001(\0132\023.netdesign" +
+      "2.Message\"$\n\023SetupChannelRequest\022\r\n\005toke" +
+      "n\030\001 \001(\t\"\025\n\023ChannelHeartRequest\"B\n\031Contac" +
+      "tMessageListRequest\022%\n\010messages\030\001 \003(\0132\023." +
+      "netdesign2.Message\"N\n\021FileUploadRequest\022" +
+      "\r\n\005token\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\036\n\004file\030\003 \001(\013" +
+      "2\020.netdesign2.File\"%\n\022FileUploadResponse" +
+      "\022\017\n\007success\030\001 \001(\010\"0\n\023FileDownloadRequest" +
+      "\022\r\n\005token\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\"6\n\024FileDownl" +
+      "oadResponse\022\036\n\004file\030\001 \001(\0132\020.netdesign2.F" +
+      "ile\"8\n\017RegisterRequest\022\020\n\010username\030\001 \001(\t" +
+      "\022\023\n\013rawPassword\030\002 \001(\t\"#\n\020RegisterRespons" +
+      "e\022\017\n\007success\030\001 \001(\010*,\n\013MessageType\022\010\n\004TEX" +
+      "T\020\000\022\t\n\005IMAGE\020\001\022\010\n\004FILE\020\002B\036\n\032top.focess.n" +
+      "etdesign.protoH\003b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -20352,7 +20584,7 @@ public final class PacketOuterClass {
     internal_static_netdesign2_ContactListRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_netdesign2_ContactListRequest_descriptor,
-        new java.lang.String[] { "Contacts", });
+        new java.lang.String[] { "Contacts", "InternalIds", });
     internal_static_netdesign2_ClientAckResponse_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_netdesign2_ClientAckResponse_fieldAccessorTable = new

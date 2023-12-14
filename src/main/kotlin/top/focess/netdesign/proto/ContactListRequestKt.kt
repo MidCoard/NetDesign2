@@ -130,7 +130,72 @@ public object ContactListRequestKt {
       _builder.clearContacts()
     }
 
-  }
+
+    /**
+     * An uninstantiable, behaviorless type to represent the field in
+     * generics.
+     */
+    @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
+    public class InternalIdsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
+    /**
+     * `repeated int32 internalIds = 2;`
+     */
+     public val internalIds: com.google.protobuf.kotlin.DslList<kotlin.Int, InternalIdsProxy>
+      @kotlin.jvm.JvmSynthetic
+      get() = com.google.protobuf.kotlin.DslList(
+        _builder.getInternalIdsList()
+      )
+    /**
+     * `repeated int32 internalIds = 2;`
+     * @param value The internalIds to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addInternalIds")
+    public fun com.google.protobuf.kotlin.DslList<kotlin.Int, InternalIdsProxy>.add(value: kotlin.Int) {
+      _builder.addInternalIds(value)
+    }/**
+     * `repeated int32 internalIds = 2;`
+     * @param value The internalIds to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignInternalIds")
+    @Suppress("NOTHING_TO_INLINE")
+    public inline operator fun com.google.protobuf.kotlin.DslList<kotlin.Int, InternalIdsProxy>.plusAssign(value: kotlin.Int) {
+      add(value)
+    }/**
+     * `repeated int32 internalIds = 2;`
+     * @param values The internalIds to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addAllInternalIds")
+    public fun com.google.protobuf.kotlin.DslList<kotlin.Int, InternalIdsProxy>.addAll(values: kotlin.collections.Iterable<kotlin.Int>) {
+      _builder.addAllInternalIds(values)
+    }/**
+     * `repeated int32 internalIds = 2;`
+     * @param values The internalIds to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignAllInternalIds")
+    @Suppress("NOTHING_TO_INLINE")
+    public inline operator fun com.google.protobuf.kotlin.DslList<kotlin.Int, InternalIdsProxy>.plusAssign(values: kotlin.collections.Iterable<kotlin.Int>) {
+      addAll(values)
+    }/**
+     * `repeated int32 internalIds = 2;`
+     * @param index The index to set the value at.
+     * @param value The internalIds to set.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("setInternalIds")
+    public operator fun com.google.protobuf.kotlin.DslList<kotlin.Int, InternalIdsProxy>.set(index: kotlin.Int, value: kotlin.Int) {
+      _builder.setInternalIds(index, value)
+    }/**
+     * `repeated int32 internalIds = 2;`
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("clearInternalIds")
+    public fun com.google.protobuf.kotlin.DslList<kotlin.Int, InternalIdsProxy>.clear() {
+      _builder.clearInternalIds()
+    }}
 }
 @kotlin.jvm.JvmSynthetic
 public inline fun top.focess.netdesign.proto.PacketOuterClass.ContactListRequest.copy(block: `top.focess.netdesign.proto`.ContactListRequestKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.ContactListRequest =

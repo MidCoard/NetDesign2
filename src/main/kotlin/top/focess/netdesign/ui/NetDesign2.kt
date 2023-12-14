@@ -93,8 +93,8 @@ fun main(args: Array<String>) {
                 server.connect()
         }
 
-        LaunchedEffect(server.logined) {
-            if (!server.logined)
+        LaunchedEffect(server.self) {
+            if (server.self == null)
                 currentContact = null
         }
 
@@ -130,7 +130,7 @@ fun main(args: Array<String>) {
                 }
             }
 
-            if (!server.logined)
+            if (server.self == null)
                 DefaultView(
                     onCloseRequest = ::exitApplication,
                     state = rememberCenterWindowState(DpSize(600.dp, Dp.Unspecified)),

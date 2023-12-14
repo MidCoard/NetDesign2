@@ -11,6 +11,9 @@ abstract class Contact(val id: Int,val name: String, online: Boolean) {
 
     var online by mutableStateOf(online)
 
+    var internalId: Int = 0
+    val messages = mutableStateListOf<Message>()
+
      abstract suspend fun RemoteServer.sendMessage(message: RawMessageContent) : Message?
 
     override fun equals(other: Any?): Boolean {

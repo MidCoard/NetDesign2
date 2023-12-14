@@ -94,7 +94,6 @@ fun LangFile.LangScope.MessageView(message: Message, renderLeft: Boolean) {
 @Composable
 fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
-    val messages = remember { mutableStateListOf<Message>() }
     var text by remember { mutableStateOf("") }
     var sendRequest by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(true) }
@@ -104,38 +103,19 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
     LaunchedEffect(Unit) {
         val localMessages = queryLatestLocalMessages(contact.id.toLong(), server.id!!.toLong())
 
-        messages.addAll(localMessages)
+        contact.messages.addAll(localMessages)
 
-        val currentInternalId : Int = localMessages.maxOfOrNull { it.internalId } ?: 0
-
-        println("currentInternalId: $currentInternalId")
+        val currentInternalId : Int = contact.internalId
 
         val missingInternalIds = (1..currentInternalId).toSet().subtract(localMessages.map { it.internalId }.toSet())
-        println("missing messages count: ${missingInternalIds.size}")
 
         for (missingInternalId in missingInternalIds) {
             val packet = server.sendPacket(ContactMessageRequestPacket(server.token!!, contact.id, missingInternalId))
             if (packet is ContactMessageResponsePacket) {
                 val message = packet.message
                 if (message.id != -1)
-                    messages.add(message)
+                    contact.messages.add(message)
             }
-        }
-
-        // find possible messages from currentInternalId
-        var current = currentInternalId + 1;
-
-        while (true) {
-            val packet = server.sendPacket(ContactMessageRequestPacket(server.token!!, contact.id, current))
-            if (packet is ContactMessageResponsePacket) {
-                val message = packet.message
-                if (message.id != -1) {
-                    messages.add(message)
-                    current++
-                    continue
-                }
-            }
-            break
         }
 
         loading = false
@@ -158,7 +138,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                     message.timestamp.toLong(),
                     message.internalId.toLong(),
                 )
-                messages.add(message)
+                contact.messages.add(message)
             } else {
                 dialog = FocessDialog(
                     "chat.sendFailed".l,
@@ -180,7 +160,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
         Column {
 
             LazyColumn(modifier = Modifier.weight(10f)) {
-                items(messages.sortedBy { it.internalId }) {
+                items(contact.messages.sortedBy { it.internalId }) {
                     MessageView(it, it.from == contact.id)
                 }
             }

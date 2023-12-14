@@ -52,6 +52,10 @@ public object MessageKt {
     }
 
     /**
+     * ```
+     * start from 0 or 1
+     * ```
+     *
      * `int32 id = 2;`
      */
     public var id: kotlin.Int
@@ -62,6 +66,10 @@ public object MessageKt {
         _builder.setId(value)
       }
     /**
+     * ```
+     * start from 0 or 1
+     * ```
+     *
      * `int32 id = 2;`
      */
     public fun clearId() {
@@ -86,6 +94,10 @@ public object MessageKt {
     }
 
     /**
+     * ```
+     * start from 1
+     * ```
+     *
      * `int32 internalId = 4;`
      */
     public var internalId: kotlin.Int
@@ -96,6 +108,10 @@ public object MessageKt {
         _builder.setInternalId(value)
       }
     /**
+     * ```
+     * start from 1
+     * ```
+     *
      * `int32 internalId = 4;`
      */
     public fun clearInternalId() {

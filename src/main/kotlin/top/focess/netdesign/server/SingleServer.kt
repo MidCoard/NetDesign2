@@ -121,14 +121,23 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         clientScope.isChannelSetup = true
         GlobalScope.launch {
             delay(200)
-            sendChannelPacket(clientScope, ContactListRequestPacket(contactList(clientScope)))
+            val info = contactList(clientScope)
+            sendChannelPacket(clientScope, ContactListRequestPacket(info.first, info.second))
         }
     }
 
-    private fun contactList(clientScope: ClientScope): List<Friend> {
+    private fun contactList(clientScope: ClientScope): Pair<List<Friend>, List<Int>> {
         if (chatGPTAccessor != null)
-            return listOf(defaultContact, clientScope.self, Friend(chatGPTAccessor.id, "ChatGPT", true));
-        return listOf(defaultContact, clientScope.self)
+            return Pair(
+                listOf(defaultContact, clientScope.self, Friend(chatGPTAccessor.id, "ChatGPT", true)),
+                listOf(queryNewestInternalId(defaultContact.id.toLong(), clientScope.self.id.toLong()),
+                    0,
+                    queryNewestInternalId(chatGPTAccessor.id.toLong(), clientScope.self.id.toLong()))
+            )
+        return Pair(
+            listOf(defaultContact, clientScope.self),
+            listOf(queryNewestInternalId(defaultContact.id.toLong(), clientScope.self.id.toLong()),
+            0))
     }
 
     companion object {
@@ -200,6 +209,10 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null) {
                             if (packet.id == 0) {
+                                return ContactMessageResponsePacket(
+                                    queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
+                                )
+                            } else if (chatGPTAccessor != null && chatGPTAccessor.id == packet.id) {
                                 return ContactMessageResponsePacket(
                                     queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
                                 )
@@ -328,16 +341,6 @@ private fun queryMessage(a: Int, b: Int, internalId: Int): Message? {
     return null
 }
 
-private fun queryNewestMessage(a: Long, b: Long): Message? {
-    val message = serverMessageQueries.selectNewest(a, b).executeAsOneOrNull()?.toMessage()
-
-    val message2 = serverMessageQueries.selectNewest(b, a).executeAsOneOrNull()?.toMessage()
-
-    if (message != null && message2 != null)
-        return if (message.internalId > message2.internalId) message else message2
-
-    return message ?: message2
-}
 
 internal fun ServerMessage.toMessage() = Message(
     id.toInt(),
@@ -355,14 +358,27 @@ internal fun ServerMessage.toMessage() = Message(
 
 val LOCK = Any()
 
+private fun queryNewestMessage(a: Long, b: Long): Message? {
+    val message = serverMessageQueries.selectNewest(a, b).executeAsOneOrNull()?.toMessage()
+
+    val message2 = serverMessageQueries.selectNewest(b, a).executeAsOneOrNull()?.toMessage()
+
+    if (message != null && message2 != null)
+        return if (message.internalId > message2.internalId) message else message2
+
+    return message ?: message2
+}
+private fun queryNewestInternalId(a: Long, b: Long) : Int {
+    synchronized(LOCK) {
+        val message = queryNewestMessage(a, b)
+        return if (message == null) 1 else message.internalId + 1
+    }
+}
+
 internal fun insertMessage(from : Int, to :Int, data: String, type: MessageType ) : Message {
     // use a lock to avoid concurrent insert
     synchronized(LOCK) {
-        val message = queryNewestMessage(
-            from.toLong(),
-            to.toLong()
-        )
-        val internalId = if (message == null) 1 else message.internalId + 1
+        val internalId = queryNewestInternalId(from.toLong(), to.toLong())
         serverMessageQueries.insert(
             from.toLong(),
             to.toLong(),

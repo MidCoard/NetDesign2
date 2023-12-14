@@ -28,7 +28,6 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
                 synchronized(handler) {
                     handler.addUserMessage(messageContent)
                     try {
-                        println("client ${id} send message ${messageContent.data} to ChatGPT")
                         if (model.messageType == MessageType.TEXT) {
                             val response = networkHandler.post(
                                 "https://api.openai.com/v1/chat/completions", mapOf(
@@ -39,9 +38,9 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
                                     "Content-Type" to "application/json"
                                 ), NetworkHandler.JSON
                             )
-                            val choices: JSONList = response.asJSON["choices"]
-                            val choice: JSONObject = choices[0]
-                            val message: JSONObject = choice["text"]
+                            val choices: JSONList = response.asJSON.getList("choices")
+                            val choice: JSONObject = choices.getJSON(0)
+                            val message: JSONObject = choice.getJSON("message")
                             val content: String = message["content"]
                             val messageResponse = TextMessageContent(content)
                             val insertedMessage = insertMessage(this@ChatGPTAccessor.id, id, content, MessageType.TEXT)
@@ -82,7 +81,7 @@ private class ChatGPTMessageHandler {
         return messages.map {
             mapOf(
                 "role" to it.role.name.lowercase(Locale.getDefault()),
-                "text" to it.content.data
+                "content" to it.content.data
             )
         }
     }
