@@ -1,12 +1,14 @@
 package top.focess.netdesign.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -18,6 +20,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -25,25 +32,63 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
-import top.focess.netdesign.server.packet.ContactMessageRequestPacket
-import top.focess.netdesign.server.packet.ContactMessageResponsePacket
-import top.focess.netdesign.server.packet.FriendSendMessageRequestPacket
-import top.focess.netdesign.server.packet.FriendSendMessageResponsePacket
 import top.focess.netdesign.sqldelight.message.LocalMessage
-import kotlin.math.max
+// wechat-like green color
+val MY_MESSAGE_COLOR = Color(0xFFC5E1A5)
+// wechat-like blue color
+val OTHER_MESSAGE_COLOR = Color(0xFFBBDEFB)
+
+// Adapted from https://stackoverflow.com/questions/65965852/jetpack-compose-create-chat-bubble-with-arrow-and-border-elevation
+class TriangleEdgeShape(val risingToTheRight: Boolean) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        val trianglePath = if(risingToTheRight) {
+            Path().apply {
+                moveTo(x = 0f, y = size.height)
+                lineTo(x = size.width, y = 0f)
+                lineTo(x = size.width, y = size.height)
+            }
+        } else {
+            Path().apply {
+                moveTo(x = 0f, y = 0f)
+                lineTo(x = size.width, y = size.height)
+                lineTo(x = 0f, y = size.height)
+            }
+        }
+
+        return Outline.Generic(path = trianglePath)
+    }
+}
+
+@Composable
+fun Triangle(risingToTheRight: Boolean, background: Color) {
+    Box(
+        Modifier
+            .padding(bottom = 10.dp)
+            .clip(TriangleEdgeShape(risingToTheRight))
+            .background(background)
+            .size(6.dp)
+    )
+}
 
 @Composable
 fun LangFile.LangScope.MessageContentView(messageContent: MessageContent) {
     when (messageContent.type) {
         MessageType.TEXT -> {
-            Text(
-                text = messageContent.data,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(end = 10.dp)
-            )
+            SelectionContainer {
+                Text(
+                    text = messageContent.data,
+                    style = MaterialTheme.typography.body1
+                )
+            }
         }
 
         MessageType.FILE -> {
@@ -57,40 +102,56 @@ fun LangFile.LangScope.MessageContentView(messageContent: MessageContent) {
 }
 
 @Composable
-fun LangFile.LangScope.MessageView(message: Message, renderLeft: Boolean) {
-    if (renderLeft)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .pointerHoverIcon(PointerIcon.Hand),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Avatar",
-                tint = MaterialTheme.colors.primary
-            )
-            MessageContentView(message.content)
+fun LangFile.LangScope.MessageView(message: Message, contactMessage: Boolean) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .padding(10.dp)
+        ,
+        horizontalAlignment = if (contactMessage) Alignment.Start else Alignment.End
+    ) {
+
+        Row(verticalAlignment = Alignment.Bottom) {
+            if (contactMessage) {
+                Column {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Avatar",
+                        tint = MaterialTheme.colors.primary
+                    )
+                }
+                Spacer(Modifier.size(2.dp))
+                Column {
+                    Triangle(true, OTHER_MESSAGE_COLOR)
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .clip(
+                        RoundedCornerShape(
+                            10.dp, 10.dp,
+                            if (contactMessage) 10.dp else 0.dp,
+                            if (contactMessage) 0.dp else 10.dp
+                        )
+                    )
+                    .background(if (contactMessage) OTHER_MESSAGE_COLOR else MY_MESSAGE_COLOR)
+                    .padding(
+                        start = 10.dp,
+                        top = 5.dp,
+                        end = 10.dp,
+                        bottom = 5.dp),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                MessageContentView(message.content)
+            }
+            if (!contactMessage) {
+                Column {
+                    Triangle(false, MY_MESSAGE_COLOR)
+                }
+            }
         }
-    else
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .pointerHoverIcon(PointerIcon.Hand),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
-        ) {
-            MessageContentView(message.content)
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Avatar",
-                tint = MaterialTheme.colors.primary
-            )
-        }
+    }
+
+    Spacer(Modifier.size(10.dp))
 }
 
 @Composable
