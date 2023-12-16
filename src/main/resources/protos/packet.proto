@@ -128,13 +128,13 @@ message ContactMessageResponse {
 }
 
 //packet id = 14 client packet
-message FriendSendMessageRequest {
+message SendMessageRequest {
   string token = 1;
   RawMessage message = 2;
 }
 
 //packet id = 15 server packet
-message FriendSendMessageResponse {
+message SendMessageResponse {
   // server do not need to send ContactMessageListRequest, this response has made the same effect to the ContactMessageListRequest
   Message message = 1; // fail if message.id == -1
 }
@@ -184,5 +184,16 @@ message RegisterRequest {
 
 //packet id = 23 server packet
 message RegisterResponse {
+  bool success = 1;
+}
+
+//packet id = 25 client packet
+message DeleteMessageRequest {
+  string token = 1;
+  int32 id = 2; // message id
+}
+
+//packet id = 26 server packet
+message DeleteMessageResponse {
   bool success = 1;
 }

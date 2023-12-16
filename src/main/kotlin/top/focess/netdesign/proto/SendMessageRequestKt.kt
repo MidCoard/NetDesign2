@@ -5,31 +5,31 @@
 @file:Suppress("DEPRECATION")
 package top.focess.netdesign.proto;
 
-@kotlin.jvm.JvmName("-initializefriendSendMessageRequest")
-public inline fun friendSendMessageRequest(block: top.focess.netdesign.proto.FriendSendMessageRequestKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest =
-  top.focess.netdesign.proto.FriendSendMessageRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest.newBuilder()).apply { block() }._build()
+@kotlin.jvm.JvmName("-initializesendMessageRequest")
+public inline fun sendMessageRequest(block: top.focess.netdesign.proto.SendMessageRequestKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.SendMessageRequest =
+  top.focess.netdesign.proto.SendMessageRequestKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.SendMessageRequest.newBuilder()).apply { block() }._build()
 /**
  * ```
  *packet id = 14 client packet
  * ```
  *
- * Protobuf type `netdesign2.FriendSendMessageRequest`
+ * Protobuf type `netdesign2.SendMessageRequest`
  */
-public object FriendSendMessageRequestKt {
+public object SendMessageRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
   public class Dsl private constructor(
-    private val _builder: top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest.Builder
+    private val _builder: top.focess.netdesign.proto.PacketOuterClass.SendMessageRequest.Builder
   ) {
     public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
-      internal fun _create(builder: top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest.Builder): Dsl = Dsl(builder)
+      internal fun _create(builder: top.focess.netdesign.proto.PacketOuterClass.SendMessageRequest.Builder): Dsl = Dsl(builder)
     }
 
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
-    internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest = _builder.build()
+    internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.SendMessageRequest = _builder.build()
 
     /**
      * `string token = 1;`
@@ -74,9 +74,9 @@ public object FriendSendMessageRequestKt {
   }
 }
 @kotlin.jvm.JvmSynthetic
-public inline fun top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest.copy(block: `top.focess.netdesign.proto`.FriendSendMessageRequestKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequest =
-  `top.focess.netdesign.proto`.FriendSendMessageRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+public inline fun top.focess.netdesign.proto.PacketOuterClass.SendMessageRequest.copy(block: `top.focess.netdesign.proto`.SendMessageRequestKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.SendMessageRequest =
+  `top.focess.netdesign.proto`.SendMessageRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
 
-public val top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageRequestOrBuilder.messageOrNull: top.focess.netdesign.proto.PacketOuterClass.RawMessage?
+public val top.focess.netdesign.proto.PacketOuterClass.SendMessageRequestOrBuilder.messageOrNull: top.focess.netdesign.proto.PacketOuterClass.RawMessage?
   get() = if (hasMessage()) getMessage() else null
 

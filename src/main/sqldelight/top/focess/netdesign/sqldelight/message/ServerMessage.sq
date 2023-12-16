@@ -19,6 +19,12 @@ SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id > 
 selectPrecise:
 SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id = ?;
 
+selectPreciseById:
+SELECT * FROM ServerMessage WHERE id = ?;
+
+deleteById:
+DELETE FROM ServerMessage WHERE id = ?;
+
 insert:
 INSERT INTO ServerMessage (sender, receiver, data, type, timestamp, internal_id) VALUES (?, ?, ?, ?, ?, ?);
 

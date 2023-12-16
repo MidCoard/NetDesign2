@@ -1,6 +1,7 @@
 package top.focess.netdesign.config
 
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.*
 import top.focess.util.yaml.YamlConfiguration
 import java.io.FileInputStream
@@ -54,6 +55,11 @@ class LangFile(filename: String) {
         fun ColumnScope.useColumn(block: @Composable ColumnLangScope.() -> Unit) {
             ColumnLangScope(this, langFile, setLangFile).block()
         }
+
+        @Composable
+        fun RowScope.useRow(block: @Composable RowLangScope.() -> Unit) {
+            RowLangScope(this, langFile, setLangFile).block()
+        }
     }
 
     class ColumnLangScope(private val columnScope: ColumnScope, langFile: LangFile, setLangFile: (langFile : LangFile) -> Unit) : LangScope(langFile, setLangFile) {
@@ -61,6 +67,14 @@ class LangFile(filename: String) {
         @Composable
         fun column(block: @Composable ColumnScope.() -> Unit) {
             columnScope.block()
+        }
+    }
+
+    class RowLangScope(private val rowScope: RowScope, langFile: LangFile, setLangFile: (langFile : LangFile) -> Unit) : LangScope(langFile, setLangFile) {
+
+        @Composable
+        fun row(block: @Composable RowScope.() -> Unit) {
+            rowScope.block()
         }
     }
 }

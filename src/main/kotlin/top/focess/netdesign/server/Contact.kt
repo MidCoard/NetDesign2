@@ -2,10 +2,7 @@ package top.focess.netdesign.server
 
 import androidx.compose.runtime.*
 import top.focess.netdesign.server.GlobalState.contacts
-import top.focess.netdesign.server.packet.FileUploadRequestPacket
-import top.focess.netdesign.server.packet.FileUploadResponsePacket
-import top.focess.netdesign.server.packet.FriendSendMessageRequestPacket
-import top.focess.netdesign.server.packet.FriendSendMessageResponsePacket
+import top.focess.netdesign.server.packet.*
 
 abstract class Contact(val id: Int,val name: String, online: Boolean) {
 
@@ -33,19 +30,19 @@ abstract class Contact(val id: Int,val name: String, online: Boolean) {
 
 class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online) {
     override suspend fun RemoteServer.sendMessage(message: RawMessageContent): Message? {
-        val packet = this.sendPacket(FriendSendMessageRequestPacket(this.token!!, this.id!!, this@Friend.id, message.toMessageContent()))
-        if (packet is FriendSendMessageResponsePacket) {
+        val packet = this.sendPacket(SendMessageRequestPacket(this.token!!, this.id!!, this@Friend.id, message.toMessageContent()))
+        if (packet is SendMessageResponsePacket) {
             if (packet.message.id == -1)
                 return null
             // special case: if message type is file or image
-            if (message is ARawFileMessageContent) {
+            if (message is RawFileMessageContent) {
                 val fileId = packet.message.content.data
                 val filePacket = this.sendPacket(FileUploadRequestPacket(this.token!!, fileId, message.file))
-                // todo handle file upload case
-                if (filePacket is FileUploadResponsePacket && filePacket.success) {
-                    // success case
-                } else {
-                    // fail case
+                if (filePacket !is FileUploadResponsePacket || !filePacket.success) {
+                    // immediately delete the message
+                    this.sendPacket(DeleteMessageRequestPacket(this.token!!, packet.message.id))
+                    // ignore the response because it should not happen here that upload failed
+                    return null
                 }
             }
             return packet.message

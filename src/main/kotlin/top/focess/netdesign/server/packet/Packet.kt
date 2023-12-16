@@ -3,7 +3,6 @@ package top.focess.netdesign.server.packet
 import com.google.protobuf.Any
 import com.google.protobuf.GeneratedMessageV3
 import top.focess.netdesign.proto.PacketOuterClass
-import top.focess.netdesign.proto.PacketOuterClass.ServerAckResponse
 import top.focess.netdesign.proto.packet
 
 abstract class Packet(val packetId: Int) {
@@ -33,8 +32,8 @@ object Packets {
         registerPacket(ContactListRequestPacket)
         registerPacket(ContactMessageRequestPacket)
         registerPacket(ContactMessageResponsePacket)
-        registerPacket(FriendSendMessageRequestPacket)
-        registerPacket(FriendSendMessageResponsePacket)
+        registerPacket(SendMessageRequestPacket)
+        registerPacket(SendMessageResponsePacket)
         registerPacket(SetupChannelRequestPacket)
         registerPacket(RegisterRequestPacket)
         registerPacket(RegisterResponsePacket)
@@ -42,6 +41,8 @@ object Packets {
         registerPacket(ClientAckResponsePacket)
         registerPacket(ChannelHeartRequestPacket)
         registerPacket(ContactMessageListRequestPacket)
+        registerPacket(DeleteMessageRequestPacket)
+        registerPacket(DeleteMessageResponsePacket)
     }
 
     fun fromProtoPacket(packet: PacketOuterClass.Packet) = packets[packet.packetId]?.fromProtoType(packet.content)

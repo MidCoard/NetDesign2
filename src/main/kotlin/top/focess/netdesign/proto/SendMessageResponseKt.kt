@@ -5,31 +5,31 @@
 @file:Suppress("DEPRECATION")
 package top.focess.netdesign.proto;
 
-@kotlin.jvm.JvmName("-initializefriendSendMessageResponse")
-public inline fun friendSendMessageResponse(block: top.focess.netdesign.proto.FriendSendMessageResponseKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse =
-  top.focess.netdesign.proto.FriendSendMessageResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse.newBuilder()).apply { block() }._build()
+@kotlin.jvm.JvmName("-initializesendMessageResponse")
+public inline fun sendMessageResponse(block: top.focess.netdesign.proto.SendMessageResponseKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.SendMessageResponse =
+  top.focess.netdesign.proto.SendMessageResponseKt.Dsl._create(top.focess.netdesign.proto.PacketOuterClass.SendMessageResponse.newBuilder()).apply { block() }._build()
 /**
  * ```
  *packet id = 15 server packet
  * ```
  *
- * Protobuf type `netdesign2.FriendSendMessageResponse`
+ * Protobuf type `netdesign2.SendMessageResponse`
  */
-public object FriendSendMessageResponseKt {
+public object SendMessageResponseKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
   public class Dsl private constructor(
-    private val _builder: top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse.Builder
+    private val _builder: top.focess.netdesign.proto.PacketOuterClass.SendMessageResponse.Builder
   ) {
     public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
-      internal fun _create(builder: top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse.Builder): Dsl = Dsl(builder)
+      internal fun _create(builder: top.focess.netdesign.proto.PacketOuterClass.SendMessageResponse.Builder): Dsl = Dsl(builder)
     }
 
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
-    internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse = _builder.build()
+    internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.SendMessageResponse = _builder.build()
 
     /**
      * ```
@@ -69,9 +69,9 @@ public object FriendSendMessageResponseKt {
   }
 }
 @kotlin.jvm.JvmSynthetic
-public inline fun top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse.copy(block: `top.focess.netdesign.proto`.FriendSendMessageResponseKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponse =
-  `top.focess.netdesign.proto`.FriendSendMessageResponseKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+public inline fun top.focess.netdesign.proto.PacketOuterClass.SendMessageResponse.copy(block: `top.focess.netdesign.proto`.SendMessageResponseKt.Dsl.() -> kotlin.Unit): top.focess.netdesign.proto.PacketOuterClass.SendMessageResponse =
+  `top.focess.netdesign.proto`.SendMessageResponseKt.Dsl._create(this.toBuilder()).apply { block() }._build()
 
-public val top.focess.netdesign.proto.PacketOuterClass.FriendSendMessageResponseOrBuilder.messageOrNull: top.focess.netdesign.proto.PacketOuterClass.Message?
+public val top.focess.netdesign.proto.PacketOuterClass.SendMessageResponseOrBuilder.messageOrNull: top.focess.netdesign.proto.PacketOuterClass.Message?
   get() = if (hasMessage()) getMessage() else null
 

@@ -208,29 +208,30 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     is ContactMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null) {
-                            if (packet.id == 0) {
+                            if (packet.id == 0)
                                 return ContactMessageResponsePacket(
                                     queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
                                 )
-                            } else if (chatGPTAccessor != null && chatGPTAccessor.id == packet.id) {
+                            else if (chatGPTAccessor != null && chatGPTAccessor.id == packet.id)
                                 return ContactMessageResponsePacket(
                                     queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
                                 )
-                            }
                         }
-                        null
+                        ContactMessageResponsePacket(EMPTY_MESSAGE)
                     }
 
-                    is FriendSendMessageRequestPacket -> {
+                    is SendMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null)
                             if (clientScope.self.id == packet.from && packet.messageContent.data.length < 1000)
+                                // todo with other contact type: for example group
                                 if (packet.to == 0 || (chatGPTAccessor != null && chatGPTAccessor.id == packet.to)) {
                                     val insertedMessage = insertMessage(
                                         packet.from,
                                         packet.to,
                                         packet.messageContent.data,
-                                        packet.messageContent.type)
+                                        packet.messageContent.type
+                                    )
 
                                     // todo with special type
 
@@ -241,11 +242,24 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                             }
                                         }
                                     }
-                                    return FriendSendMessageResponsePacket(
+                                    return SendMessageResponsePacket(
                                         insertedMessage
                                     )
                                 }
-                        null
+                        SendMessageResponsePacket(EMPTY_MESSAGE)
+                    }
+
+                    is DeleteMessageRequestPacket -> {
+                        val clientScope = this.clientScopeMap[packet.token]
+                        if (clientScope != null) {
+                            val message = serverMessageQueries.selectPreciseById(packet.id.toLong()).executeAsOneOrNull()
+                            if (message != null)
+                                if (message.sender.toInt() == clientScope.id) {
+                                    serverMessageQueries.deleteById(packet.id.toLong())
+                                    return DeleteMessageResponsePacket(true)
+                                }
+                        }
+                        DeleteMessageResponsePacket(false)
                     }
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")
