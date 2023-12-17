@@ -90,21 +90,18 @@ fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecifi
 @Preview
 fun main() {
 
-    if (configuration.containsSection("local")) {
-        val section = configuration.getSection("local")
-        val status: Boolean? = section["status"]
-        if (status == true) {
-            val name: String? = section["name"]
-            val port: Int? = section.getOrDefault("port", DEFAULT_SERVER_PORT)
-            name?.let {
-                port?.let {
-                    singleServer = SingleServer(name, port, System.getenv("OPENAI_API_KEY"))
-                }
+    val section = configuration.getSection("local")
+    if (section.getOrDefault("status", false)) {
+        val name: String? = section["name"]
+        val port: Int? = section.getOrDefault("port", DEFAULT_SERVER_PORT)
+        name?.let {
+            port?.let {
+                singleServer = SingleServer(name, port, System.getenv("OPENAI_API_KEY"))
             }
         }
+    }
 
         // todo take over the RemoteServer
-    }
 
 
     application(exitProcessOnExit = false) {
