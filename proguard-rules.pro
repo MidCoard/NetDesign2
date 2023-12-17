@@ -1,1 +1,2 @@
 -dontwarn **
+-keep class top.focess.netdesign.proto.PacketOuterClass { *; }

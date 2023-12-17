@@ -56,7 +56,7 @@ val driver: SqlDriver = JdbcSqliteDriver(
     val newVersion = Database.Schema.version
 
     try {
-        if (newVersion.toInt() == 0)
+        if (currentVersion == 0)
             Database.Schema.create(this)
         else if (currentVersion < newVersion)
             Database.Schema.migrate(this, currentVersion.toLong(), newVersion)
