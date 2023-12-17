@@ -1,1 +1,7 @@
-database: {version: 3}
+database:
+  version: 3
+local:
+  status: true
+  name: "Local"
+  port: 34953
+

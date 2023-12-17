@@ -18,6 +18,7 @@ import top.focess.netdesign.Database
 import top.focess.netdesign.config.FileConfiguration
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.config.LangFile.Companion.createLandScope
+import top.focess.netdesign.config.NetworkConfig.DEFAULT_SERVER_PORT
 import top.focess.netdesign.server.Contact
 import top.focess.netdesign.server.GlobalState.server
 import top.focess.netdesign.server.GlobalState.singleServer
@@ -25,21 +26,25 @@ import top.focess.netdesign.server.MessageType
 import top.focess.netdesign.server.SingleServer
 import top.focess.netdesign.sqldelight.message.LocalMessage
 import top.focess.netdesign.sqldelight.message.ServerMessage
-import top.focess.util.option.OptionParserClassifier
-import top.focess.util.option.Options
-import top.focess.util.option.type.IntegerOptionType
-import top.focess.util.option.type.OptionType
 import java.awt.EventQueue
 import java.io.File
 
-private fun loadConfiguration() : FileConfiguration {
-    val file = File("config.yml")
-    if (!file.exists())
-        file.createNewFile()
-    return FileConfiguration.loadFile(file);
+
+val configDir: String = when {
+    System.getProperty("os.name").startsWith("Windows") -> System.getenv("APPDATA")
+    System.getProperty("os.name").startsWith("Mac") -> System.getProperty("user.home") + "/Library/Application Support"
+    else -> System.getProperty("user.home") + "/.config" // Assume Linux
 }
 
-val configuration = loadConfiguration()
+val configFile = File("$configDir/NetDesign2/config.txt").let {
+    if (!it.exists()) {
+        it.parentFile.mkdirs()
+        it.createNewFile()
+    }
+    it
+}
+
+val configuration = FileConfiguration.loadFile(configFile)
 
 val driver: SqlDriver = JdbcSqliteDriver(
     "jdbc:sqlite:netdesign.db"
@@ -83,17 +88,20 @@ fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecifi
     rememberWindowState(size = size, position = WindowPosition(Alignment.Center))
 
 @Preview
-fun main(args: Array<String>) {
+fun main() {
 
-    val options = Options.parse(args,
-        OptionParserClassifier("local", OptionType.DEFAULT_OPTION_TYPE, IntegerOptionType.INTEGER_OPTION_TYPE),
-    )
-
-    val localOption = options["local"]
-    if (localOption != null) {
-        val name = localOption[OptionType.DEFAULT_OPTION_TYPE]
-        val port = localOption[IntegerOptionType.INTEGER_OPTION_TYPE]
-        singleServer = SingleServer(name, port, System.getenv("OPENAI_API_KEY"))
+    if (configuration.containsSection("local")) {
+        val section = configuration.getSection("local")
+        val status: Boolean? = section["status"]
+        if (status == true) {
+            val name: String? = section["name"]
+            val port: Int? = section.getOrDefault("port", DEFAULT_SERVER_PORT)
+            name?.let {
+                port?.let {
+                    singleServer = SingleServer(name, port, System.getenv("OPENAI_API_KEY"))
+                }
+            }
+        }
 
         // todo take over the RemoteServer
     }

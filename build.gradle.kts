@@ -40,18 +40,15 @@ sqldelight {
 compose.desktop {
     application {
         mainClass = "top.focess.netdesign.ui.NetDesign2Kt"
-
-
-        val serverPort = project.findProperty("server.port") as String?
-
-        if (serverPort != null)
-            args("--local", "Local", serverPort)
-
+        jvmArgs += listOf("-Xmx4G")
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "NetDesign2"
             packageVersion = "1.0.0"
+            version = "1.0.0"
+            description = "NetDesign2"
+            copyright = "© 2023 Focess. All rights reserved."
             appResourcesRootDir.set(project.layout.projectDirectory.dir("src/main/resources"))
         }
     }
