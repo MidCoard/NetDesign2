@@ -36,7 +36,7 @@ val configDir: String = when {
     else -> System.getProperty("user.home") + "/.config" // Assume Linux
 }
 
-val configFile = File("$configDir/NetDesign2/config.txt").let {
+val configFile = File("$configDir/NetDesign2/config.yml").let {
     if (!it.exists()) {
         it.parentFile.mkdirs()
         it.createNewFile()
