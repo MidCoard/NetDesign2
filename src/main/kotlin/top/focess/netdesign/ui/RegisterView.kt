@@ -87,7 +87,8 @@ fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit
             label = { Text("register.confirmPassword".l) },
             singleLine = true,
             onEnterKey = {
-                registerRequest = true
+                if (!registerRequest && canRegister(username, password, confirmPassword) && !dialog.show)
+                    registerRequest = true
             }
         )
     }
