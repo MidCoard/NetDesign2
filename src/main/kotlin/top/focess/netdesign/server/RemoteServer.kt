@@ -84,10 +84,16 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         }
     }
 
-    suspend fun sendPacket(packet: ClientPacket, socket: Socket = this.socket): ServerPacket? {
+    suspend fun sendPacket(packet: ClientPacket): ServerPacket? {
         if (!connected)
             return null
-        val serverPacket = trySendPacket(packet, socket)
+        val serverPacket = try {
+            trySendPacket(packet, this.socket)
+        } catch (e : Exception) {
+            // this exception is caused by this.socket's getter
+            e.printStackTrace()
+            null
+        }
         if (serverPacket == null)
             disconnect()
         return serverPacket
@@ -108,7 +114,14 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         }
         this.channelSocket?.close()
         this.channelThread?.join()
-        this.channelSocket = this.socket
+        try {
+            this.channelSocket = this.socket
+        } catch (e: Exception) {
+            // setup socket failed, so setup channel failed
+            e.printStackTrace()
+            this.channelSocket = null
+            return
+        }
         this.channelSocket?.keepAlive = true
         this.channelThread = Thread {
             // send channel setup request
@@ -208,7 +221,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
     suspend fun reconnect() {
         if (this.connected()) {
-            val packet = this.sendPacket(ServerStatusUpdateRequestPacket(), this.socket)
+            val packet = this.sendPacket(ServerStatusUpdateRequestPacket())
             if (packet is ServerStatusUpdateResponsePacket) {
                 this.online = packet.online
                 this.registerable = packet.registrable

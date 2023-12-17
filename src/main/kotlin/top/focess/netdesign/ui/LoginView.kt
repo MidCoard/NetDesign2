@@ -91,7 +91,8 @@ fun LangFile.LangScope.LoginView(
             label = { Text("login.password".l) },
             singleLine = true,
             onEnterKey = {
-                loginRequest = true
+                if (server.connected() && !loginRequest && canLogin(username, password) && !dialog.show && server.channelSocket == null)
+                    loginRequest = true
             }
         )
     }
