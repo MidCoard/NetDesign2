@@ -37,12 +37,22 @@ sqldelight {
     }
 }
 
+
 compose.desktop {
     application {
         mainClass = "top.focess.netdesign.ui.NetDesign2Kt"
         jvmArgs += listOf("-Xmx4G")
 
         nativeDistributions {
+            buildTypes {
+                release {
+                    proguard {
+                        configurationFiles.from(project.file("proguard-rules.pro"))
+                    }
+                }
+            }
+            includeAllModules = true
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "NetDesign2"
             packageVersion = "1.0.0"
