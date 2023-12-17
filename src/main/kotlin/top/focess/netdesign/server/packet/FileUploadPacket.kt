@@ -11,13 +11,13 @@ import top.focess.netdesign.proto.fileUploadRequest
 import top.focess.netdesign.proto.fileUploadResponse
 import top.focess.netdesign.server.File
 
-data class FileUploadRequestPacket(val token: String, val id: String, val file: File) : ClientPacket(PACKET_ID) {
+data class FileUploadRequestPacket(val token: String, val id: String, val file: File, val hash: String) : ClientPacket(PACKET_ID) {
 
     companion object : PacketCompanion<FileUploadRequestPacket>() {
         override val PACKET_ID = 19
         override fun fromProtoType(packet: Any): FileUploadRequestPacket {
             val fileUploadRequest: FileUploadRequest = packet.unpack()
-            return FileUploadRequestPacket(fileUploadRequest.token, fileUploadRequest.id, File(fileUploadRequest.file.name, fileUploadRequest.file.content.toByteArray()))
+            return FileUploadRequestPacket(fileUploadRequest.token, fileUploadRequest.id, File(fileUploadRequest.file.name, fileUploadRequest.file.content.toByteArray()), fileUploadRequest.hash)
         }
     }
 
@@ -25,6 +25,7 @@ data class FileUploadRequestPacket(val token: String, val id: String, val file: 
         this.token = this@FileUploadRequestPacket.token
         this.id = this@FileUploadRequestPacket.id
         this.file = this@FileUploadRequestPacket.file.toProtoType()
+        this.hash = this@FileUploadRequestPacket.hash
     }
 }
 

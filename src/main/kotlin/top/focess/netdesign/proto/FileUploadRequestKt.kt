@@ -88,6 +88,23 @@ public object FileUploadRequestKt {
     public fun hasFile(): kotlin.Boolean {
       return _builder.hasFile()
     }
+
+    /**
+     * `string hash = 4;`
+     */
+    public var hash: kotlin.String
+      @JvmName("getHash")
+      get() = _builder.getHash()
+      @JvmName("setHash")
+      set(value) {
+        _builder.setHash(value)
+      }
+    /**
+     * `string hash = 4;`
+     */
+    public fun clearHash() {
+      _builder.clearHash()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

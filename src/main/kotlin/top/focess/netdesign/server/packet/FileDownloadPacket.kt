@@ -23,18 +23,19 @@ data class FileDownloadRequestPacket(val token: String, val id: String) : Client
     }
 }
 
-data class FileDownloadResponsePacket(val file: File) : ServerPacket(PACKET_ID) {
+data class FileDownloadResponsePacket(val file: File, val hash: String) : ServerPacket(PACKET_ID) {
     companion object : PacketCompanion<FileDownloadResponsePacket>() {
         override val PACKET_ID = 21
 
         override fun fromProtoType(packet: Any) : FileDownloadResponsePacket {
             val fileDownloadResponse : top.focess.netdesign.proto.PacketOuterClass.FileDownloadResponse = packet.unpack()
-            return FileDownloadResponsePacket(fileDownloadResponse.file.fromProtoType())
+            return FileDownloadResponsePacket(fileDownloadResponse.file.fromProtoType(), fileDownloadResponse.hash)
         }
 
     }
 
     override fun toProtoType() = top.focess.netdesign.proto.fileDownloadResponse {
         this.file = this@FileDownloadResponsePacket.file.toProtoType()
+        this.hash = this@FileDownloadResponsePacket.hash
     }
 }

@@ -6,14 +6,15 @@ CREATE TABLE File (
 CREATE TABLE FileData (
     fileId TEXT PRIMARY KEY NOT NULL,
     filename TEXT NOT NULL,
-    data BLOB NOT NULL
+    data BLOB NOT NULL,
+    hash TEXT NOT NULL
 );
 
 insertFile:
 INSERT INTO File (fileId, id) VALUES (?, ?);
 
 insertFileData:
-INSERT INTO FileData (fileId, filename, data) VALUES (?, ?, ?);
+INSERT INTO FileData (fileId, filename, data, hash) VALUES (?, ?, ?, ?);
 
 selectFile:
 SELECT * FROM File WHERE fileId = ?;

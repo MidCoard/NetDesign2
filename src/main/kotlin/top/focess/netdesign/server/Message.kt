@@ -9,6 +9,8 @@ import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import com.google.protobuf.kotlin.toByteString
+import top.focess.netdesign.ui.sha256
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
@@ -81,3 +83,5 @@ val RawMessageContent.messageCount: Int
         is RawRichMessageContent -> rawMessageContents.size
         else -> 0
     }
+
+internal fun File.sha256() = this.data.sha256()

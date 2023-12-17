@@ -61,7 +61,7 @@ fun LangFile.LangScope.LoginView(
                 }
             }
             if (!flag) {
-                dialog.title  = "login.loginFailed".l
+                dialog.title = "login.loginFailed".l
                 dialog.message = "login.loginFailedMessage".l
                 dialog.show()
             }
@@ -100,9 +100,12 @@ fun LangFile.LangScope.LoginView(
         Button(
             onClick = {
                 loginRequest = true
-                      },
+            },
             modifier = Modifier.padding(16.dp),
-            enabled = server.connected() && !loginRequest && canLogin(username, password) && !dialog.show && server.channelSocket == null
+            enabled = server.connected() && !loginRequest && canLogin(
+                username,
+                password
+            ) && !dialog.show && server.channelSocket == null
         ) {
             Text("login.login".l)
             Spacer(Modifier.width(5.dp))
@@ -145,11 +148,13 @@ fun LangFile.LangScope.LoginView(
     }
 }
 
-private fun hashString(input: String, algorithm: String): String {
+private fun hashString(input: ByteArray, algorithm: String): String {
     return MessageDigest
         .getInstance(algorithm)
-        .digest(input.toByteArray())
+        .digest(input)
         .fold("") { str, it -> str + "%02x".format(it) }
 }
 
-internal fun String.sha256(): String = hashString(this, "SHA-256")
+internal fun ByteArray.sha256(): String = hashString(this, "SHA-256")
+
+internal fun String.sha256(): String = hashString(this.toByteArray(), "SHA-256")

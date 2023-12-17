@@ -271,7 +271,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             if (file != null) {
                                 val fileData = fileQueries.selectFileData(file.fileId).executeAsOneOrNull();
                                 if (fileData == null) {
-                                    fileQueries.insertFileData(file.fileId, packet.file.filename, packet.file.data)
+                                    fileQueries.insertFileData(file.fileId, packet.file.filename, packet.file.data, packet.hash)
                                     return FileUploadResponsePacket(true)
                                 }
                             }
@@ -286,10 +286,10 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             if (file != null) {
                                 val fileData = fileQueries.selectFileData(file.fileId).executeAsOneOrNull();
                                 if (fileData != null)
-                                    return FileDownloadResponsePacket(File(fileData.filename, fileData.data_))
+                                    return FileDownloadResponsePacket(File(fileData.filename, fileData.data_), fileData.hash)
                             }
                         }
-                        FileDownloadResponsePacket(EMPTY_FILE)
+                        FileDownloadResponsePacket(EMPTY_FILE, "")
                     }
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")

@@ -32,6 +32,10 @@ public object FileDownloadResponseKt {
     internal fun _build(): top.focess.netdesign.proto.PacketOuterClass.FileDownloadResponse = _builder.build()
 
     /**
+     * ```
+     * if failed, file name is empty
+     * ```
+     *
      * `.netdesign2.File file = 1;`
      */
     public var file: top.focess.netdesign.proto.PacketOuterClass.File
@@ -42,17 +46,42 @@ public object FileDownloadResponseKt {
         _builder.setFile(value)
       }
     /**
+     * ```
+     * if failed, file name is empty
+     * ```
+     *
      * `.netdesign2.File file = 1;`
      */
     public fun clearFile() {
       _builder.clearFile()
     }
     /**
+     * ```
+     * if failed, file name is empty
+     * ```
+     *
      * `.netdesign2.File file = 1;`
      * @return Whether the file field is set.
      */
     public fun hasFile(): kotlin.Boolean {
       return _builder.hasFile()
+    }
+
+    /**
+     * `string hash = 2;`
+     */
+    public var hash: kotlin.String
+      @JvmName("getHash")
+      get() = _builder.getHash()
+      @JvmName("setHash")
+      set(value) {
+        _builder.setHash(value)
+      }
+    /**
+     * `string hash = 2;`
+     */
+    public fun clearHash() {
+      _builder.clearHash()
     }
   }
 }
