@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release on Linux
 
 on:
   push:
@@ -25,5 +25,5 @@ jobs:
     - name: Upload Release
       uses: actions/upload-artifact@v2
       with:
-        name: NetDesign2
+        name: NetDesign2 Linux
         path: build/compose/binaries/main-release/deb/*

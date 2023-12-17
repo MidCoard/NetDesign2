@@ -4,3 +4,4 @@ local:
   status: true
   name: "Local"
   port: 34953
+  apiKey: "xxx"

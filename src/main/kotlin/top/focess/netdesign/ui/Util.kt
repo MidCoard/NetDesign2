@@ -89,35 +89,19 @@ fun LangFile.LangScope.DefaultView(
 
                             Spacer(modifier = Modifier.weight(3f))
 
-
-                            CustomLayout(modifier = Modifier.weight(6f), how = {
-                                    measurables, constraints ->
-                                val placeable =
-                                    measurables[0].measure(
-                                        constraints.copy(minWidth = 0, minHeight = 0)
-                                    )
-                                val x = (constraints.maxWidth - placeable.width) / 2
-                                val y = (constraints.maxHeight - placeable.height) / 2
-                                placeable.placeRelative(x, y)
-                            }) {
-                                Text(
-                                    text = title,
-                                    fontSize = 18.sp, textAlign = TextAlign.Center,
-                                )
-                            }
+                            Text(
+                                text = title,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.weight(6f).align(Alignment.CenterVertically)
+                            )
 
                             Spacer(modifier = Modifier.weight(1f))
 
-                            CustomLayout(modifier = Modifier.weight(2f), how = {
-                                measurables, constraints ->
-                                val offset = 128;
-                                measurables[0].measure(
-                                    constraints.copy(minWidth = 0, maxWidth = offset)
-                                ).place(constraints.maxWidth - offset, 0)
-                            }) {
-                                Button(modifier = Modifier.fillMaxHeight(), onClick = onCloseRequest) {
-                                    Icon(Icons.Default.Close, "close".l)
-                                }
+                            Button(
+                                modifier = Modifier.weight(2f).fillMaxHeight(),
+                                onClick = onCloseRequest) {
+                                Icon(Icons.Default.Close, "close".l)
                             }
                         }
                     }

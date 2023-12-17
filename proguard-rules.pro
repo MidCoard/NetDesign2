@@ -1,2 +1,3 @@
 -dontwarn **
--keep class top.focess.netdesign.proto.PacketOuterClass { *; }
+-keep class top.focess.netdesign.proto.** { *; }
+-keep class org.sqlite.** { *; }

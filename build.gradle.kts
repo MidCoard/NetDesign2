@@ -24,6 +24,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java:3.25.0")
     implementation("com.google.protobuf:protobuf-kotlin:3.25.0")
     implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
+    implementation("org.xerial:sqlite-jdbc:3.44.1.0")
 
     // Include the Test API
     testImplementation(compose.desktop.uiTestJUnit4)

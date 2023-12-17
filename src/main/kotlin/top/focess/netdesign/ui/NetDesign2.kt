@@ -56,9 +56,10 @@ val driver: SqlDriver = JdbcSqliteDriver(
     val newVersion = Database.Schema.version
 
     try {
-        if (currentVersion == 0)
+        if (currentVersion == 0) {
             Database.Schema.create(this)
-        else if (currentVersion < newVersion)
+            println("Created database.")
+        } else if (currentVersion < newVersion)
             Database.Schema.migrate(this, currentVersion.toLong(), newVersion)
     } catch (e: Exception) {
         // ignore the create database error (database already exists)
@@ -98,7 +99,7 @@ fun main() {
         val port: Int? = section.getOrDefault("port", DEFAULT_SERVER_PORT)
         name?.let {
             port?.let {
-                singleServer = SingleServer(name, port, System.getenv("OPENAI_API_KEY"))
+                singleServer = SingleServer(name, port, section.getOrDefault("apiKey",System.getenv("OPENAI_API_KEY")))
             }
         }
     }

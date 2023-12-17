@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release on Macos
 
 on:
   push:
@@ -25,5 +25,5 @@ jobs:
     - name: Upload Release
       uses: actions/upload-artifact@v2
       with:
-        name: NetDesign2
-        path: build/compose/binaries/main-release/dmg/*  # replace with the path to your built app
+        name: NetDesign2 Macos
+        path: build/compose/binaries/main-release/dmg/*
