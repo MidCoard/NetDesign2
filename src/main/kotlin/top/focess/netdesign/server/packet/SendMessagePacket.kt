@@ -42,7 +42,7 @@ data class SendMessageResponsePacket(val message: Message) : ServerPacket(PACKET
                     MessageType.IMAGE -> PacketOuterClass.MessageType.IMAGE
                     MessageType.FILE -> PacketOuterClass.MessageType.FILE
                 }
-                this.content = this@SendMessageResponsePacket.message.content.data
+                this.content = this@SendMessageResponsePacket.message.content.content
             }
             this.id = this@SendMessageResponsePacket.message.id
             this.internalId = this@SendMessageResponsePacket.message.internalId
@@ -79,7 +79,7 @@ data class SendMessageRequestPacket(val token: String, val from: Int, val to: In
         this.message = rawMessage {
             this.from = this@SendMessageRequestPacket.from
             this.to = this@SendMessageRequestPacket.to
-            this.content = this@SendMessageRequestPacket.messageContent.data
+            this.content = this@SendMessageRequestPacket.messageContent.content
             this.type = when(this@SendMessageRequestPacket.messageContent.type) {
                 MessageType.TEXT -> PacketOuterClass.MessageType.TEXT
                 MessageType.IMAGE -> PacketOuterClass.MessageType.IMAGE

@@ -225,10 +225,10 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     is SendMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null)
-                            if (clientScope.id == packet.from && packet.messageContent.data.length < 1000)
+                            if (clientScope.id == packet.from && packet.messageContent.content.length < 1000)
                                 // todo with other contact type: for example group
                                 if (packet.to == 0 || (chatGPTAccessor != null && chatGPTAccessor.id == packet.to)) {
-                                    var content = packet.messageContent.data
+                                    var content = packet.messageContent.content
 
                                     if (packet.messageContent.type == MessageType.FILE || packet.messageContent.type == MessageType.IMAGE) {
                                         content = UUID.randomUUID().toString()

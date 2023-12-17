@@ -6,7 +6,6 @@ import top.focess.netdesign.server.packet.ContactMessageListRequestPacket
 import top.focess.scheduler.ThreadPoolScheduler
 import top.focess.util.json.JSONList
 import top.focess.util.json.JSONObject
-import top.focess.util.network.HttpResponseException
 import top.focess.util.network.NetworkHandler
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -94,7 +93,7 @@ private class ChatGPTMessageHandler(val name: String) {
         return messages.map {
             mapOf(
                 "role" to it.role.name.lowercase(Locale.getDefault()),
-                "content" to it.content.data
+                "content" to it.content.content
             )
         }
     }

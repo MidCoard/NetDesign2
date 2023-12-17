@@ -35,7 +35,7 @@ class Friend(id: Int, name: String, online: Boolean) : Contact(id, name, online)
                 return null
             // special case: if message type is file or image
             if (message is RawFileMessageContent) {
-                val fileId = packet.message.content.data
+                val fileId = packet.message.content.content
                 val filePacket = this.sendPacket(FileUploadRequestPacket(this.token!!, fileId, message.file, message.file.sha256()))
                 if (filePacket !is FileUploadResponsePacket || !filePacket.success) {
                     // immediately delete the message

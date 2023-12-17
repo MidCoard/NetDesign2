@@ -48,11 +48,18 @@ val driver: SqlDriver = JdbcSqliteDriver(
     val currentVersion = section.getOrDefault("version", 0)
     val newVersion = Database.Schema.version
 
-    if (newVersion.toInt() == 0)
-        Database.Schema.create(this)
-    else if (currentVersion < newVersion)
-        Database.Schema.migrate(this, currentVersion.toLong(), newVersion)
+    try {
+        if (newVersion.toInt() == 0)
+            Database.Schema.create(this)
+        else if (currentVersion < newVersion)
+            Database.Schema.migrate(this, currentVersion.toLong(), newVersion)
+    } catch (e: Exception) {
+        // ignore the create database error (database already exists)
+        e.printStackTrace()
+    }
     section["version"] = newVersion
+    // make sure the database version is up-to-date.
+    configuration.save()
 }
 
 object MessageTypeAdapter : ColumnAdapter<MessageType, String> {

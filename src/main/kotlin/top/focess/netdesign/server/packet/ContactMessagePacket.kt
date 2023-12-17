@@ -51,7 +51,7 @@ internal fun Message.toProtoType() = message {
             MessageType.IMAGE -> PacketOuterClass.MessageType.IMAGE
             MessageType.FILE -> PacketOuterClass.MessageType.FILE
         }
-        this.content = this@toProtoType.content.data
+        this.content = this@toProtoType.content.content
     }
     this.id = this@toProtoType.id
     this.internalId = this@toProtoType.internalId

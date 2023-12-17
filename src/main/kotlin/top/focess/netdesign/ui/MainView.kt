@@ -28,11 +28,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
 import top.focess.netdesign.server.GlobalState.contacts
-import top.focess.netdesign.server.GlobalState.server
 
 
 @Composable
@@ -143,7 +141,7 @@ private fun LangFile.LangScope.lastMessageView(message: Message?) : String {
     return message?.let {
         when (it.content.type) {
             MessageType.TEXT -> {
-                it.content.data.maxLength(20)
+                it.content.content.maxLength(20)
             }
 
             MessageType.IMAGE -> {

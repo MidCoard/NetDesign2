@@ -6,17 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toAwtImage
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import com.google.protobuf.kotlin.toByteString
 import top.focess.netdesign.sqldelight.file.LocalFileData
 import top.focess.netdesign.ui.sha256
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
-import javax.swing.Spring.height
 
 
 val EMPTY_MESSAGE = Message(-1, -1, -1, -1, TextMessageContent(""), -1)
@@ -31,7 +28,7 @@ enum class MessageType {
     FILE
 }
 
-abstract class MessageContent(val type: MessageType, val data: String)
+abstract class MessageContent(val type: MessageType, val content: String)
 data class TextMessageContent(val text: String) : MessageContent(MessageType.TEXT, text)
 abstract class SpecialMessageContent(type: MessageType, id: String) : MessageContent(type, id)
 class ImageMessageContent(id: String) : SpecialMessageContent(MessageType.IMAGE, id)

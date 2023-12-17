@@ -2,18 +2,14 @@ package top.focess.netdesign.server
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.*
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
-import top.focess.netdesign.proto.clientAckResponse
 import top.focess.netdesign.server.GlobalState.contacts
 import top.focess.netdesign.server.packet.*
 import top.focess.netdesign.ui.localMessageQueries
 import top.focess.netdesign.ui.queryLatestLocalMessages
-import top.focess.util.RSA
-import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.Closeable
 import java.io.InputStream
@@ -250,7 +246,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                                                 message.id.toLong(),
                                                 message.from.toLong(),
                                                 message.to.toLong(),
-                                                message.content.data,
+                                                message.content.content,
                                                 message.content.type,
                                                 message.timestamp.toLong(),
                                                 message.internalId.toLong(),
@@ -276,7 +272,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                                 it.id.toLong(),
                                 it.from.toLong(),
                                 it.to.toLong(),
-                                it.content.data,
+                                it.content.content,
                                 it.content.type,
                                 it.timestamp.toLong(),
                                 it.internalId.toLong(),
