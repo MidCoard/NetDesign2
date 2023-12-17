@@ -63,6 +63,10 @@ compose.desktop {
 
             windows {
                 console = true
+                dirChooser = true
+                perUserInstall = true
+                menuGroup = "NetDesign2"
+                upgradeUuid = "9edd3750-f718-4169-b33b-00284d77de93"
             }
         }
     }
