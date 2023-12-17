@@ -1,0 +1,28 @@
+CREATE TABLE File (
+    fileId TEXT PRIMARY KEY NOT NULL,
+    id INTEGER NOT NULL
+);
+
+CREATE TABLE FileData (
+    fileId TEXT PRIMARY KEY NOT NULL,
+    filename TEXT NOT NULL,
+    data BLOB NOT NULL
+);
+
+insertFile:
+INSERT INTO File (fileId, id) VALUES (?, ?);
+
+insertFileData:
+INSERT INTO FileData (fileId, filename, data) VALUES (?, ?, ?);
+
+selectFile:
+SELECT * FROM File WHERE fileId = ?;
+
+selectFiles:
+SELECT * FROM File WHERE id = ?;
+
+selectFileData:
+SELECT * FROM FileData WHERE fileId = ?;
+
+selectFilePrecise:
+SELECT * FROM File WHERE fileId = ? AND id = ?;

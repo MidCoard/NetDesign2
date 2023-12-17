@@ -34,7 +34,6 @@ fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit
             var flag = false
             if (canRegister(username, password, confirmPassword)) {
                 val packet = server.sendPacket(RegisterRequestPacket(username, password))
-                println(packet)
                 if (packet is RegisterResponsePacket && packet.success) {
                     flag = true
                 }

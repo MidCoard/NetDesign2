@@ -34,11 +34,17 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
 import top.focess.netdesign.sqldelight.message.LocalMessage
+import java.net.URI
+import java.nio.file.Files
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.io.path.toPath
 
 data class RenderMessage(val messageContent: MessageContent, val contactMessage: Boolean, var internalId: Int = -1, val timestamp: Int)
 
@@ -103,17 +109,26 @@ fun LangFile.LangScope.MessageContentView(renderMessage: RenderMessage) {
 
         }
     }
+    Icon(
+        painter = when (renderMessage.internalId) {
+            -1 -> painterResource("icons/cloud_upload.svg")
+            -2 -> painterResource("icons/error.svg")
+            else -> painterResource("icons/check_circle.svg")
+        },
+        contentDescription = "Status",
+        modifier = Modifier.size(16.dp).padding(2.dp)
+
+    )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
     Column(
         modifier = Modifier.fillMaxWidth()
-            .padding(10.dp)
-        ,
+            .padding(10.dp),
         horizontalAlignment = if (renderMessage.contactMessage) Alignment.Start else Alignment.End
     ) {
-
         Row(verticalAlignment = Alignment.Bottom) {
             if (renderMessage.contactMessage) {
                 Column {
@@ -128,7 +143,7 @@ fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
                     Triangle(true, OTHER_MESSAGE_COLOR)
                 }
             }
-            Column(
+            Row (
                 modifier = Modifier
                     .clip(
                         RoundedCornerShape(
@@ -143,16 +158,18 @@ fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
                         top = 5.dp,
                         end = 10.dp,
                         bottom = 5.dp),
-                verticalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 MessageContentView(renderMessage)
             }
+
             if (!renderMessage.contactMessage) {
                 Column {
                     Triangle(false, MY_MESSAGE_COLOR)
                 }
             }
         }
+
     }
 
     Spacer(Modifier.size(10.dp))
@@ -273,7 +290,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
         if (requestShowLatestMessage) {
             val targetIndex = messages.size - 1
             if (targetIndex >= 0)
-                listState.animateScrollToItem(messages.size - 1)
+                listState.animateScrollToItem(targetIndex)
             requestShowLatestMessage = false
         }
     }
@@ -309,19 +326,8 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
     Box(
         modifier = Modifier
             .size(200.dp)
-            .background(Color.LightGray.copy(alpha = 0.4f), shape = RoundedCornerShape(8.dp))
+            .background(Color.LightGray.copy(alpha = 0.5f), shape = RoundedCornerShape(8.dp))
     ) {
-
-        IconButton(
-            onClick = { onRemove() },
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Remove",
-                modifier = Modifier.size(16.dp)
-            )
-        }
 
         Box(
             modifier = Modifier
@@ -343,7 +349,9 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.Yellow),
+                            .background(
+                                Color(0xFFE0E0E0)
+                                , shape = RoundedCornerShape(8.dp)),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -370,6 +378,17 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
                 }
             }
         }
+
+        IconButton(
+            onClick = { onRemove() },
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Remove",
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 
     if (showDialog) {
@@ -391,10 +410,8 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
 @Composable
 fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit, onMessageSend: (RawMessageContent) -> Unit) {
 
-    var sendRequest by remember { mutableStateOf(_sendRequest) }
-
+    var sendRequest by remember { mutableStateOf(false) }
     var textMessage by remember { mutableStateOf("") }
-
     val currentFileMessageContents = remember { mutableStateListOf<RawFileMessageContent>() }
     val needRemoveFileMessageContents = remember { mutableStateListOf<RawFileMessageContent>() }
     var isDroppable by remember { mutableStateOf(false) }
@@ -412,6 +429,7 @@ fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit
                 onMessageSend(RawRichMessageContent(RawTextMessageContent(textMessage), *currentFileMessageContents.toTypedArray()))
             textMessage = ""
             currentFileMessageContents.clear()
+            sendRequest = false
         }
     }
 
@@ -429,6 +447,8 @@ fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit
     }
 
     fun shouldSend() : Boolean {
+        if (_sendRequest)
+            return false
         if (textMessage.isNotEmpty())
             return true
         if (currentFileMessageContents.isNotEmpty())
@@ -437,7 +457,7 @@ fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit
     }
 
         Column(
-            modifier = Modifier.wrapContentHeight(Alignment.Bottom).fillMaxWidth()
+            modifier = Modifier.wrapContentHeight(Alignment.Bottom). fillMaxWidth()
                 .onExternalDrag (
                     onDragStart = {
                         isDroppable = it.dragData is DragData.FilesList || it.dragData is DragData.Image
@@ -450,17 +470,16 @@ fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit
                     onDrop = {
                         isDroppable = false
                         val dragData = it.dragData
-//                        if (dragData is DragData.FilesList) {
-//                            val uris = dragData.readFiles()
-//                            for (uri in uris) {
-//                                val file = URI.create(uri).toPath().toFile()
-//                                if (!file.exists() || file.isDirectory)
-//                                    continue
-//                                currentFileMessageContents.add(RawFileMessageContent(File(file.name, Files.readAllBytes(file.toPath()))))
-//                            }
-//                        } else if (dragData is DragData.Image)
-//                            currentFileMessageContents.add(RawImageMessageContent(dragData.readImage()))
-                        currentFileMessageContents.add(RawImageMessageContent(resource))
+                        if (dragData is DragData.FilesList) {
+                            val uris = dragData.readFiles()
+                            for (uri in uris) {
+                                val file = URI.create(uri).toPath().toFile()
+                                if (!file.exists() || file.isDirectory)
+                                    continue
+                                currentFileMessageContents.add(RawFileMessageContent(File(file.name, Files.readAllBytes(file.toPath()))))
+                            }
+                        } else if (dragData is DragData.Image)
+                            currentFileMessageContents.add(RawImageMessageContent(dragData.readImage()))
                     }
 
                 )
@@ -552,3 +571,9 @@ internal fun LocalMessage.toMessage() : Message = Message(
     },
     this.timestamp.toInt()
 )
+
+internal fun convertTimestamp(timestamp: Int): String {
+    val date = Date(timestamp.toLong() * 1000) // Convert to milliseconds
+    val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    return format.format(date)
+}

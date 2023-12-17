@@ -7,6 +7,7 @@ import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.server.packet.*
 import top.focess.netdesign.sqldelight.message.ServerMessage
+import top.focess.netdesign.ui.fileQueries
 import top.focess.netdesign.ui.friendQueries
 import top.focess.netdesign.ui.serverMessageQueries
 import top.focess.netdesign.ui.sha256
@@ -254,12 +255,41 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                         if (clientScope != null) {
                             val message = serverMessageQueries.selectPreciseById(packet.id.toLong()).executeAsOneOrNull()
                             if (message != null)
-                                if (message.sender.toInt() == clientScope.id) {
-                                    serverMessageQueries.deleteById(packet.id.toLong())
-                                    return DeleteMessageResponsePacket(true)
-                                }
+                                if (message.sender.toInt() == clientScope.id && message.type == MessageType.FILE)
+                                    if (fileQueries.selectFileData(message.data_).executeAsOneOrNull() == null) {
+                                        serverMessageQueries.deleteById(packet.id.toLong())
+                                        return DeleteMessageResponsePacket(true)
+                                    }
                         }
                         DeleteMessageResponsePacket(false)
+                    }
+
+                    is FileUploadRequestPacket -> {
+                        val clientScope = this.clientScopeMap[packet.token]
+                        if (clientScope != null && packet.file.filename.isNotEmpty()) {
+                            val file = fileQueries.selectFilePrecise(packet.id, clientScope.id.toLong()).executeAsOneOrNull()
+                            if (file != null) {
+                                val fileData = fileQueries.selectFileData(file.fileId).executeAsOneOrNull();
+                                if (fileData == null) {
+                                    fileQueries.insertFileData(file.fileId, packet.file.filename, packet.file.data)
+                                    return FileUploadResponsePacket(true)
+                                }
+                            }
+                        }
+                        DeleteMessageResponsePacket(false)
+                    }
+
+                    is FileDownloadRequestPacket -> {
+                        val clientScope = this.clientScopeMap[packet.token]
+                        if (clientScope != null) {
+                            val file = fileQueries.selectFilePrecise(packet.id, clientScope.id.toLong()).executeAsOneOrNull()
+                            if (file != null) {
+                                val fileData = fileQueries.selectFileData(file.fileId).executeAsOneOrNull();
+                                if (fileData != null)
+                                    return FileDownloadResponsePacket(File(fileData.filename, fileData.data_))
+                            }
+                        }
+                        FileDownloadResponsePacket(EMPTY_FILE)
                     }
 
                     else -> throw IllegalArgumentException("Unknown packet id: ${packet.packetId}")

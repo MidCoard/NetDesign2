@@ -55,6 +55,7 @@ val database = Database(
 val friendQueries = database.friendQueries
 val localMessageQueries = database.localMessageQueries
 val serverMessageQueries = database.serverMessageQueries
+val fileQueries = database.fileQueries
 
 @Composable
 fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified)): WindowState =

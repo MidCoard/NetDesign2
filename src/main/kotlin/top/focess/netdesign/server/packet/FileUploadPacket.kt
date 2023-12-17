@@ -3,6 +3,7 @@ package top.focess.netdesign.server.packet
 import com.google.protobuf.Any
 import com.google.protobuf.kotlin.toByteString
 import com.google.protobuf.kotlin.unpack
+import top.focess.netdesign.proto.PacketOuterClass
 import top.focess.netdesign.proto.PacketOuterClass.FileUploadRequest
 import top.focess.netdesign.proto.PacketOuterClass.FileUploadResponse
 import top.focess.netdesign.proto.file
@@ -31,6 +32,8 @@ internal fun File.toProtoType() = file {
     this.name = this@toProtoType.filename
     this.content = this@toProtoType.data.toByteString()
 }
+
+internal fun PacketOuterClass.File.fromProtoType() = File(this.name, this.content.toByteArray())
 
 data class FileUploadResponsePacket(val success: Boolean) : ServerPacket(PACKET_ID) {
     companion object : PacketCompanion<FileUploadResponsePacket>() {

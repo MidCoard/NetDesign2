@@ -55,6 +55,8 @@ class RawRichMessageContent(vararg rawMessageContents: RawMessageContent) : RawM
     override fun toMessageContent() = throw UnsupportedOperationException()
 }
 
+val EMPTY_FILE = File("", ByteArray(0))
+
 data class File(val filename: String, val data: ByteArray)
 
 internal fun Painter.toFile() = File("", this.toBytes())
