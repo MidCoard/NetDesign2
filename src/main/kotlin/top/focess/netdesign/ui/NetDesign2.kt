@@ -36,9 +36,9 @@ val configDir: String = when(CURRENT_OS) {
     Platform.WINDOWS -> System.getenv("APPDATA")
     Platform.MACOS -> System.getProperty("user.home") + "/Library/Application Support"
     else -> System.getProperty("user.home") + "/.config" // Assume Linux
-}
+} + "/NetDesign2"
 
-val configFile = File("$configDir/NetDesign2/config.yml").let {
+val configFile = File("$configDir/config.yml").let {
     if (!it.exists()) {
         it.parentFile.mkdirs()
         it.createNewFile()
@@ -49,7 +49,7 @@ val configFile = File("$configDir/NetDesign2/config.yml").let {
 val configuration = FileConfiguration.loadFile(configFile)
 
 val driver: SqlDriver = JdbcSqliteDriver(
-    "jdbc:sqlite:netdesign.db"
+    "jdbc:sqlite:$configDir/netdesign.db"
 ).apply {
     val section = configuration.getSection("database")
     val currentVersion = section.getOrDefault("version", 0)

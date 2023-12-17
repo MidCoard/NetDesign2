@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout code
@@ -26,4 +26,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: NetDesign2
-        path: build/compose/binaries/main-release/deb/*
+        path: build/compose/binaries/main-release/dmg/*  # replace with the path to your built app
