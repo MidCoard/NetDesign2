@@ -45,6 +45,8 @@ object Packets {
         registerPacket(DeleteMessageResponsePacket)
         registerPacket(FileDownloadRequestPacket)
         registerPacket(FileDownloadResponsePacket)
+        registerPacket(FileUploadRequestPacket)
+        registerPacket(FileUploadResponsePacket)
     }
 
     fun fromProtoPacket(packet: PacketOuterClass.Packet) = packets[packet.packetId]?.fromProtoType(packet.content)

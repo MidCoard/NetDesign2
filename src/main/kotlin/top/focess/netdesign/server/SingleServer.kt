@@ -276,7 +276,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                 }
                             }
                         }
-                        DeleteMessageResponsePacket(false)
+                        FileUploadResponsePacket(false)
                     }
 
                     is FileDownloadRequestPacket -> {

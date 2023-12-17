@@ -39,6 +39,9 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
+import top.focess.netdesign.server.GlobalState.server
+import top.focess.netdesign.server.packet.FileDownloadRequestPacket
+import top.focess.netdesign.server.packet.FileDownloadResponsePacket
 import top.focess.netdesign.sqldelight.message.LocalMessage
 import java.net.URI
 import java.nio.file.Files
@@ -46,21 +49,25 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.io.path.toPath
 
-data class RenderMessage(val messageContent: MessageContent, val contactMessage: Boolean, var internalId: Int = -1, val timestamp: Int)
+data class RenderMessage(
+    val messageContent: MessageContent,
+    val contactMessage: Boolean,
+    var internalId: Int = -1,
+    val timestamp: Int
+)
 
 // wechat-like green color
 val MY_MESSAGE_COLOR = Color(0xFFC5E1A5)
+
 // wechat-like blue color
 val OTHER_MESSAGE_COLOR = Color(0xFFBBDEFB)
 
 // Adapted from https://stackoverflow.com/questions/65965852/jetpack-compose-create-chat-bubble-with-arrow-and-border-elevation
 class TriangleEdgeShape(val risingToTheRight: Boolean) : Shape {
     override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
+        size: Size, layoutDirection: LayoutDirection, density: Density
     ): Outline {
-        val trianglePath = if(risingToTheRight) {
+        val trianglePath = if (risingToTheRight) {
             Path().apply {
                 moveTo(x = 0f, y = size.height)
                 lineTo(x = size.width, y = 0f)
@@ -81,28 +88,65 @@ class TriangleEdgeShape(val risingToTheRight: Boolean) : Shape {
 @Composable
 fun Triangle(risingToTheRight: Boolean, background: Color) {
     Box(
-        Modifier
-            .padding(bottom = 10.dp)
-            .clip(TriangleEdgeShape(risingToTheRight))
-            .background(background)
-            .size(6.dp)
+        Modifier.padding(bottom = 10.dp).clip(TriangleEdgeShape(risingToTheRight)).background(background).size(6.dp)
     )
 }
 
 @Composable
 fun LangFile.LangScope.MessageContentView(renderMessage: RenderMessage) {
+
+    var fileLoading by remember { mutableStateOf(true) }
+    var file by remember { mutableStateOf(EMPTY_FILE) }
+
+    LaunchedEffect(Unit) {
+        if (renderMessage.messageContent is SpecialMessageContent) {
+            val specialMessageContent = renderMessage.messageContent
+            if (specialMessageContent.data.isNotEmpty()) {
+                val packet = server.sendPacket(FileDownloadRequestPacket(server.token!!, specialMessageContent.data))
+                if (packet is FileDownloadResponsePacket) if (packet.file.filename.isNotEmpty()) file = packet.file
+                fileLoading = false
+            }
+        }
+    }
+
     when (renderMessage.messageContent.type) {
         MessageType.TEXT -> {
             SelectionContainer {
                 Text(
-                    text = renderMessage.messageContent.data,
-                    style = MaterialTheme.typography.body1
+                    text = renderMessage.messageContent.data, style = MaterialTheme.typography.body1
                 )
             }
         }
 
         MessageType.FILE -> {
-
+            if (fileLoading || file.filename.isEmpty()) CircularProgressIndicator(
+                modifier = Modifier.size(24.dp).padding(4.dp)
+            )
+            else {
+                Column(
+                    modifier = Modifier.fillMaxSize().background(
+                            Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)
+                        ), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        painter = painterResource("icons/description.svg"),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Box(
+                        modifier = Modifier.padding(top = 4.dp).horizontalScroll(rememberScrollState())
+                    ) {
+                        SelectionContainer {
+                            Text(
+                                text = file.filename,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 4.dp),
+                                style = MaterialTheme.typography.body2
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         MessageType.IMAGE -> {
@@ -114,19 +158,20 @@ fun LangFile.LangScope.MessageContentView(renderMessage: RenderMessage) {
             -1 -> painterResource("icons/cloud_upload.svg")
             -2 -> painterResource("icons/error.svg")
             else -> painterResource("icons/check_circle.svg")
-        },
-        contentDescription = "Status",
-        modifier = Modifier.size(16.dp).padding(2.dp)
-
+        }, contentDescription = "Status", modifier = Modifier.size(16.dp).padding(2.dp).background(
+            when (renderMessage.internalId) {
+                -1 -> Color(0xFFE0E0E0)
+                -2 -> Color(0xFFE57373)
+                else -> Color(0xFF81C784)
+            },
+        )
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
     Column(
-        modifier = Modifier.fillMaxWidth()
-            .padding(10.dp),
+        modifier = Modifier.fillMaxWidth().padding(10.dp),
         horizontalAlignment = if (renderMessage.contactMessage) Alignment.Start else Alignment.End
     ) {
         Row(verticalAlignment = Alignment.Bottom) {
@@ -143,22 +188,17 @@ fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
                     Triangle(true, OTHER_MESSAGE_COLOR)
                 }
             }
-            Row (
-                modifier = Modifier
-                    .clip(
+            Row(
+                modifier = Modifier.clip(
                         RoundedCornerShape(
-                            10.dp, 10.dp,
+                            10.dp,
+                            10.dp,
                             if (renderMessage.contactMessage) 10.dp else 0.dp,
                             if (renderMessage.contactMessage) 0.dp else 10.dp
                         )
-                    )
-                    .background(if (renderMessage.contactMessage) OTHER_MESSAGE_COLOR else MY_MESSAGE_COLOR)
-                    .padding(
-                        start = 10.dp,
-                        top = 5.dp,
-                        end = 10.dp,
-                        bottom = 5.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    ).background(if (renderMessage.contactMessage) OTHER_MESSAGE_COLOR else MY_MESSAGE_COLOR).padding(
+                        start = 10.dp, top = 5.dp, end = 10.dp, bottom = 5.dp
+                    ), verticalAlignment = Alignment.CenterVertically
             ) {
                 MessageContentView(renderMessage)
             }
@@ -178,11 +218,10 @@ fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
 @Composable
 fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
-    var messageContent : RawMessageContent? by remember { mutableStateOf(null) }
+    var messageContent: RawMessageContent? by remember { mutableStateOf(null) }
     var sendRequest by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
-    val showDialog = remember { mutableStateOf(false) }
-    var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
+    val dialog = remember { FocessDialog() }
     var requestShowLatestMessage by remember { mutableStateOf(false) }
     val messages = remember { mutableStateListOf<RenderMessage>() }
 
@@ -196,36 +235,32 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
                     if (copyMessageContent !is RawRichMessageContent) {
                         val textRenderMessage = RenderMessage(
-                            copyMessageContent.toMessageContent(),
-                            false,
-                            -1,
-                            System.currentTimeMillis().toInt()
+                            copyMessageContent.toMessageContent(), false, -1, System.currentTimeMillis().toInt()
                         )
                         messages.add(textRenderMessage)
+                        delay(2000)
                         server.sendMessage(copyMessageContent)?.let {
                             list.add(it)
-                            messages.remove(textRenderMessage)
+                            textRenderMessage.internalId = it.internalId
+                            contact.messages.add(it)
                         }
-                    }
-                    else {
+                    } else {
                         val jobs = mutableListOf<Job>()
-                        for (content in copyMessageContent.rawMessageContents)
-                            if (content !is RawRichMessageContent) {
-                                launch {
-                                    val renderMessage = RenderMessage(
-                                        content.toMessageContent(),
-                                        false,
-                                        -1,
-                                        System.currentTimeMillis().toInt()
-                                    )
-                                    server.sendMessage(content)?.let {
-                                        list.add(it)
-                                        messages.remove(renderMessage)
-                                    }
-                                }.let {
-                                    jobs.add(it)
+                        for (content in copyMessageContent.rawMessageContents) if (content !is RawRichMessageContent) {
+                            launch {
+                                val renderMessage = RenderMessage(
+                                    content.toMessageContent(), false, -1, System.currentTimeMillis().toInt()
+                                )
+                                messages.add(renderMessage)
+                                server.sendMessage(content)?.let {
+                                    list.add(it)
+                                    renderMessage.internalId = it.internalId
+                                    contact.messages.add(it)
                                 }
+                            }.let {
+                                jobs.add(it)
                             }
+                        }
                         jobs.joinAll()
                     }
                     list
@@ -240,7 +275,6 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                         message.timestamp.toLong(),
                         message.internalId.toLong(),
                     )
-                    contact.messages.add(message)
                 }
 
                 // indicate send failed
@@ -249,11 +283,8 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                 }
 
                 if (messageList.size != rawMessageCount) {
-                    dialog = FocessDialog(
-                        "chat.sendFailed".l,
-                        "chat.sendFailedMessage".l,
-                        showDialog
-                    )
+                    dialog.title = "chat.sendFailed".l
+                    dialog.message = "chat.sendFailedMessage".l
                     dialog.show()
                 }
             }
@@ -268,29 +299,25 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
         if (newSize > lastSize) {
             for (i in lastSize until newSize) {
                 val message = contact.messages[i]
+                if (messages.find { it.internalId == message.internalId } != null) continue
                 messages.add(
                     RenderMessage(
-                        message.content,
-                        message.to == server.self!!.id,
-                        message.internalId,
-                        message.timestamp
+                        message.content, message.to == server.self!!.id, message.internalId, message.timestamp
                     )
                 )
+                lastSize = i + 1
             }
-            lastSize = newSize
         }
     }
 
     LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty())
-            requestShowLatestMessage = true
+        if (messages.isNotEmpty()) requestShowLatestMessage = true
     }
 
     LaunchedEffect(requestShowLatestMessage) {
         if (requestShowLatestMessage) {
             val targetIndex = messages.size - 1
-            if (targetIndex >= 0)
-                listState.animateScrollToItem(targetIndex)
+            if (targetIndex >= 0) listState.animateScrollToItem(targetIndex)
             requestShowLatestMessage = false
         }
     }
@@ -324,34 +351,26 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
-            .size(200.dp)
+        modifier = Modifier.size(200.dp)
             .background(Color.LightGray.copy(alpha = 0.5f), shape = RoundedCornerShape(8.dp))
     ) {
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp)
+            modifier = Modifier.fillMaxSize().padding(4.dp)
         ) {
             when (content) {
                 is RawImageMessageContent -> {
                     val image = content.image
-                    Image(
-                        painter = image,
+                    Image(painter = image,
                         contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clickable { showDialog = true }
-                    )
+                        modifier = Modifier.fillMaxSize().clickable { showDialog = true })
                 }
+
                 is RawFileMessageContent -> {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Color(0xFFE0E0E0)
-                                , shape = RoundedCornerShape(8.dp)),
+                        modifier = Modifier.fillMaxSize().background(
+                                Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)
+                            ),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -361,9 +380,7 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
                             modifier = Modifier.size(24.dp)
                         )
                         Box(
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .horizontalScroll(rememberScrollState())
+                            modifier = Modifier.padding(top = 4.dp).horizontalScroll(rememberScrollState())
                         ) {
                             SelectionContainer {
                                 Text(
@@ -379,16 +396,9 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
             }
         }
 
-        IconButton(
-            onClick = { onRemove() },
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Remove",
-                modifier = Modifier.size(16.dp)
-            )
-        }
+        Icon(imageVector = Icons.Default.Close,
+            contentDescription = "Remove",
+            modifier = Modifier.align(Alignment.TopEnd).size(24.dp).padding(4.dp).clickable { onRemove() })
     }
 
     if (showDialog) {
@@ -396,9 +406,7 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
             Box(modifier = Modifier.fillMaxSize()) {
                 if (content is RawImageMessageContent) {
                     Image(
-                        painter = content.image,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize()
+                        painter = content.image, contentDescription = null, modifier = Modifier.fillMaxSize()
                     )
                 }
             }
@@ -408,7 +416,11 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit, onMessageSend: (RawMessageContent) -> Unit) {
+fun LangFile.ColumnLangScope.InputView(
+    _sendRequest: Boolean,
+    onDrag: () -> Unit,
+    onMessageSend: (RawMessageContent) -> Unit
+) {
 
     var sendRequest by remember { mutableStateOf(false) }
     var textMessage by remember { mutableStateOf("") }
@@ -421,12 +433,14 @@ fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit
 
     LaunchedEffect(sendRequest) {
         if (sendRequest) {
-            if (currentFileMessageContents.isEmpty())
-                onMessageSend(RawTextMessageContent(textMessage))
-            else if (textMessage.isEmpty())
-                onMessageSend(RawRichMessageContent(*currentFileMessageContents.toTypedArray()))
-            else
-                onMessageSend(RawRichMessageContent(RawTextMessageContent(textMessage), *currentFileMessageContents.toTypedArray()))
+            if (currentFileMessageContents.isEmpty()) onMessageSend(RawTextMessageContent(textMessage))
+            else if (textMessage.isEmpty()) onMessageSend(RawRichMessageContent(*currentFileMessageContents.toTypedArray()))
+            else onMessageSend(
+                RawRichMessageContent(
+                    RawTextMessageContent(textMessage),
+                    *currentFileMessageContents.toTypedArray()
+                )
+            )
             textMessage = ""
             currentFileMessageContents.clear()
             sendRequest = false
@@ -435,8 +449,7 @@ fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit
 
     LaunchedEffect(currentFileMessageContents.size, isDroppable) {
         val targetIndex = if (isDroppable) currentFileMessageContents.size else currentFileMessageContents.size - 1
-        if (targetIndex >= 0)
-            listState.animateScrollToItem(index = targetIndex)
+        if (targetIndex >= 0) listState.animateScrollToItem(index = targetIndex)
     }
 
     LaunchedEffect(needRemoveFileMessageContents.size) {
@@ -446,130 +459,111 @@ fun LangFile.ColumnLangScope.InputView(_sendRequest: Boolean, onDrag: () -> Unit
         }
     }
 
-    fun shouldSend() : Boolean {
-        if (_sendRequest)
-            return false
-        if (textMessage.isNotEmpty())
-            return true
-        if (currentFileMessageContents.isNotEmpty())
-            return true
+    fun shouldSend(): Boolean {
+        if (_sendRequest) return false
+        if (textMessage.isNotEmpty()) return true
+        if (currentFileMessageContents.isNotEmpty()) return true
         return false
     }
 
-        Column(
-            modifier = Modifier.wrapContentHeight(Alignment.Bottom). fillMaxWidth()
-                .onExternalDrag (
-                    onDragStart = {
-                        isDroppable = it.dragData is DragData.FilesList || it.dragData is DragData.Image
-                        if (isDroppable)
-                            onDrag()
-                    },
-                    onDragExit = {
-                        isDroppable = false
-                    },
-                    onDrop = {
-                        isDroppable = false
-                        val dragData = it.dragData
-                        if (dragData is DragData.FilesList) {
-                            val uris = dragData.readFiles()
-                            for (uri in uris) {
-                                val file = URI.create(uri).toPath().toFile()
-                                if (!file.exists() || file.isDirectory)
-                                    continue
-                                currentFileMessageContents.add(RawFileMessageContent(File(file.name, Files.readAllBytes(file.toPath()))))
-                            }
-                        } else if (dragData is DragData.Image)
-                            currentFileMessageContents.add(RawImageMessageContent(dragData.readImage()))
-                    }
-
+    Column(modifier = Modifier.wrapContentHeight(Alignment.Bottom).fillMaxWidth().onExternalDrag(onDragStart = {
+            isDroppable = it.dragData is DragData.FilesList || it.dragData is DragData.Image
+            if (isDroppable) onDrag()
+        }, onDragExit = {
+            isDroppable = false
+        }, onDrop = {
+            isDroppable = false
+            val dragData = it.dragData
+            if (dragData is DragData.FilesList) {
+                val uris = dragData.readFiles()
+                for (uri in uris) {
+                    val file = URI.create(uri).toPath().toFile()
+                    if (!file.exists() || file.isDirectory) continue
+                    currentFileMessageContents.add(
+                        RawFileMessageContent(
+                            File(
+                                file.name,
+                                Files.readAllBytes(file.toPath())
+                            )
+                        )
+                    )
+                }
+            } else if (dragData is DragData.Image) currentFileMessageContents.add(
+                RawImageMessageContent(
+                    dragData.readImage()
                 )
-        ) {
+            )
+        }
 
-            if (currentFileMessageContents.isNotEmpty() || isDroppable) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(8.dp)
-                        .background(Color.LightGray.copy(alpha = 0.6f), shape = RoundedCornerShape(8.dp))
+        )) {
+
+        if (currentFileMessageContents.isNotEmpty() || isDroppable) {
+            Box(
+                modifier = Modifier.fillMaxWidth().height(200.dp).padding(8.dp)
+                    .background(Color.LightGray.copy(alpha = 0.6f), shape = RoundedCornerShape(8.dp))
+            ) {
+                LazyRow(
+                    modifier = Modifier.padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    state = listState
                 ) {
-                    LazyRow(
-                        modifier = Modifier.padding(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState
-                    ) {
-                        items(currentFileMessageContents) { content ->
-                            DroppedItemView(content) {
-                                needRemoveFileMessageContents.add(content)
-                            }
+                    items(currentFileMessageContents) { content ->
+                        DroppedItemView(content) {
+                            needRemoveFileMessageContents.add(content)
                         }
-                        if (isDroppable) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .size(200.dp)
-                                        .background(Color.White, shape = RoundedCornerShape(8.dp))
-                                )
-                            }
+                    }
+                    if (isDroppable) {
+                        item {
+                            Box(
+                                modifier = Modifier.size(200.dp)
+                                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            )
                         }
                     }
                 }
             }
+        }
 
-                TextField(
-                    value = textMessage,
-                    onValueChange = { textMessage = it },
-                    modifier = Modifier.fillMaxWidth().onKeyEvent {
-                        if (it.key == Key.Enter) {
-                            if (sendRequest)
-                                return@onKeyEvent true
-                            if (shouldSend())
+        TextField(value = textMessage,
+            onValueChange = { textMessage = it },
+            modifier = Modifier.fillMaxWidth().onKeyEvent {
+                if (it.key == Key.Enter) {
+                    if (sendRequest) return@onKeyEvent true
+                    if (shouldSend()) sendRequest = true
+                }
+                it.key == Key.Enter
+            },
+            singleLine = true,
+            placeholder = {
+                Text("chat.placeholder".l)
+            },
+            trailingIcon = {
+                if (shouldSend()) {
+                    Row(
+                        modifier = Modifier.clickable {
+                                if (sendRequest) return@clickable
                                 sendRequest = true
-                        }
-                        it.key == Key.Enter
-                    },
-                    singleLine = true,
-                    placeholder = {
-                        Text("chat.placeholder".l)
-                    },
-                    trailingIcon = {
-                        if (shouldSend()) {
-                            Row(
-                                modifier = Modifier
-                                    .clickable {
-                                        if (sendRequest)
-                                            return@clickable
-                                        sendRequest = true
-                                    }
-                                    .clip(RoundedCornerShape(5.dp))
-                                    .padding(10.dp)
-                                    .pointerHoverIcon(PointerIcon.Hand),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Send,
-                                    contentDescription = "chat.send".l,
-                                    tint = MaterialTheme.colors.primary
-                                )
-                                Text("chat.send".l)
-                            }
-                        }
+                            }.clip(RoundedCornerShape(5.dp)).padding(10.dp).pointerHoverIcon(PointerIcon.Hand),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Send,
+                            contentDescription = "chat.send".l,
+                            tint = MaterialTheme.colors.primary
+                        )
+                        Text("chat.send".l)
                     }
-                )
-            }
+                }
+            })
+    }
 }
 
-internal fun LocalMessage.toMessage() : Message = Message(
-    this.id.toInt(),
-    this.sender.toInt(),
-    this.receiver_.toInt(),
-    this.internal_id.toInt(),
-    when (this.type) {
+internal fun LocalMessage.toMessage(): Message = Message(
+    this.id.toInt(), this.sender.toInt(), this.receiver_.toInt(), this.internal_id.toInt(), when (this.type) {
         MessageType.TEXT -> TextMessageContent(this.data_)
         MessageType.IMAGE -> ImageMessageContent(this.data_)
         MessageType.FILE -> FileMessageContent(this.data_)
-    },
-    this.timestamp.toInt()
+    }, this.timestamp.toInt()
 )
 
 internal fun convertTimestamp(timestamp: Int): String {

@@ -25,9 +25,7 @@ fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit
 
     var registerRequest by remember { mutableStateOf(false) }
 
-    val showDialog = remember { mutableStateOf(false) }
-
-    var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
+    val dialog = remember { FocessDialog() }
 
     LaunchedEffect(registerRequest) {
         if (registerRequest) {
@@ -39,17 +37,21 @@ fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit
                 }
             }
 
-            dialog = if (!flag)
-                FocessDialog("register.registerFailed".l, "register.registerFailedMessage".l, showDialog)
+            dialog.title = if (!flag)
+                "register.registerFailed".l
             else
-                FocessDialog("register.registerSuccess".l, "register.registerSuccessMessage".l, showDialog)
+                "register.registerSuccess".l
+            dialog.message = if (!flag)
+                "register.registerFailedMessage".l
+            else
+                "register.registerSuccessMessage".l
             dialog.show()
             registerRequest = false
         }
     }
 
-    LaunchedEffect(showDialog.value) {
-        if (!showDialog.value && dialog.title == "register.registerSuccess".l)
+    LaunchedEffect(dialog.show) {
+        if (!dialog.show && dialog.title == "register.registerSuccess".l)
             registered()
     }
 
@@ -96,7 +98,7 @@ fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit
                 registerRequest = true
             },
             modifier = Modifier.padding(16.dp),
-            enabled = !registerRequest && canRegister(username, password, confirmPassword) && !showDialog.value
+            enabled = !registerRequest && canRegister(username, password, confirmPassword) && !dialog.show
         ) {
             Text("register.register".l)
         }

@@ -52,7 +52,7 @@ fun LangFile.LangScope.MainView(server: RemoteServer, showContact: (Contact) -> 
             }
         }
 
-        items(contacts) { contact ->
+        items(contacts, key = {it.id}) { contact ->
             if (contact is Friend && contact.id != server.id) {
                 FriendView(contact, showContact)
             } else if (contact is Group) {

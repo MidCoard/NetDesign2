@@ -8,7 +8,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,9 +23,12 @@ import androidx.compose.ui.window.DialogWindow
 import androidx.compose.ui.window.rememberDialogState
 import top.focess.netdesign.config.LangFile
 
-class FocessDialog(val title: String = "", val message: String = "", internal val show: MutableState<Boolean>) {
+class FocessDialog(_title: String = "", _message: String = "") {
+    var title by mutableStateOf(_title)
+    var message by mutableStateOf(_message)
+    var show by mutableStateOf(false)
     fun show() {
-        show.value = true
+        show = true
     }
 }
 
@@ -33,9 +38,9 @@ fun LangFile.LangScope.FocessDialogWindow(focessDialog: FocessDialog) {
     val state = rememberDialogState(size = DpSize(275.dp, Dp.Unspecified))
 
     DialogWindow(
-        onCloseRequest = { focessDialog.show.value = false },
+        onCloseRequest = { focessDialog.show = false },
         state = state,
-        visible = focessDialog.show.value,
+        visible = focessDialog.show,
         title = focessDialog.title,
         undecorated = true,
         transparent = true,
@@ -76,7 +81,7 @@ fun LangFile.LangScope.FocessDialogWindow(focessDialog: FocessDialog) {
                             }) {
                                 Button(
                                     modifier = Modifier.fillMaxHeight(),
-                                    onClick = { focessDialog.show.value = false }) {
+                                    onClick = { focessDialog.show = false }) {
                                     Icon(Icons.Default.Close, "close".l)
                                 }
                             }
@@ -93,7 +98,7 @@ fun LangFile.LangScope.FocessDialogWindow(focessDialog: FocessDialog) {
                             }
 
                             Row(Modifier.fillMaxWidth().height(55.dp), horizontalArrangement = Arrangement.Center) {
-                                Button(onClick = { focessDialog.show.value = false }) {
+                                Button(onClick = { focessDialog.show = false }) {
                                     Text("dialog.ok".l)
                                 }
                             }

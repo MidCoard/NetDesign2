@@ -35,9 +35,7 @@ fun LangFile.LangScope.LoginView(
     var reconnect by remember { mutableStateOf(false) }
     var loginRequest by remember { mutableStateOf(false) }
 
-    val showDialog = remember { mutableStateOf(false) }
-
-    var dialog by remember { mutableStateOf(FocessDialog(show = showDialog)) }
+    val dialog = remember { FocessDialog() }
 
     LaunchedEffect(reconnect) {
         if (reconnect) {
@@ -63,7 +61,8 @@ fun LangFile.LangScope.LoginView(
                 }
             }
             if (!flag) {
-                dialog = FocessDialog("login.loginFailed".l, "login.loginFailedMessage".l, showDialog)
+                dialog.title  = "login.loginFailed".l
+                dialog.message = "login.loginFailedMessage".l
                 dialog.show()
             }
             loginRequest = false
@@ -103,7 +102,7 @@ fun LangFile.LangScope.LoginView(
                 loginRequest = true
                       },
             modifier = Modifier.padding(16.dp),
-            enabled = server.connected() && !loginRequest && canLogin(username, password) && !showDialog.value && server.channelSocket == null
+            enabled = server.connected() && !loginRequest && canLogin(username, password) && !dialog.show && server.channelSocket == null
         ) {
             Text("login.login".l)
             Spacer(Modifier.width(5.dp))

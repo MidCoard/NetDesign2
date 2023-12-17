@@ -1,6 +1,9 @@
 package top.focess.netdesign.server
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
@@ -15,7 +18,9 @@ import javax.swing.Spring.height
 
 val EMPTY_MESSAGE = Message(-1, -1, -1, -1, TextMessageContent(""), -1)
 
-data class Message(val id: Int, val from: Int, val to: Int, val internalId: Int, val content: MessageContent, val timestamp: Int)
+data class Message(val id: Int, val from: Int, val to: Int, val _internalId: Int, val content: MessageContent, val timestamp: Int) {
+    var internalId by mutableStateOf(_internalId)
+}
 
 enum class MessageType {
     TEXT,
@@ -42,8 +47,6 @@ open class RawFileMessageContent(var file: File) : RawMessageContent() {
     override fun toMessageContent() : MessageContent = FileMessageContent("")
 
 }
-
-
 class RawImageMessageContent(val image: Painter) : @Composable RawFileMessageContent(image.toFile()) {
 
     override fun toMessageContent() = ImageMessageContent("")
@@ -59,7 +62,7 @@ val EMPTY_FILE = File("", ByteArray(0))
 
 data class File(val filename: String, val data: ByteArray)
 
-internal fun Painter.toFile() = File("", this.toBytes())
+internal fun Painter.toFile() = File("image", this.toBytes())
 
 internal fun Painter.toBytes() = this.toAwtImage(Density(1f), LayoutDirection.Ltr).toBytes()
 
