@@ -19,6 +19,8 @@ import top.focess.netdesign.config.FileConfiguration
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.config.LangFile.Companion.createLandScope
 import top.focess.netdesign.config.NetworkConfig.DEFAULT_SERVER_PORT
+import top.focess.netdesign.config.Platform
+import top.focess.netdesign.config.Platform.Companion.CURRENT_OS
 import top.focess.netdesign.server.Contact
 import top.focess.netdesign.server.GlobalState.server
 import top.focess.netdesign.server.GlobalState.singleServer
@@ -30,9 +32,9 @@ import java.awt.EventQueue
 import java.io.File
 
 
-val configDir: String = when {
-    System.getProperty("os.name").startsWith("Windows") -> System.getenv("APPDATA")
-    System.getProperty("os.name").startsWith("Mac") -> System.getProperty("user.home") + "/Library/Application Support"
+val configDir: String = when(CURRENT_OS) {
+    Platform.WINDOWS -> System.getenv("APPDATA")
+    Platform.MACOS -> System.getProperty("user.home") + "/Library/Application Support"
     else -> System.getProperty("user.home") + "/.config" // Assume Linux
 }
 

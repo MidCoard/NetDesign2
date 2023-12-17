@@ -47,6 +47,8 @@ compose.desktop {
             buildTypes {
                 release {
                     proguard {
+                        isEnabled = false
+                        isEnabled.set(false)
                         optimize = false
                         configurationFiles.from(project.file("proguard-rules.pro"))
                     }

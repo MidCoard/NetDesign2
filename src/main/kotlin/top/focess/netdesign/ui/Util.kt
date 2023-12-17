@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
 import top.focess.netdesign.config.LangFile
+import top.focess.netdesign.config.Platform
+import top.focess.netdesign.config.Platform.Companion.CURRENT_OS
 import top.focess.netdesign.ui.WindowColumnScope.Companion.createWindowColumnScope
 
 @Composable
@@ -57,22 +59,22 @@ fun LangFile.LangScope.DefaultView(
         focusable = true
     ) {
 
-
-        MenuBar {
-            Menu("menu.status.title".l, mnemonic = 'S') {
-                Item("menu.status.quit".l, onClick = {
-                    onCloseRequest()
-                }, shortcut = KeyShortcut(Key.Q, ctrl = true))
+        if (CURRENT_OS == Platform.MACOS || CURRENT_OS == Platform.LINUX)
+            MenuBar {
+                Menu("menu.status.title".l, mnemonic = 'S') {
+                    Item("menu.status.quit".l, onClick = {
+                        onCloseRequest()
+                    }, shortcut = KeyShortcut(Key.Q, ctrl = true))
+                }
+                Menu("menu.language.title".l, mnemonic = 'L'){
+                    Item("menu.language.chinese".l, onClick = {
+                        langFile = LangFile("langs/zh_CN.yml")
+                    })
+                    Item("menu.language.english".l, onClick = {
+                        langFile = LangFile("langs/en_US.yml")
+                    })
+                }
             }
-            Menu("menu.language.title".l, mnemonic = 'L'){
-                Item("menu.language.chinese".l, onClick = {
-                    langFile = LangFile("langs/zh_CN.yml")
-                })
-                Item("menu.language.english".l, onClick = {
-                    langFile = LangFile("langs/en_US.yml")
-                })
-            }
-        }
 
         Box(Modifier.clip(RoundedCornerShape(5.dp))) {
 
