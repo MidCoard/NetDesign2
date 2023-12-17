@@ -60,6 +60,10 @@ compose.desktop {
             description = "NetDesign2"
             copyright = "© 2023 Focess. All rights reserved."
             appResourcesRootDir.set(project.layout.projectDirectory.dir("src/main/resources"))
+
+            windows {
+                console = true
+            }
         }
     }
 }
