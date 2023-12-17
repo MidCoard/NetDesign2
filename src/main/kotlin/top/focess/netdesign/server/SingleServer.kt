@@ -19,6 +19,7 @@ import java.net.ServerSocket
 import java.net.Socket
 import java.security.SecureRandom
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -34,7 +35,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
     private var shouldClose = false
 
-    private val scheduler: FocessScheduler = FocessScheduler("SingleServer")
+    private val scheduler: FocessScheduler = FocessScheduler("SingleServer", true)
 
     private val packetQueue = ConcurrentLinkedQueue<Pair<ClientScope, ServerPacket>>()
 
@@ -224,17 +225,22 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                     is SendMessageRequestPacket -> {
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null)
-                            if (clientScope.self.id == packet.from && packet.messageContent.data.length < 1000)
+                            if (clientScope.id == packet.from && packet.messageContent.data.length < 1000)
                                 // todo with other contact type: for example group
                                 if (packet.to == 0 || (chatGPTAccessor != null && chatGPTAccessor.id == packet.to)) {
+                                    var content = packet.messageContent.data
+
+                                    if (packet.messageContent.type == MessageType.FILE || packet.messageContent.type == MessageType.IMAGE) {
+                                        content = UUID.randomUUID().toString()
+                                        fileQueries.insertFile(content, clientScope.id.toLong())
+                                    }
+
                                     val insertedMessage = insertMessage(
                                         packet.from,
                                         packet.to,
-                                        packet.messageContent.data,
+                                        content,
                                         packet.messageContent.type
                                     )
-
-                                    // todo with special type
 
                                     chatGPTAccessor?.let {
                                         if (chatGPTAccessor.id == packet.to) {
@@ -270,7 +276,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                             val file = fileQueries.selectFilePrecise(packet.id, clientScope.id.toLong()).executeAsOneOrNull()
                             if (file != null) {
                                 val fileData = fileQueries.selectFileData(file.fileId).executeAsOneOrNull();
-                                if (fileData == null) {
+                                if (fileData == null && packet.file.data.sha256() == packet.hash) {
                                     fileQueries.insertFileData(file.fileId, packet.file.filename, packet.file.data, packet.hash)
                                     return FileUploadResponsePacket(true)
                                 }

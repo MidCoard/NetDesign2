@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.google.protobuf.kotlin.toByteString
+import top.focess.netdesign.sqldelight.file.LocalFileData
 import top.focess.netdesign.ui.sha256
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -85,3 +86,5 @@ val RawMessageContent.messageCount: Int
     }
 
 internal fun File.sha256() = this.data.sha256()
+
+internal fun LocalFileData.toFile() = File(this.filename, this.data_)

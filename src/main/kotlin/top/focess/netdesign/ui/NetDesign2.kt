@@ -2,7 +2,6 @@ package top.focess.netdesign.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -16,11 +15,14 @@ import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import top.focess.netdesign.Database
+import top.focess.netdesign.config.FileConfiguration
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.config.LangFile.Companion.createLandScope
-import top.focess.netdesign.server.*
+import top.focess.netdesign.server.Contact
 import top.focess.netdesign.server.GlobalState.server
 import top.focess.netdesign.server.GlobalState.singleServer
+import top.focess.netdesign.server.MessageType
+import top.focess.netdesign.server.SingleServer
 import top.focess.netdesign.sqldelight.message.LocalMessage
 import top.focess.netdesign.sqldelight.message.ServerMessage
 import top.focess.util.option.OptionParserClassifier
@@ -28,18 +30,29 @@ import top.focess.util.option.Options
 import top.focess.util.option.type.IntegerOptionType
 import top.focess.util.option.type.OptionType
 import java.awt.EventQueue
-import java.sql.SQLException
-import java.util.*
+import java.io.File
 
+private fun loadConfiguration() : FileConfiguration {
+    val file = File("config.yml")
+    if (!file.exists())
+        file.createNewFile()
+    return FileConfiguration.loadFile(file);
+}
+
+val configuration = loadConfiguration()
 
 val driver: SqlDriver = JdbcSqliteDriver(
     "jdbc:sqlite:netdesign.db"
 ).apply {
-    try {
-        Database.Schema.create(this)
-    } catch (e: SQLException) {
-    }
+    val section = configuration.getSection("database")
+    val currentVersion = section.getOrDefault("version", 0)
+    val newVersion = Database.Schema.version
 
+    if (newVersion.toInt() == 0)
+        Database.Schema.create(this)
+    else if (currentVersion < newVersion)
+        Database.Schema.migrate(this, currentVersion.toLong(), newVersion)
+    section["version"] = newVersion
 }
 
 object MessageTypeAdapter : ColumnAdapter<MessageType, String> {
@@ -56,6 +69,7 @@ val friendQueries = database.friendQueries
 val localMessageQueries = database.localMessageQueries
 val serverMessageQueries = database.serverMessageQueries
 val fileQueries = database.fileQueries
+val localFileQueries = database.localFileQueries
 
 @Composable
 fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecified)): WindowState =
@@ -78,7 +92,7 @@ fun main(args: Array<String>) {
     }
 
 
-    application(exitProcessOnExit = true) {
+    application(exitProcessOnExit = false) {
 
         var showSettings by remember { mutableStateOf(false) }
         var showRegister by remember { mutableStateOf(false) }
@@ -197,6 +211,11 @@ fun main(args: Array<String>) {
         }
     }
 
+    println("Saving configuration...")
+    configuration.save()
+
+    singleServer?.close()
+    server.close()
 }
 
 object TrayIcon : Painter() {

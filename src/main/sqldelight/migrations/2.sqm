@@ -1,0 +1,6 @@
+CREATE TABLE LocalFileData (
+    fileId TEXT PRIMARY KEY NOT NULL,
+    filename TEXT NOT NULL,
+    data BLOB NOT NULL,
+    hash TEXT NOT NULL
+);

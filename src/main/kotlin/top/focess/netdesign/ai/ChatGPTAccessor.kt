@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
 
     private val messageHandlers = ConcurrentHashMap<Int, ChatGPTMessageHandler>()
-    private val scheduler = ThreadPoolScheduler("ChatGPTAccessor", 10)
+    private val scheduler = ThreadPoolScheduler(10, false,"ChatGPTAccessor", true)
     private val networkHandler = NetworkHandler()
 
     val id = -1
