@@ -11,6 +11,7 @@ import top.focess.netdesign.server.packet.*
 import top.focess.netdesign.ui.localMessageQueries
 import top.focess.netdesign.ui.queryLatestLocalMessages
 import java.io.BufferedOutputStream
+import java.io.ByteArrayOutputStream
 import java.io.Closeable
 import java.io.InputStream
 import java.net.Socket
@@ -44,45 +45,49 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         return socket
     }
 
-    private suspend fun trySendPacket(packet: ClientPacket, socket: Socket): ServerPacket? {
-        println("RemoteServer: pre-send ${packet.packetId}")
-        if (this.connected() && packet is ServerStatusRequestPacket)
-        // server is connected, no need to send
-        // if you want to update the server status, send an update packet or reconnect
-            return ServerStatusResponsePacket(online, registerable)
-        try {
-            socket.let {
-                val bytes = packet.toProtoPacket().toByteArray()
-                println("RemoteServer: send ${packet.packetId}")
-                it.getOutputStream().write(bytes)
-                it.shutdownOutput()
-            }
-        } catch (e: Exception) {
-            // trySendPacket method will catch this exception and return null
-            e.printStackTrace()
-            return null
-        }
-        return try {
-            socket.let {
-                // call and wait for 3000ms
-                withTimeout(3000) {
-                    val bytes = it.getInputStream().readAvailableBytes()
-                    val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                    val packetId = protoPacket.packetId
-                    println("RemoteServer: receive $packetId")
-                    it.shutdownInput()
-                    it.close()
-                    Packets.fromProtoPacket(protoPacket) as ServerPacket
+    private suspend fun trySendPacket(packet: ClientPacket, socket: Socket): ServerPacket? =
+        withContext(Dispatchers.IO) {
+            if (connected() && packet is ServerStatusRequestPacket)
+            // server is connected, no need to send
+            // if you want to update the server status, send an update packet or reconnect
+                return@withContext ServerStatusResponsePacket(online, registerable)
+            try {
+                socket.let {
+                    println("RemoteServer: send $packet")
+                    val bytes = packet.toProtoPacket().toByteArray()
+                    println("Send ${bytes.size} bytes")
+                    BufferedOutputStream(it.getOutputStream(), bytes.size).let {
+                        it.write(bytes)
+                        it.flush()
+                    }
+                    it.shutdownOutput()
                 }
+            } catch (e: Exception) {
+                // trySendPacket method will catch this exception and return null
+                e.printStackTrace()
+                return@withContext null
             }
-        } catch (e: Exception) {
-            // trySendPacket method will catch this exception and return null
-            e.printStackTrace()
-            if (e is TimeoutCancellationException)
-                println("RemoteServer: receive timeout")
-            null
+            return@withContext try {
+                socket.let {
+                    // call and wait for 3000ms
+                    withTimeout(3000) {
+                        val bytes = it.getInputStream().readAvailableBytes()
+                        it.shutdownInput()
+                        it.close()
+                        Packets.fromProtoPacket(PacketOuterClass.Packet.parseFrom(bytes)) as ServerPacket
+                    }
+                }.let {
+                    println("RemoteServer: receive $it")
+                    it
+                }
+            } catch (e: Exception) {
+                // trySendPacket method will catch this exception and return null
+                e.printStackTrace()
+                if (e is TimeoutCancellationException)
+                    println("RemoteServer: receive timeout")
+                null
+            }
         }
-    }
 
     suspend fun sendPacket(packet: ClientPacket): ServerPacket? {
         if (!connected)
@@ -94,8 +99,9 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             e.printStackTrace()
             null
         }
-        if (serverPacket == null)
+        if (serverPacket == null) {
             disconnect()
+        }
         return serverPacket
     }
 
@@ -107,13 +113,17 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             throw IllegalArgumentException("Setup channel failed")
         }
         if (!connected()) {
-            this.channelSocket?.close()
-            this.channelThread?.join()
+            withContext(Dispatchers.IO) {
+                channelSocket?.close()
+                channelThread?.join()
+            }
             this.channelSocket = null
             return
         }
-        this.channelSocket?.close()
-        this.channelThread?.join()
+        withContext(Dispatchers.IO) {
+            channelSocket?.close()
+            channelThread?.join()
+        }
         try {
             this.channelSocket = this.socket
         } catch (e: Exception) {
@@ -142,6 +152,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                             this@RemoteServer.id = id
                             this@RemoteServer.token = token
                             this@RemoteServer.username = username
+                            println("setup channel success")
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -153,16 +164,22 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             try {
                 // start channel
                 while (this.channelSocket?.isClosed?.not() == true) {
+                    println("close: ${this.channelSocket?.isClosed}")
                     val bytes = runBlocking { channelSocket?.getInputStream()?.readAvailableBytes() }
                     if (bytes != null) {
                         val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
                         val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
                         println("RemoteServerChannel: receive ${packet.packetId}")
-                        channelSocket?.getOutputStream()?.let {
-                            BufferedOutputStream(it).let {
-                                it.write(ClientAckResponsePacket().toProtoPacket().toByteArray())
-                                it.flush()
-                            }
+
+                        runBlocking {
+//                            withContext(Dispatchers.IO) {
+                                channelSocket?.getOutputStream()?.let {
+                                    BufferedOutputStream(it).let {
+                                        it.write(ClientAckResponsePacket().toProtoPacket().toByteArray())
+                                        it.flush()
+                                    }
+                                }
+//                            }
                         }
                         with(DEFAULT_PACKET_HANDLER) {
                             handle(packet)
@@ -317,9 +334,17 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 }
 
 internal suspend fun InputStream.readAvailableBytes(): ByteArray {
-    while (this.available() == 0)
-        delay(1)
-    val bytes = ByteArray(this.available())
-    this.read(bytes)
-    return bytes
+    return withContext(Dispatchers.IO) {
+        while (available() == 0)
+            delay(100)
+        val available = available()
+        println("available: $available")
+        if (available > 8192)
+            readAllBytes()
+        else {
+            val bs = ByteArray(available)
+            read(bs)
+            return@withContext bs
+        }
+    }
 }

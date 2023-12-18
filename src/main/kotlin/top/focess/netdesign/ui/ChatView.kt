@@ -17,10 +17,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -33,10 +31,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
 import top.focess.netdesign.server.GlobalState.server
@@ -49,7 +44,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.io.path.toPath
 
-class RenderMessage(
+class  RenderMessage(
     _messageContent: MessageContent,
     val contactMessage: Boolean,
     val timestamp: Int,
@@ -65,6 +60,8 @@ val MY_MESSAGE_COLOR = Color(0xFFC5E1A5)
 
 // wechat-like blue color
 val OTHER_MESSAGE_COLOR = Color(0xFFBBDEFB)
+
+val fileState = FileState()
 
 // Adapted from https://stackoverflow.com/questions/65965852/jetpack-compose-create-chat-bubble-with-arrow-and-border-elevation
 class TriangleEdgeShape(val risingToTheRight: Boolean) : Shape {
@@ -96,37 +93,63 @@ fun Triangle(risingToTheRight: Boolean, background: Color) {
     )
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
 
     var fileLoading by remember { mutableStateOf(true) }
     var file by remember { mutableStateOf(EMPTY_FILE) }
+    var imageBitmap: ImageBitmap? by remember { mutableStateOf(null) }
+    var showDialog by remember { mutableStateOf(false) }
+    var requestDownload by remember { mutableStateOf(false) }
 
-    LaunchedEffect(renderMessage.internalId) {
-        if ((renderMessage.type == MessageType.FILE || renderMessage.type == MessageType.IMAGE) && fileLoading) {
-            val data = renderMessage.content
-            if (data.isNotEmpty()) {
-                val localFile = localFileQueries.select(data).executeAsOneOrNull()
-                if (localFile != null)
-                    file = localFile.toFile()
-                else {
-                    val packet =
-                        server.sendPacket(FileDownloadRequestPacket(server.token!!, data))
-                    if (packet is FileDownloadResponsePacket)
-                        if (packet.file.filename.isNotEmpty()) {
-                            if (packet.hash == packet.file.data.sha256()) {
-                                localFileQueries.insert(
-                                    data,
-                                    packet.file.filename,
-                                    packet.file.data,
-                                    packet.hash,
-                                )
-                                file = packet.file
-                            }
+    LaunchedEffect(requestDownload) {
+        if (requestDownload) {
+            val requestFile = fileState.result(file.filename)
+            if (requestFile != null)
+                Files.write(requestFile.toPath(), file.data)
+            requestDownload = false
+        }
+    }
+
+    DisposableEffect(renderMessage.internalId) {
+        GlobalScope.launch {
+            if ((renderMessage.type == MessageType.FILE || renderMessage.type == MessageType.IMAGE) && fileLoading) {
+                val data = renderMessage.content
+                if (data.isNotEmpty()) {
+                    val localFile = localFileQueries.select(data).executeAsOneOrNull()
+                    if (localFile != null) {
+                        file = localFile.toFile()
+                        if (renderMessage.type == MessageType.IMAGE) {
+                            val image = org.jetbrains.skia.Image.makeFromEncoded(file.data)
+                            imageBitmap = image.toComposeImageBitmap()
                         }
+                    } else {
+                        val packet =
+                            server.sendPacket(FileDownloadRequestPacket(server.token!!, data))
+                        if (packet is FileDownloadResponsePacket)
+                            if (packet.file.filename.isNotEmpty()) {
+                                if (packet.hash == packet.file.data.sha256()) {
+                                    localFileQueries.insert(
+                                        data,
+                                        packet.file.filename,
+                                        packet.file.data,
+                                        packet.hash,
+                                    )
+                                    file = packet.file
+                                    if (renderMessage.type == MessageType.IMAGE) {
+                                        val image = org.jetbrains.skia.Image.makeFromEncoded(file.data)
+                                        imageBitmap = image.toComposeImageBitmap()
+                                    }
+                                }
+                            }
+                    }
+                    fileLoading = false
                 }
-                fileLoading = false
             }
+        }
+        onDispose {
+            // do not cancel it, because exception will make the sendPacket method think the packet is not sent
         }
     }
 
@@ -134,15 +157,14 @@ fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
         MessageType.TEXT -> {
             SelectionContainer {
                 Text(
-                    text = renderMessage.content, style = MaterialTheme.typography.body1
+                    text = renderMessage.content + "#${renderMessage.timestamp}", style = MaterialTheme.typography.body1
                 )
             }
         }
 
         MessageType.FILE -> {
-            if (fileLoading) CircularProgressIndicator(
-                modifier = Modifier.size(24.dp).padding(4.dp)
-            )
+            if (fileLoading)
+                CircularProgressIndicator(modifier = Modifier.size(24.dp).padding(4.dp))
             else {
                 if (file.filename.isEmpty()) {
                     Box(
@@ -159,9 +181,14 @@ fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
                     }
                 } else
                     Column(
-                        modifier = Modifier.size(100.dp, 100.dp).background(
-                                Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)
-                            ), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.size(100.dp, 100.dp)
+                            .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp))
+                            .clickable {
+                                requestDownload = true
+                            },
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+
                     ) {
                         Icon(
                             painter = painterResource("icons/description.svg"),
@@ -185,6 +212,38 @@ fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
         }
 
         MessageType.IMAGE -> {
+            if (fileLoading)
+                CircularProgressIndicator(modifier = Modifier.size(24.dp).padding(4.dp))
+            else if (imageBitmap == null) {
+                Box(
+                    modifier = Modifier
+                        .size(100.dp, 100.dp)
+                        .background(Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Image is broken",
+                        style = MaterialTheme.typography.body2,
+                        color = Color.Red
+                    )
+                }
+            } else {
+                ContextMenuArea({
+                    listOf(
+                        ContextMenuItem("chat.download".l) {
+                            requestDownload = true
+                        }
+                    )
+                }) {
+                    Image(painter = BitmapPainter(imageBitmap!!),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(imageBitmap!!.height.dp)
+                            .width(imageBitmap!!.width.dp)
+                            .clickable { showDialog = true }
+                    )
+                }
+            }
 
         }
     }
@@ -204,6 +263,16 @@ fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
                 else -> Color(0xFF81C784)
             },
         )
+    }
+
+    if (showDialog) {
+        Dialog(onDismissRequest = { showDialog = false }) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = BitmapPainter(imageBitmap!!), contentDescription = null, modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
     }
 }
 
@@ -229,15 +298,13 @@ fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
             }
             Row(
                 modifier = Modifier.clip(
-                        RoundedCornerShape(
-                            10.dp,
-                            10.dp,
-                            if (renderMessage.contactMessage) 10.dp else 0.dp,
-                            if (renderMessage.contactMessage) 0.dp else 10.dp
-                        )
-                    ).background(if (renderMessage.contactMessage) OTHER_MESSAGE_COLOR else MY_MESSAGE_COLOR).padding(
-                        start = 10.dp, top = 5.dp, end = 10.dp, bottom = 5.dp
-                    ), verticalAlignment = Alignment.CenterVertically
+                    RoundedCornerShape(
+                        10.dp,
+                        10.dp,
+                        if (renderMessage.contactMessage) 10.dp else 0.dp,
+                        if (renderMessage.contactMessage) 0.dp else 10.dp
+                    )
+                ).background(if (renderMessage.contactMessage) OTHER_MESSAGE_COLOR else MY_MESSAGE_COLOR).padding(10.dp), verticalAlignment = Alignment.CenterVertically
             ) {
                 useRow {
                     MessageContentView(renderMessage)
@@ -276,7 +343,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
 
                     if (copyMessageContent !is RawRichMessageContent) {
                         val textRenderMessage = RenderMessage(
-                            copyMessageContent.toMessageContent(), false,  System.currentTimeMillis().toInt()
+                            copyMessageContent.toMessageContent(), false, (System.currentTimeMillis() / 1000).toInt()
                         )
                         messages.add(textRenderMessage)
                         delay(2000)
@@ -290,7 +357,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                         for (content in copyMessageContent.rawMessageContents) if (content !is RawRichMessageContent) {
                             launch {
                                 val renderMessage = RenderMessage(
-                                    content.toMessageContent(), false,  System.currentTimeMillis().toInt()
+                                    content.toMessageContent(), false, (System.currentTimeMillis() / 1000).toInt()
                                 )
                                 messages.add(renderMessage)
                                 server.sendMessage(content)?.let {
@@ -393,7 +460,7 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier.size(200.dp)
+        modifier = Modifier.size(120.dp)
             .background(Color.LightGray.copy(alpha = 0.5f), shape = RoundedCornerShape(8.dp))
     ) {
 
@@ -411,8 +478,8 @@ fun DroppedItemView(content: RawMessageContent, onRemove: () -> Unit) {
                 is RawFileMessageContent -> {
                     Column(
                         modifier = Modifier.fillMaxSize().background(
-                                Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)
-                            ),
+                            Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)
+                        ),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -506,40 +573,44 @@ fun LangFile.ColumnLangScope.InputView(
         return false
     }
 
+    fun canDrop(externalDragValue: ExternalDragValue) : Boolean {
+        return externalDragValue.dragData is DragData.FilesList || externalDragValue.dragData is DragData.Image
+    }
+
     Column(modifier = Modifier.wrapContentHeight(Alignment.Bottom).fillMaxWidth().onExternalDrag(onDragStart = {
-            isDroppable = it.dragData is DragData.FilesList || it.dragData is DragData.Image
-            if (isDroppable) onDrag()
-        }, onDragExit = {
-            isDroppable = false
-        }, onDrop = {
-            isDroppable = false
-            val dragData = it.dragData
-            if (dragData is DragData.FilesList) {
-                val uris = dragData.readFiles()
-                for (uri in uris) {
-                    val file = URI.create(uri).toPath().toFile()
-                    if (!file.exists() || file.isDirectory) continue
-                    currentFileMessageContents.add(
-                        RawFileMessageContent(
-                            File(
-                                file.name,
-                                Files.readAllBytes(file.toPath())
-                            )
+        isDroppable = canDrop(it)
+        if (isDroppable) onDrag()
+    }, onDragExit = {
+        isDroppable = false
+    }, onDrop = {
+        isDroppable = false
+        val dragData = it.dragData
+        if (dragData is DragData.FilesList) {
+            val uris = dragData.readFiles()
+            for (uri in uris) {
+                val file = URI.create(uri).toPath().toFile()
+                if (!file.exists() || file.isDirectory) continue
+                currentFileMessageContents.add(
+                    RawFileMessageContent(
+                        File(
+                            file.name,
+                            Files.readAllBytes(file.toPath())
                         )
                     )
-                }
-            } else if (dragData is DragData.Image) currentFileMessageContents.add(
-                RawImageMessageContent(
-                    dragData.readImage()
                 )
+            }
+        } else if (dragData is DragData.Image) currentFileMessageContents.add(
+            RawImageMessageContent(
+                dragData.readImage()
             )
-        }
+        )
+    }
 
-        )) {
+    )) {
 
         if (currentFileMessageContents.isNotEmpty() || isDroppable) {
             Box(
-                modifier = Modifier.fillMaxWidth().height(200.dp).padding(8.dp)
+                modifier = Modifier.fillMaxWidth().height(125.dp).padding(8.dp)
                     .background(Color.LightGray.copy(alpha = 0.6f), shape = RoundedCornerShape(8.dp))
             ) {
                 LazyRow(
@@ -555,7 +626,7 @@ fun LangFile.ColumnLangScope.InputView(
                     if (isDroppable) {
                         item {
                             Box(
-                                modifier = Modifier.size(200.dp)
+                                modifier = Modifier.size(120.dp)
                                     .background(Color.White, shape = RoundedCornerShape(8.dp))
                             )
                         }
@@ -581,9 +652,9 @@ fun LangFile.ColumnLangScope.InputView(
                 if (shouldSend()) {
                     Row(
                         modifier = Modifier.clickable {
-                                if (sendRequest) return@clickable
-                                sendRequest = true
-                            }.clip(RoundedCornerShape(5.dp)).padding(10.dp).pointerHoverIcon(PointerIcon.Hand),
+                            if (sendRequest) return@clickable
+                            sendRequest = true
+                        }.clip(RoundedCornerShape(5.dp)).padding(10.dp).pointerHoverIcon(PointerIcon.Hand),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(

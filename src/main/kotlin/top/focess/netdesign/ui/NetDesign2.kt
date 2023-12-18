@@ -28,15 +28,18 @@ import top.focess.netdesign.server.MessageType
 import top.focess.netdesign.server.SingleServer
 import top.focess.netdesign.sqldelight.message.LocalMessage
 import top.focess.netdesign.sqldelight.message.ServerMessage
+import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J
 import java.awt.EventQueue
 import java.io.File
 
 
-val configDir: String = when(CURRENT_OS) {
+val osConfigDir: String = when(CURRENT_OS) {
     Platform.WINDOWS -> System.getenv("APPDATA")
     Platform.MACOS -> System.getProperty("user.home") + "/Library/Application Support"
     else -> System.getProperty("user.home") + "/.config" // Assume Linux
-} + "/NetDesign2"
+}
+
+val configDir: String = "$osConfigDir/NetDesign2"
 
 val configFile = File("$configDir/config.yml").let {
     if (!it.exists()) {
@@ -93,6 +96,7 @@ fun rememberCenterWindowState(size: DpSize = DpSize(Dp.Unspecified, Dp.Unspecifi
 @Preview
 fun main() {
 
+    SysOutOverSLF4J.sendSystemOutAndErrToSLF4J()
     val section = configuration.getSection("local")
     if (section.getOrDefault("status", false)) {
         val name: String? = section["name"]
@@ -149,6 +153,14 @@ fun main() {
                         }
                     }
 
+
+                    useWindow {
+                        useWindow {
+                            with(fileState) {
+                                dialog()
+                            }
+                        }
+                    }
 
                     useColumn {
                         currentContact?.let {

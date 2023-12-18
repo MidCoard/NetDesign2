@@ -48,15 +48,16 @@ fun LangFile.LangScope.LoginView(
     LaunchedEffect(loginRequest) {
         if (loginRequest) {
             var flag = false
-            if (canLogin(username, password)) {
-                val packet = server.sendPacket(LoginPreRequestPacket(username))
+            val _username = username.trim()
+            if (canLogin(_username, password)) {
+                val packet = server.sendPacket(LoginPreRequestPacket(_username))
                 if (packet is LoginPreResponsePacket) {
                     val rawPassword = password.sha256() + packet.challenge
                     val encryptedPassword = rawPassword.sha256()
-                    val loginPacket = server.sendPacket(LoginRequestPacket(username, encryptedPassword))
+                    val loginPacket = server.sendPacket(LoginRequestPacket(_username, encryptedPassword))
                     if (loginPacket is LoginResponsePacket && loginPacket.logined) {
                         flag = true
-                        server.setupChannel(loginPacket.id, username, loginPacket.token)
+                        server.setupChannel(loginPacket.id, _username, loginPacket.token)
                     }
                 }
             }

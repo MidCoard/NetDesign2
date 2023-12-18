@@ -8,8 +8,7 @@ import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,10 +23,15 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
+import kotlinx.coroutines.CompletableDeferred
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.config.Platform
 import top.focess.netdesign.config.Platform.Companion.CURRENT_OS
 import top.focess.netdesign.ui.WindowColumnScope.Companion.createWindowColumnScope
+import java.awt.FileDialog
+import java.awt.Frame
+import java.io.File
+import java.nio.file.Path
 
 @Composable
 fun CustomLayout(
@@ -172,5 +176,67 @@ class WindowColumnScope(val columnScope: ColumnScope, val windowScope: FrameWind
 
 }
 
+
+class FileState(_file: String? = null, _directory: String? = null) {
+
+    var directory by mutableStateOf(_directory)
+    var file by mutableStateOf(_file)
+
+    private var state: CompletableDeferred<File?>? by mutableStateOf(null)
+    fun onResult(file: File?) {
+        state?.complete(file)
+    }
+
+    suspend fun result(filename: String?) : File? {
+        file = filename
+        state = CompletableDeferred()
+        val result = state!!.await()
+        state = null
+        return result
+    }
+
+    suspend fun result() = result(null)
+
+    private val isAwaiting get() = state != null
+
+    @Composable
+    fun LangFile.WindowLangScope.dialog() {
+        if (isAwaiting)
+            FileDialog(false, this@FileState)
+    }
+
+}
+
+@Composable
+fun LangFile.WindowLangScope.FileDialog(
+    isLoad: Boolean,
+    state: FileState,
+) {
+    println("composed")
+    window {
+        AwtWindow(
+            create = {
+                object : FileDialog(window, "dialog.file".l, if (isLoad) LOAD else SAVE) {
+                    init {
+                        this.file = state.file
+                        this.directory = state.directory ?: osConfigDir
+                    }
+
+                    override fun setVisible(value: Boolean) {
+                        super.setVisible(value)
+                        if (value) {
+                            if (this.directory != null && this.file != null) {
+                                state.directory = this.directory
+                                state.file = this.file
+                                state.onResult(File(this.directory).resolve(this.file))
+                            } else state.onResult(null)
+                        }
+                    }
+                }
+            },
+            dispose = FileDialog::dispose
+        )
+    }
+}
 
 

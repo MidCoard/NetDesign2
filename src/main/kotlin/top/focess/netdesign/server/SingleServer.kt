@@ -76,23 +76,28 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                 withTimeout(3000) {
                                     val bytes = it.readAvailableBytes()
                                     val protoPacket = PacketOuterClass.Packet.parseFrom(bytes)
-                                    val packetId = protoPacket.packetId
-                                    println("SingleServer: receive $packetId")
                                     val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
+                                    println("SingleServer: receive $clientPacket")
                                     with(DEFAULT_PACKET_HANDLER) {
                                         this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
                                     }?.to(clientPacket)
                                 }
                             }?.let {
                                 val serverPacket = it.first
-                                println("SingleServer: send ${serverPacket.packetId}");
+                                println("SingleServer: send $serverPacket");
+                                val bytes = serverPacket.toProtoPacket().toByteArray()
+                                println("send ${bytes.size} bytes")
                                 BufferedOutputStream(socket.getOutputStream()).let {
-                                    it.write(serverPacket.toProtoPacket().toByteArray())
+                                    it.write(bytes)
                                     it.flush()
                                 }
                                 val clientPacket = it.second
                                 if (clientPacket is SetupChannelRequestPacket)
                                     setupChannel(socket, clientPacket.token)
+                                else {
+                                    socket.shutdownOutput()
+                                    socket.close()
+                                }
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -212,7 +217,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                         if (clientScope != null) {
                             if (packet.id == 0)
                                 return ContactMessageResponsePacket(
-                                    queryMessage(packet.id, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
+                                    queryMessage(0, clientScope.self.id, packet.internalId) ?: EMPTY_MESSAGE
                                 )
                             else if (chatGPTAccessor != null && chatGPTAccessor.id == packet.id)
                                 return ContactMessageResponsePacket(

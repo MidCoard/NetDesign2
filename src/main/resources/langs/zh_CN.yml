@@ -46,5 +46,7 @@ chat:
   sendFailedMessage: "由于网络原因，消息发送失败。"
   fileMessage: "[文件消息]"
   imageMessage: "[图片消息]"
+  download: "下载"
 dialog:
   ok: "确定"
+  file: "请选择文件"

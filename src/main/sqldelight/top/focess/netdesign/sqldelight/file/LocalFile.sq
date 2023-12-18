@@ -6,7 +6,7 @@ CREATE TABLE LocalFileData (
 );
 
 insert:
-INSERT INTO LocalFileData (fileId, filename, data, hash) VALUES (?, ?, ?, ?);
+INSERT OR REPLACE INTO LocalFileData (fileId, filename, data, hash) VALUES (?, ?, ?, ?);
 
 select:
 SELECT * FROM LocalFileData WHERE fileId = ?;

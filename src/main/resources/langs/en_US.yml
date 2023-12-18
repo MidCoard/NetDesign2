@@ -46,5 +46,7 @@ chat:
   sendFailedMessage: "Send failed due to network error."
   fileMessage: "[File Message]"
   imageMessage: "[Image Message]"
+  download: "Download"
 dialog:
   ok: "OK"
+  file: "Please select a file"
