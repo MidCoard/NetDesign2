@@ -25,6 +25,12 @@ SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id = 
 selectPreciseById:
 SELECT * FROM ServerMessage WHERE id = ?;
 
+selectReceiver:
+SELECT * FROM ServerMessage WHERE receiver = ? ORDER BY internal_id DESC LIMIT 20;
+
+selectPreciseReceiver:
+SELECT * FROM ServerMessage WHERE receiver = ? AND internal_id = ?;
+
 deleteById:
 DELETE FROM ServerMessage WHERE id = ?;
 

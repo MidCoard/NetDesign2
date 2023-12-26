@@ -32,7 +32,6 @@ import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
 import top.focess.netdesign.server.GlobalState.contacts
 
-
 @Composable
 fun LangFile.LangScope.MainView(client: Client, showContact: (Contact) -> Unit = {}) {
 
@@ -54,7 +53,7 @@ fun LangFile.LangScope.MainView(client: Client, showContact: (Contact) -> Unit =
             if (contact is Friend && contact.id != client.id) {
                 FriendView(contact, showContact)
             } else if (contact is Group) {
-                GroupView(contact)
+                GroupView(contact, showContact)
             }
         }
     }
@@ -93,7 +92,7 @@ fun MyView(self: Friend) {
 fun LangFile.LangScope.FriendView(friend: Friend, showContact: (Contact) -> Unit) {
 
     var isHovered by remember { mutableStateOf(false) }
-    val backgroundColor by animateColorAsState(if (isHovered) Color.LightGray else DefaultTheme.colors().background)
+    val backgroundColor by animateColorAsState(if (isHovered) Color.LightGray else contactBackgroundColor(friend))
     var lastMessage : Message? by remember { mutableStateOf(null) }
 
     LaunchedEffect(friend.messages.size) {
@@ -127,14 +126,49 @@ fun LangFile.LangScope.FriendView(friend: Friend, showContact: (Contact) -> Unit
             Text(text = friend.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
             Text(text = lastMessageView(lastMessage), style = TextStyle(fontSize = 14.sp))
         }
-
     }
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun GroupView(group: Group) {
-    Text(group.name)
+fun LangFile.LangScope.GroupView(group: Group, showContact: (Contact) -> Unit) {
+    var isHovered by remember { mutableStateOf(false) }
+    val backgroundColor by animateColorAsState(if (isHovered) Color.LightGray else contactBackgroundColor(group))
+    var lastMessage : Message? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(group.messages.size) {
+        lastMessage = group.messages.maxByOrNull { it.internalId }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor)
+            .onPointerEvent(PointerEventType.Enter) { isHovered = true }
+            .onPointerEvent(PointerEventType.Exit) { isHovered = false }
+            .pointerHoverIcon(PointerIcon.Hand)
+            .clickable { showContact(group) },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            Icons.Default.Person,
+            contentDescription = group.name,
+            modifier = Modifier
+                .size(80.dp)
+                .padding(8.dp)
+                .clip(CircleShape)
+        )
+
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(end = 20.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(text = group.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
+            Text(text = lastMessageView(lastMessage), style = TextStyle(fontSize = 14.sp))
+        }
+    }
 }
 
 private fun LangFile.LangScope.lastMessageView(message: Message?) : String {
@@ -161,6 +195,8 @@ internal fun queryLatestLocalMessages(a: Long, b: Long): List<Message> {
         .addAll(localMessageQueries.selectLatest(b, a).executeAsList().map { it.toMessage() })
     return messages
 }
+
+internal fun contactBackgroundColor(contact: Contact) = if (contact.online) Color.Green else Color.Red
 
 private fun queryNewestLocalMessage(a: Long, b: Long): Message? {
     val message = localMessageQueries.selectNewest(a, b).executeAsOneOrNull()?.toMessage()

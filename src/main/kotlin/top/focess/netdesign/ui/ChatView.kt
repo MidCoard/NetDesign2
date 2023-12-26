@@ -172,7 +172,7 @@ fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
         MessageType.TEXT -> {
             SelectionContainer {
                 Text(
-                    text = renderMessage.content + "#${renderMessage.timestamp}", style = MaterialTheme.typography.body1
+                    text = renderMessage.content + "#${convertTimestamp(renderMessage.timestamp)}", style = MaterialTheme.typography.body1
                 )
             }
         }
@@ -348,6 +348,10 @@ fun LangFile.ColumnLangScope.ChatView(client: Client, contact: Contact) {
     var requestShowLatestMessage by remember { mutableStateOf(false) }
     val messages = remember { mutableStateListOf<RenderMessage>() }
 
+    LaunchedEffect(contact) {
+        messages.clear()
+    }
+
     LaunchedEffect(sendRequest) {
         if (sendRequest) {
             val copyMessageContent = messageContent
@@ -361,7 +365,6 @@ fun LangFile.ColumnLangScope.ChatView(client: Client, contact: Contact) {
                             copyMessageContent.toMessageContent(), false, (System.currentTimeMillis() / 1000).toInt()
                         )
                         messages.add(textRenderMessage)
-                        delay(2000)
                         client.sendMessage(copyMessageContent)?.let {
                             list.add(it)
                             textRenderMessage.internalId = it.internalId

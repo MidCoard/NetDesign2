@@ -55,7 +55,7 @@ compose.desktop {
 
         jvmArgs += listOf("-Xmx4G", "-DNET_DESIGN_2_LOG_PATH=$configDir/logs")
 
-        args += listOf("--local")
+//        args += listOf("--local")
 
 
         nativeDistributions {
