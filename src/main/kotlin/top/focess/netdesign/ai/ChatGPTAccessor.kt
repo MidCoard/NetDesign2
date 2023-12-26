@@ -20,7 +20,7 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
 
     fun SingleServer.sendMessage(id: Int, name: String, messageContent: MessageContent) {
         if (messageContent.type != model.messageType) {
-            val message = insertMessage(this@ChatGPTAccessor.id, id, "Message type not match.", MessageType.TEXT)
+            val message = insertMessage(this@ChatGPTAccessor.id, id, "Message type does not match.", MessageType.TEXT)
             sendChannelPacket(id, ContactMessageListRequestPacket(message))
         } else {
             val handler = messageHandlers.getOrPut(id) { ChatGPTMessageHandler( name ) }
