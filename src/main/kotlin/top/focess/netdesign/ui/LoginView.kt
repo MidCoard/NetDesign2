@@ -12,7 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import top.focess.netdesign.config.LangFile
-import top.focess.netdesign.server.RemoteServer
+import top.focess.netdesign.server.Client
+import top.focess.netdesign.server.RemoteClient
 import top.focess.netdesign.server.packet.LoginPreRequestPacket
 import top.focess.netdesign.server.packet.LoginPreResponsePacket
 import top.focess.netdesign.server.packet.LoginRequestPacket
@@ -24,7 +25,7 @@ fun canLogin(username: String, password: String) =
 
 @Composable
 fun LangFile.LangScope.LoginView(
-    server: RemoteServer,
+    server: RemoteClient,
     showSettings: () -> Unit = {},
     showRegister: () -> Unit = {}
 ) {
@@ -124,7 +125,7 @@ fun LangFile.LangScope.LoginView(
         Button(
             onClick = { reconnect = true },
             modifier = Modifier.padding(16.dp),
-            enabled = !reconnect && server.connected != RemoteServer.ConnectionStatus.CONNECTING
+            enabled = !reconnect && server.connected != Client.ConnectionStatus.CONNECTING
         ) {
             Icon(Icons.Default.Refresh, "login.reconnect".l)
         }
@@ -132,11 +133,11 @@ fun LangFile.LangScope.LoginView(
         Button(
             onClick = { showRegister() },
             modifier = Modifier.padding(16.dp),
-            enabled = server.connected() && server.registerable
+            enabled = server.connected() && server.registrable
         ) {
             Text("login.register".l)
             Spacer(Modifier.width(5.dp))
-            Crossfade(server.connected() && server.registerable) {
+            Crossfade(server.connected() && server.registrable) {
                 if (it)
                     Icon(Icons.Default.Done, "login.connected".l)
                 else

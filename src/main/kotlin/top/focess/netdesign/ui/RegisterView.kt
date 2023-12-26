@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import top.focess.netdesign.config.LangFile
-import top.focess.netdesign.server.RemoteServer
+import top.focess.netdesign.server.RemoteClient
 import top.focess.netdesign.server.packet.RegisterRequestPacket
 import top.focess.netdesign.server.packet.RegisterResponsePacket
 
@@ -17,7 +17,7 @@ fun canRegister(username: String, password: String, confirmPassword: String) =
     username.length in 6..20 && password.length in 6..20 && password == confirmPassword
 
 @Composable
-fun LangFile.LangScope.RegisterView(server: RemoteServer, registered: () -> Unit = {}) {
+fun LangFile.LangScope.RegisterView(server: RemoteClient, registered: () -> Unit = {}) {
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

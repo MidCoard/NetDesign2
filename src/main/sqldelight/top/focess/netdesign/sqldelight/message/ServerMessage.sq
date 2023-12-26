@@ -13,6 +13,9 @@ CREATE TABLE ServerMessage (
 selectNewest:
 SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC LIMIT 1;
 
+selectLatest:
+SELECT * FROM LocalMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC LIMIT 20;
+
 selectAfterInternalId:
 SELECT * FROM ServerMessage WHERE sender = ? AND receiver = ? AND internal_id > ? LIMIT 1;
 

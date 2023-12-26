@@ -34,7 +34,7 @@ import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.*
 import top.focess.netdesign.config.LangFile
 import top.focess.netdesign.server.*
-import top.focess.netdesign.server.GlobalState.server
+import top.focess.netdesign.server.GlobalState.client
 import top.focess.netdesign.server.packet.FileDownloadRequestPacket
 import top.focess.netdesign.server.packet.FileDownloadResponsePacket
 import top.focess.netdesign.sqldelight.message.LocalMessage
@@ -117,25 +117,40 @@ fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
             if ((renderMessage.type == MessageType.FILE || renderMessage.type == MessageType.IMAGE) && fileLoading) {
                 val data = renderMessage.content
                 if (data.isNotEmpty()) {
-                    val localFile = localFileQueries.select(data).executeAsOneOrNull()
-                    if (localFile != null) {
-                        file = localFile.toFile()
-                        if (renderMessage.type == MessageType.IMAGE) {
-                            val image = org.jetbrains.skia.Image.makeFromEncoded(file.data)
-                            imageBitmap = image.toComposeImageBitmap()
+                    if (client.id != 0) {
+                        val localFile = localFileQueries.select(data).executeAsOneOrNull()
+                        if (localFile != null) {
+                            file = localFile.toFile()
+                            if (renderMessage.type == MessageType.IMAGE) {
+                                val image = org.jetbrains.skia.Image.makeFromEncoded(file.data)
+                                imageBitmap = image.toComposeImageBitmap()
+                            }
+                        } else {
+                            val packet =
+                                client.sendPacket(FileDownloadRequestPacket(client.token!!, data))
+                            if (packet is FileDownloadResponsePacket)
+                                if (packet.file.filename.isNotEmpty()) {
+                                    if (packet.hash == packet.file.data.sha256()) {
+                                        localFileQueries.insert(
+                                            data,
+                                            packet.file.filename,
+                                            packet.file.data,
+                                            packet.hash,
+                                        )
+                                        file = packet.file
+                                        if (renderMessage.type == MessageType.IMAGE) {
+                                            val image = org.jetbrains.skia.Image.makeFromEncoded(file.data)
+                                            imageBitmap = image.toComposeImageBitmap()
+                                        }
+                                    }
+                                }
                         }
                     } else {
                         val packet =
-                            server.sendPacket(FileDownloadRequestPacket(server.token!!, data))
+                            client.sendPacket(FileDownloadRequestPacket(client.token!!, data))
                         if (packet is FileDownloadResponsePacket)
                             if (packet.file.filename.isNotEmpty()) {
                                 if (packet.hash == packet.file.data.sha256()) {
-                                    localFileQueries.insert(
-                                        data,
-                                        packet.file.filename,
-                                        packet.file.data,
-                                        packet.hash,
-                                    )
                                     file = packet.file
                                     if (renderMessage.type == MessageType.IMAGE) {
                                         val image = org.jetbrains.skia.Image.makeFromEncoded(file.data)
@@ -174,7 +189,7 @@ fun LangFile.RowLangScope.MessageContentView(renderMessage: RenderMessage) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "File is broken",
+                            text = "File is uploading",
                             style = MaterialTheme.typography.body2,
                             color = Color.Red
                         )
@@ -324,7 +339,7 @@ fun LangFile.LangScope.MessageView(renderMessage: RenderMessage) {
 }
 
 @Composable
-fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
+fun LangFile.ColumnLangScope.ChatView(client: Client, contact: Contact) {
 
     var messageContent: RawMessageContent? by remember { mutableStateOf(null) }
     var sendRequest by remember { mutableStateOf(false) }
@@ -347,7 +362,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                         )
                         messages.add(textRenderMessage)
                         delay(2000)
-                        server.sendMessage(copyMessageContent)?.let {
+                        client.sendMessage(copyMessageContent)?.let {
                             list.add(it)
                             textRenderMessage.internalId = it.internalId
                             contact.messages.add(it)
@@ -360,7 +375,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                                     content.toMessageContent(), false, (System.currentTimeMillis() / 1000).toInt()
                                 )
                                 messages.add(renderMessage)
-                                server.sendMessage(content)?.let {
+                                client.sendMessage(content)?.let {
                                     list.add(it)
                                     renderMessage.internalId = it.internalId
                                     renderMessage.content = it.content.content
@@ -374,17 +389,18 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                     }
                     list
                 }
-                for (message in messageList) {
-                    localMessageQueries.insert(
-                        message.id.toLong(),
-                        message.from.toLong(),
-                        message.to.toLong(),
-                        message.content.content,
-                        message.content.type,
-                        message.timestamp.toLong(),
-                        message.internalId.toLong(),
-                    )
-                }
+                if (client.id != 0)
+                    for (message in messageList) {
+                        localMessageQueries.insert(
+                            message.id.toLong(),
+                            message.from.toLong(),
+                            message.to.toLong(),
+                            message.content.content,
+                            message.content.type,
+                            message.timestamp.toLong(),
+                            message.internalId.toLong(),
+                        )
+                    }
 
                 // indicate send failed
                 messages.filter { it.internalId == -1 }.forEach {
@@ -411,7 +427,7 @@ fun LangFile.ColumnLangScope.ChatView(server: RemoteServer, contact: Contact) {
                 if (messages.find { it.internalId == message.internalId } != null) continue
                 messages.add(
                     RenderMessage(
-                        message.content, message.to == server.self!!.id, message.timestamp, message.internalId
+                        message.content, message.to == client.self!!.id, message.timestamp, message.internalId
                     )
                 )
                 lastSize = i + 1

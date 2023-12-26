@@ -5,11 +5,12 @@ import top.focess.netdesign.ai.ChatGPTAccessor
 import top.focess.netdesign.ai.ChatGPTModel
 import top.focess.netdesign.config.NetworkConfig
 import top.focess.netdesign.proto.PacketOuterClass
+import top.focess.netdesign.server.GlobalState.contacts
 import top.focess.netdesign.server.packet.*
+import top.focess.netdesign.server.toMessage
+import top.focess.netdesign.sqldelight.contact.Contact
 import top.focess.netdesign.sqldelight.message.ServerMessage
-import top.focess.netdesign.ui.fileQueries
-import top.focess.netdesign.ui.friendQueries
-import top.focess.netdesign.ui.serverMessageQueries
+import top.focess.netdesign.ui.*
 import top.focess.netdesign.ui.sha256
 import top.focess.scheduler.FocessScheduler
 import java.io.BufferedInputStream
@@ -20,10 +21,12 @@ import java.net.Socket
 import java.security.SecureRandom
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.ConcurrentMap
 
 @OptIn(DelicateCoroutinesApi::class)
-class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PORT, chatgptKey: String?) : Closeable {
+class LocalServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PORT, chatgptKey: String? = null) : Closeable {
 
     private val clientScopeMap = mutableMapOf<String, ClientScope>()
 
@@ -40,6 +43,19 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
     private val packetQueue = ConcurrentLinkedQueue<Pair<ClientScope, ServerPacket>>()
 
     private val chatGPTAccessor = chatgptKey?.let { ChatGPTAccessor(it, ChatGPTModel.GPT4_TURBO) }
+
+    private val delayMessageList = ConcurrentHashMap<String, Pair<List<Int>, Message>>()
+
+    init {
+        contacts.add(defaultContact)
+        contacts.addAll(contactQueries.selectAll().executeAsList().map { it.toContact() })
+
+        contacts.forEach {
+            if (it.id != 0) {
+                it.messages.addAll(queryMessages(0, it.id))
+            }
+        }
+    }
 
     // make sure all packets are sent in one thread
     // in fact, different clients' packets can be sent in different threads
@@ -79,7 +95,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                     val clientPacket = Packets.fromProtoPacket(protoPacket) as ClientPacket
                                     println("SingleServer: receive $clientPacket")
                                     with(DEFAULT_PACKET_HANDLER) {
-                                        this@SingleServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
+                                        this@LocalServer.handle(Packets.fromProtoPacket(protoPacket) as ClientPacket)
                                     }?.to(clientPacket)
                                 }
                             }?.let {
@@ -149,9 +165,9 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
 
     companion object {
 
-        private val DEFAULT_PACKET_HANDLER = object : SingleServerPacketHandler {
+        val DEFAULT_PACKET_HANDLER = object : SingleServerPacketHandler {
 
-            override fun SingleServer.handle(packet: ClientPacket): ServerPacket? {
+            override fun LocalServer.handle(packet: ClientPacket): ServerPacket? {
                 return when (packet) {
                     is ServerStatusRequestPacket -> {
                         ServerStatusResponsePacket(
@@ -164,8 +180,13 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                         if (packet.username.length in 6..20) {
                             val friend = friendQueries.selectByName(packet.username).executeAsOneOrNull()
                             if (friend == null) {
-                                friendQueries.insert(packet.username, packet.rawPassword.sha256())
-                                return RegisterResponsePacket(true)
+                                contactQueries.insert(packet.username, 0)
+                                val contact = contactQueries.selectByName(packet.username).executeAsOneOrNull()
+                                if (contact != null) {
+                                    friendQueries.insert(contact.id, packet.username, packet.rawPassword.sha256())
+                                    contacts.add(ServerFriend(contact.id.toInt(), contact.name))
+                                    return RegisterResponsePacket(true)
+                                }
                             }
                         }
                         RegisterResponsePacket(false)
@@ -188,10 +209,12 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                     val hashPassword = (friend.password + challenge).sha256()
                                     if (hashPassword == packet.hashPassword) {
                                         val token = genToken()
-                                        this.clientScopeMap[token] = ClientScope(packet.username, token, friend.id.toInt())
+                                        val clientScope = ClientScope(packet.username, token, friend.id.toInt())
+                                        this.clientScopeMap[token] = clientScope
+                                        val serverFriend = contacts.find { it.id == friend.id.toInt() } as ServerFriend
+                                        serverFriend.clientScope = clientScope
                                         return LoginResponsePacket(true, friend.id.toInt(), token)
                                     }
-
                                 }
                             }
                         }
@@ -231,13 +254,13 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                         val clientScope = this.clientScopeMap[packet.token]
                         if (clientScope != null)
                             if (clientScope.id == packet.from && packet.messageContent.content.length < 1000)
-                                // todo with other contact type: for example group
-                                if (packet.to == 0 || (chatGPTAccessor != null && chatGPTAccessor.id == packet.to)) {
+                                if (packet.from == 0 || packet.to == 0 || (chatGPTAccessor != null && chatGPTAccessor.id == packet.to)) {
                                     var content = packet.messageContent.content
 
                                     if (packet.messageContent.type == MessageType.FILE || packet.messageContent.type == MessageType.IMAGE) {
                                         content = UUID.randomUUID().toString()
                                         fileQueries.insertFile(content, clientScope.id.toLong())
+                                        fileQueries.insertFile(content, packet.to.toLong())
                                     }
 
                                     val insertedMessage = insertMessage(
@@ -246,17 +269,64 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                         content,
                                         packet.messageContent.type
                                     )
-
+                                    var chatgpt = false
                                     chatGPTAccessor?.let {
                                         if (chatGPTAccessor.id == packet.to) {
                                             with(chatGPTAccessor) {
                                                 sendMessage(clientScope.id, clientScope.username, packet.messageContent)
+                                                chatgpt = true
                                             }
                                         }
                                     }
+                                    if (!chatgpt)
+                                        if (insertedMessage.content is TextMessageContent)
+                                            sendChannelPacket(packet.to, ContactMessageListRequestPacket(insertedMessage))
+                                        else
+                                            delayMessageList[content] = listOf(packet.to) to insertedMessage
                                     return SendMessageResponsePacket(
                                         insertedMessage
                                     )
+                                } else {
+                                    val target = contactQueries.selectById(packet.to.toLong()).executeAsOneOrNull()
+                                    if (target != null) {
+                                        val targetContact = try {
+                                            target.toContact()
+                                        } catch (e: Exception) {null}
+                                        if (targetContact is Group) {
+                                            if (targetContact.members.find { it.id == packet.from } != null) {
+                                                var content = packet.messageContent.content
+
+                                                if (packet.messageContent.type == MessageType.FILE || packet.messageContent.type == MessageType.IMAGE) {
+                                                    content = UUID.randomUUID().toString()
+                                                    fileQueries.insertFile(content, clientScope.id.toLong())
+                                                    targetContact.members.forEach{
+                                                        if (it.id != 0)
+                                                            fileQueries.insertFile(content, it.id.toLong())
+                                                    }
+                                                }
+
+                                                val insertedMessage = insertMessage(
+                                                    packet.from,
+                                                    packet.to,
+                                                    content,
+                                                    packet.messageContent.type
+                                                )
+                                                if (insertedMessage.content is TextMessageContent)
+                                                    targetContact.members.forEach {
+                                                        if (it.id != packet.from)
+                                                            sendChannelPacket(
+                                                                it.id,
+                                                                ContactMessageListRequestPacket(insertedMessage)
+                                                            )
+                                                    }
+                                                else
+                                                    delayMessageList[content] = targetContact.members.map{it.id}.filter {it != 0} to insertedMessage
+                                                return SendMessageResponsePacket(
+                                                    insertedMessage
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                         SendMessageResponsePacket(EMPTY_MESSAGE)
                     }
@@ -283,6 +353,13 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
                                 val fileData = fileQueries.selectFileData(file.fileId).executeAsOneOrNull();
                                 if (fileData == null && packet.file.data.sha256() == packet.hash) {
                                     fileQueries.insertFileData(file.fileId, packet.file.filename, packet.file.data, packet.hash)
+                                    val pair = delayMessageList[packet.id]
+                                    pair?.first?.forEach {
+                                        sendChannelPacket(
+                                            it,
+                                            ContactMessageListRequestPacket(pair.second)
+                                        )
+                                    }
                                     return FileUploadResponsePacket(true)
                                 }
                             }
@@ -311,7 +388,7 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
     }
 
 
-    private data class ClientScope(
+    data class ClientScope(
         val username: String,
         val token: String,
         val id: Int,
@@ -321,8 +398,8 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         var isChannelSetup = false
     }
 
-    private interface SingleServerPacketHandler {
-        fun SingleServer.handle(packet: ClientPacket): ServerPacket?
+    interface SingleServerPacketHandler {
+        fun LocalServer.handle(packet: ClientPacket): ServerPacket?
     }
 
     private suspend fun sendChannelPacket0(clientScope: ClientScope, packet: ServerPacket) {
@@ -362,13 +439,25 @@ class SingleServer(val name: String, port: Int = NetworkConfig.DEFAULT_SERVER_PO
         this.packetQueue.add(clientScope to packet)
     }
 
-    fun sendChannelPacket(token: String, packet: ServerPacket) {
-        sendChannelPacket(this.clientScopeMap[token] ?: return, packet)
+    fun sendChannelPacket(id: Int, packet: ServerPacket) {
+        println("server should send to $id with packet: $packet")
+        if (id != 0)
+            sendChannelPacket(this.clientScopeMap.values.find { it.id == id } ?: return, packet)
+        else {
+            when(packet) {
+                is ContactMessageListRequestPacket -> {
+                    packet.messages.forEach {
+                        getContact(it.from)?.messages?.add(it)
+                    }
+                }
+            }
+        }
     }
 
-    fun sendChannelPacket(id: Int, packet: ServerPacket) {
-        // todo special case for id = 0
-        sendChannelPacket(this.clientScopeMap.values.find { it.id == id } ?: return, packet)
+    fun getClient(): Client {
+        val token = genToken()
+        this.clientScopeMap[token] = ClientScope(name, token,0, defaultContact)
+        return LocalClient(false, true, defaultContact, token)
     }
 
 
@@ -394,6 +483,12 @@ private fun queryMessage(a: Int, b: Int, internalId: Int): Message? {
         }
 
     return null
+}
+
+private fun queryMessages(a: Int, b: Int) : List<Message> {
+    val messages = serverMessageQueries.selectLatest(a.toLong(), b.toLong()).executeAsList().map { it.toMessage() }.toMutableList()
+    messages.addAll(serverMessageQueries.selectLatest(b.toLong(), a.toLong()).executeAsList().map { it.toMessage() })
+    return messages
 }
 
 
@@ -449,3 +544,14 @@ internal fun insertMessage(from : Int, to :Int, data: String, type: MessageType 
         ).executeAsOne().toMessage()
     }
 }
+
+internal fun Contact.toContact() : top.focess.netdesign.server.Contact = when (this.type.toInt()) {
+        0 -> ServerFriend(this.id.toInt(), this.name)
+        1 -> {
+            val ids = groupQueries.selectMembers(this.id).executeAsList()
+            Group(this.id.toInt(), this.name, true, ids.map { ServerMember(friendQueries.selectById(it).executeAsOne().toContact()) })
+        }
+        else -> throw IllegalArgumentException()
+    }
+
+internal fun top.focess.netdesign.sqldelight.contact.Friend.toContact() : Friend = ServerFriend(this.id.toInt(), this.name)

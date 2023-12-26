@@ -10,12 +10,12 @@ CREATE TABLE LocalMessage (
     internal_id INTEGER NOT NULL
 );
 
-selectBySenderAndReceiverLatest:
-SELECT * FROM LocalMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC;
+selectLatest:
+SELECT * FROM LocalMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC LIMIT 20;
 
 
-selectBySenderAndReceiverNewest:
-SELECT * FROM LocalMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC;
+selectNewest:
+SELECT * FROM LocalMessage WHERE sender = ? AND receiver = ? ORDER BY internal_id DESC LIMIT 1;
 
 insert:
 INSERT INTO LocalMessage (id, sender, receiver, data, type, timestamp, internal_id) VALUES (?, ?, ?, ?, ?, ?, ?);

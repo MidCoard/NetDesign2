@@ -34,7 +34,7 @@ import top.focess.netdesign.server.GlobalState.contacts
 
 
 @Composable
-fun LangFile.LangScope.MainView(server: RemoteServer, showContact: (Contact) -> Unit = {}) {
+fun LangFile.LangScope.MainView(client: Client, showContact: (Contact) -> Unit = {}) {
 
     val listState = rememberLazyListState()
 
@@ -45,13 +45,13 @@ fun LangFile.LangScope.MainView(server: RemoteServer, showContact: (Contact) -> 
     ) {
 
         item {
-            server.self?.let {
-                MyView(server.self!!)
+            client.self?.let {
+                MyView(client.self!!)
             }
         }
 
         items(contacts, key = {it.id}) { contact ->
-            if (contact is Friend && contact.id != server.id) {
+            if (contact is Friend && contact.id != client.id) {
                 FriendView(contact, showContact)
             } else if (contact is Group) {
                 GroupView(contact)
@@ -79,7 +79,7 @@ fun MyView(self: Friend) {
                         .padding(8.dp)
                         .clip(CircleShape)
                 )
-                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
+                Column(modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.End) {
                     Text(text = self.name, style = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold))
                     Text(text = "#${self.id}", style = TextStyle(fontSize = 15.sp))
                 }
@@ -156,15 +156,15 @@ private fun LangFile.LangScope.lastMessageView(message: Message?) : String {
 }
 
 internal fun queryLatestLocalMessages(a: Long, b: Long): List<Message> {
-    val messages = localMessageQueries.selectBySenderAndReceiverLatest(a, b).executeAsList().map { it.toMessage() }.toMutableList()
+    val messages = localMessageQueries.selectLatest(a, b).executeAsList().map { it.toMessage() }.toMutableList()
     messages
-        .addAll(localMessageQueries.selectBySenderAndReceiverLatest(b, a).executeAsList().map { it.toMessage() })
+        .addAll(localMessageQueries.selectLatest(b, a).executeAsList().map { it.toMessage() })
     return messages
 }
 
 private fun queryNewestLocalMessage(a: Long, b: Long): Message? {
-    val message = localMessageQueries.selectBySenderAndReceiverNewest(a, b).executeAsOneOrNull()?.toMessage()
-    val message2 = localMessageQueries.selectBySenderAndReceiverNewest(b, a).executeAsOneOrNull()?.toMessage()
+    val message = localMessageQueries.selectNewest(a, b).executeAsOneOrNull()?.toMessage()
+    val message2 = localMessageQueries.selectNewest(b, a).executeAsOneOrNull()?.toMessage()
 
     if (message != null && message2 != null)
         return if (message.internalId > message2.internalId) message else message2

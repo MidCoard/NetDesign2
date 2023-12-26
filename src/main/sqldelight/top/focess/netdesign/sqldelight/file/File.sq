@@ -1,5 +1,5 @@
 CREATE TABLE File (
-    fileId TEXT PRIMARY KEY NOT NULL,
+    fileId TEXT NOT NULL,
     id INTEGER NOT NULL
 );
 

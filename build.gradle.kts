@@ -44,7 +44,19 @@ sqldelight {
 compose.desktop {
     application {
         mainClass = "top.focess.netdesign.ui.NetDesign2Kt"
-        jvmArgs += listOf("-Xmx4G")
+
+        val osConfigDir: String = when {
+            System.getProperty("os.name").startsWith("Windows") -> System.getenv("APPDATA")
+            System.getProperty("os.name").startsWith("Mac") -> System.getProperty("user.home") + "/Library/Application Support"
+            else -> System.getProperty("user.home") + "/.config" // Assume Linux
+        }
+
+        val configDir = "$osConfigDir/NetDesign2"
+
+        jvmArgs += listOf("-Xmx4G", "-DNET_DESIGN_2_LOG_PATH=$configDir/logs")
+
+        args += listOf("--local")
+
 
         nativeDistributions {
             buildTypes {

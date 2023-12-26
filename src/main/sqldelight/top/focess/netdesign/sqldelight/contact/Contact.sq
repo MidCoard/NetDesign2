@@ -1,0 +1,19 @@
+CREATE TABLE Contact (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    type INTEGER NOT NULL
+);
+
+CREATE INDEX idx_Contact_name ON Contact (name);
+
+selectAll:
+SELECT * FROM Contact;
+
+selectByName:
+SELECT * FROM Contact WHERE name = ?;
+
+selectById:
+SELECT * FROM Contact WHERE id = ?;
+
+insert:
+INSERT INTO Contact (name, type) VALUES (?, ?);

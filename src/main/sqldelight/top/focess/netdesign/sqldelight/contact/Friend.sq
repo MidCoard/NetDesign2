@@ -1,5 +1,5 @@
 CREATE TABLE Friend (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL
 );
@@ -9,5 +9,11 @@ CREATE INDEX idx_Friend_name ON Friend (name);
 selectByName:
 SELECT * FROM Friend WHERE name = ?;
 
+selectById:
+SELECT * FROM Friend WHERE id = ?;
+
+selectAll:
+SELECT * FROM Friend;
+
 insert:
-INSERT INTO Friend (name, password) VALUES (?, ?);
+INSERT INTO Friend (id, name, password) VALUES (?, ?, ?);

@@ -11,28 +11,15 @@ import top.focess.netdesign.server.packet.*
 import top.focess.netdesign.ui.localMessageQueries
 import top.focess.netdesign.ui.queryLatestLocalMessages
 import java.io.BufferedOutputStream
-import java.io.ByteArrayOutputStream
-import java.io.Closeable
 import java.io.InputStream
 import java.net.Socket
 import kotlin.math.max
 
-class RemoteServer
-internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) :
-    Closeable {
+class RemoteClient
+internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int = NetworkConfig.DEFAULT_SERVER_PORT) : Client() {
 
     var host by mutableStateOf(host)
     var port by mutableStateOf(port)
-    var connected by mutableStateOf(ConnectionStatus.DISCONNECTED)
-
-    var online by mutableStateOf(true)
-    var registerable by mutableStateOf(false)
-    var self: Friend? by mutableStateOf(null)
-
-    var id: Int? = null
-    var token: String? = null
-    var username: String? = null
-
     private val socket: Socket
         get() = setupSocket()
     var channelSocket: Socket? = null
@@ -50,7 +37,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             if (connected() && packet is ServerStatusRequestPacket)
             // server is connected, no need to send
             // if you want to update the server status, send an update packet or reconnect
-                return@withContext ServerStatusResponsePacket(online, registerable)
+                return@withContext ServerStatusResponsePacket(online, registrable)
             try {
                 socket.let {
                     println("RemoteServer: send $packet")
@@ -89,11 +76,11 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             }
         }
 
-    suspend fun sendPacket(packet: ClientPacket): ServerPacket? {
+    override suspend fun sendPacket(clientPacket: ClientPacket): ServerPacket? {
         if (!connected)
             return null
         val serverPacket = try {
-            trySendPacket(packet, this.socket)
+            trySendPacket(clientPacket, this.socket)
         } catch (e : Exception) {
             // this exception is caused by this.socket's getter
             e.printStackTrace()
@@ -149,9 +136,9 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                             val packet = Packets.fromProtoPacket(protoPacket) as ServerPacket
                             if (packet !is ServerAckResponsePacket)
                                 throw IllegalArgumentException("Setup channel failed")
-                            this@RemoteServer.id = id
-                            this@RemoteServer.token = token
-                            this@RemoteServer.username = username
+                            this@RemoteClient.id = id
+                            this@RemoteClient.token = token
+                            this@RemoteClient.username = username
                             println("setup channel success")
                         }
                     } catch (e: Exception) {
@@ -172,14 +159,14 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                         println("RemoteServerChannel: receive ${packet.packetId}")
 
                         runBlocking {
-//                            withContext(Dispatchers.IO) {
+                            withContext(Dispatchers.IO) {
                                 channelSocket?.getOutputStream()?.let {
                                     BufferedOutputStream(it).let {
                                         it.write(ClientAckResponsePacket().toProtoPacket().toByteArray())
                                         it.flush()
                                     }
                                 }
-//                            }
+                            }
                         }
                         with(DEFAULT_PACKET_HANDLER) {
                             handle(packet)
@@ -215,7 +202,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             val packet = this.trySendPacket(ServerStatusRequestPacket(), this.socket)
             if (packet != null && packet is ServerStatusResponsePacket) {
                 this.online = packet.online
-                this.registerable = packet.registrable
+                this.registrable = packet.registrable
                 this.connected = ConnectionStatus.CONNECTED
             } else
                 this.connected = ConnectionStatus.DISCONNECTED
@@ -229,7 +216,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
     fun disconnect() {
         this.connected = ConnectionStatus.DISCONNECTED
         this.online = true
-        this.registerable = false
+        this.registrable = false
         this.self = null
         this.channelSocket?.close()
         this.channelThread?.join()
@@ -241,7 +228,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
             val packet = this.sendPacket(ServerStatusUpdateRequestPacket())
             if (packet is ServerStatusUpdateResponsePacket) {
                 this.online = packet.online
-                this.registerable = packet.registrable
+                this.registrable = packet.registrable
             } else disconnect()
         } else {
             this.disconnect()
@@ -253,7 +240,7 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
 
         @OptIn(DelicateCoroutinesApi::class)
         private val DEFAULT_PACKET_HANDLER = object : RemoteServerPacketHandler {
-            override fun RemoteServer.handle(packet: ServerPacket) {
+            override fun RemoteClient.handle(packet: ServerPacket) {
                 when (packet) {
                     is ChannelHeartRequestPacket -> {}
                     is ContactListRequestPacket -> {
@@ -293,7 +280,18 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
                     is ContactRequestPacket -> {
                         if (packet.delete)
                             contacts.removeIf { it.id == packet.contact.id }
-                        else contacts.add(packet.contact)
+                        else  {
+                            val localContact =  contacts.find { it.id == packet.contact.id }
+                            if (localContact != null) {
+                                localContact.online = packet.contact.online
+                                if (localContact is Group && packet.contact is Group) {
+                                    localContact.members.clear()
+                                    localContact.members.addAll(packet.contact.members)
+                                }
+                            } else
+                                contacts.add(packet.contact)
+
+                        }
                     }
                     is ContactMessageListRequestPacket -> {
                         packet.messages.forEach {
@@ -317,18 +315,9 @@ internal constructor(host: String = NetworkConfig.DEFAULT_SERVER_HOST, port: Int
         }
     }
 
-    enum class ConnectionStatus {
-        CONNECTED, DISCONNECTED, CONNECTING;
-
-        operator fun invoke() = this == CONNECTED
-
-        operator fun not() = this == DISCONNECTED
-    }
-
-
 
     private interface RemoteServerPacketHandler {
-        fun RemoteServer.handle(packet: ServerPacket)
+        fun RemoteClient.handle(packet: ServerPacket)
     }
 
 }

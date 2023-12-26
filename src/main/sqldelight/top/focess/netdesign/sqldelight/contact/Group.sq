@@ -1,0 +1,10 @@
+CREATE TABLE Group_ (
+    id INTEGER NOT NULL,
+    friendId INTEGER NOT NULL
+);
+
+selectMembers:
+SELECT friendId FROM Group_ WHERE id = ?;
+
+insertMember:
+INSERT INTO Group_(id, friendId) VALUES (?, ?);

@@ -18,7 +18,7 @@ class ChatGPTAccessor(val apiKey: String, val model: ChatGPTModel) {
 
     val id = -1
 
-    fun SingleServer.sendMessage(id: Int, name: String, messageContent: MessageContent) {
+    fun LocalServer.sendMessage(id: Int, name: String, messageContent: MessageContent) {
         if (messageContent.type != model.messageType) {
             val message = insertMessage(this@ChatGPTAccessor.id, id, "Message type does not match.", MessageType.TEXT)
             sendChannelPacket(id, ContactMessageListRequestPacket(message))
