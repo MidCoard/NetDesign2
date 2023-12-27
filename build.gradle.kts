@@ -51,9 +51,9 @@ compose.desktop {
             else -> System.getProperty("user.home") + "/.config" // Assume Linux
         }
 
-        val configDir = "$osConfigDir/NetDesign2"
+        val configDir = "$osConfigDir${File.separator}NetDesign2"
 
-        jvmArgs += listOf("-Xmx4G", "-DNET_DESIGN_2_LOG_PATH=$configDir/logs")
+        jvmArgs += listOf("-Xmx4G", "-DNET_DESIGN_2_LOG_PATH=$configDir${File.separator}logs")
 
 //        args += listOf("--local")
 
